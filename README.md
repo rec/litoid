@@ -1,0 +1,2 @@
+# litoid
+Sequence DMX lighting
