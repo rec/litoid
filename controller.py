@@ -1,5 +1,6 @@
 from functools import cached_property
 from pyftdi.ftdi import Ftdi
+import numpy as np
 
 FTDI_VENDOR_ID = 0x0403
 FTDI_PRODUCT_ID = 0x6001
@@ -16,13 +17,34 @@ class OpenDmxController:
         f.reset()
         f.set_baudrate(FTDI_BAUDRATE)
         f.set_line_property(**FTDI_LINE_PROPERTIES)
+        return f
 
-    def transmit(self, frame, first):
-        # Convert to a bytearray and pad the start of the frame
-        # We're transmitting direct DMX data here, so a frame must start at channel 1, but can end early
-        data = bytearray(([0] * first) + frame)
+    @cached_property
+    def _frame(self):
+        return bytearray(513)
 
+    @cached_property
+    def levels(self):
+        frame = np.array(self._frame, dtype='uint8', copy=False)
+        return frame[1:]
+
+    def transmit(self):
         # Write
         self.ftdi.set_break(True)
         self.ftdi.set_break(False)
-        self.ftdi.write_data(data)
+        self.ftdi.write_data(self._frame)
+
+    def close(self):
+        self.ftdi.close()
+
+
+def main():
+    od = OpenDmxController()
+    od.levels += 255
+
+    while True:
+        od.transmit()
+        import time
+        time.sleep(0.1)
+
+main()
