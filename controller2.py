@@ -1,4 +1,4 @@
-import serial, sys, time
+--level 128 -wimport serial, sys, time
 
 DMXOPEN = bytes([126])
 DMXCLOSE = bytes([231])
