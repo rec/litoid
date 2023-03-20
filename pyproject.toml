@@ -10,6 +10,7 @@ readme = "README.md"
 python = "^3.11"
 pyenttec = "^1.4"
 python-osc = "^1.8.1"
+datacls = "^4.6.0"
 
 [build-system]
 requires = ["poetry-core"]
