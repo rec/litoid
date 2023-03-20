@@ -30,7 +30,19 @@ files = [
 [package.extras]
 cp2110 = ["hidapi"]
 
+[[package]]
+name = "python-osc"
+version = "1.8.1"
+description = "Open Sound Control server and client implementations in pure Python"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "python-osc-1.8.1.tar.gz", hash = "sha256:ebd6b7cf8ae387380f48e9d6d7369bad1c176a1af6608efd7888b50b4f0e74ad"},
+    {file = "python_osc-1.8.1-py3-none-any.whl", hash = "sha256:13a1f76cbc5e5acdd9f9ec5b002b769ecb31db6bcf6d6e75ca64c07bbb6c83e8"},
+]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "bff7d1c778b555ff31520ef64b3bdd2ee3ec69b620dc2dfde872f06a27f8bab9"
+content-hash = "0c2ebe980a9b7ecb1583d674d1c3e4d045b2e676830e497b1768badc8dbcf316"
