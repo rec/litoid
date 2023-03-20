@@ -1,13 +1,28 @@
 from functools import cached_method
 from queue import Queue
-from threading import Thread
+import threading
 
 
-class ThreadQueue:
+class HasThread:
+    _target = None
+    daemon = True
+
+    def new_thread(self):
+        return threading.Thread(target=self._target, daemon=self.daemon)
+
+    @cached_method
+    def thread(self):
+        return self.new_thread()
+
+    def start(self):
+        self.thread.start()
+
+
+class ThreadQueue(HasThread):
     maxsize = 1
     thread_count = 1
-    daemon = True
     callback = None
+    thread = None
 
     def start(self):
         [t.start() for t in self.threads]
@@ -21,10 +36,7 @@ class ThreadQueue:
 
     @cached_method
     def threads(self):
-        return tuple(self._thread() for i in range(self.thread_count))
-
-    def _thread(self):
-        return Thread(target=self._target, daemon=self.daemon)
+        return tuple(self.new_thread() for i in range(self.thread_count))
 
     def _target(self):
         while (d := self.queue.get()) is not None:

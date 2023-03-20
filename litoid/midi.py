@@ -6,7 +6,7 @@ import mido
 
 
 @datacls
-class Midi:
+class MidiInput:
     callback: Callable
     name: str | None = None
 
@@ -21,3 +21,12 @@ class Midi:
     @cached_property
     def input(self):
         return mido.open_input(self.name)
+
+
+@datacls
+class MidiOutput:
+    name: str | None = None
+
+    @cached_property
+    def output(self):
+        return mido.open_output(self.name)
