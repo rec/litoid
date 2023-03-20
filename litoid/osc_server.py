@@ -1,3 +1,4 @@
+from . thread_queue import ThreadQueue
 from functools import cached_method
 from pythonosc.dispatcher import Dispatcher
 from pythonosc.osc_server import BlockingOSCUDPServer
@@ -8,7 +9,7 @@ import datacls
 
 
 @datacls
-class Server:
+class Server(ThreadQueue):
     callback: Callable
     endpoints: tuple[str]
     ip: str = '127.0.0.1'
@@ -17,7 +18,7 @@ class Server:
     thread_count: int = 1
 
     def serve(self):
-        [t.start() for t in self.threads]
+        self.start()
         self.server.serve_forever()
 
     @cached_method
@@ -32,17 +33,4 @@ class Server:
         return d
 
     def osc_callback(self, address, *osc_args):
-        queue.put_nowait((address, *osc_args))
-
-    @cached_method
-    def queue(self):
-        return Queue(self.maxsize)
-
-    @cached_method
-    def threads(self):
-        it = range(self.thread_count)
-        return tuple(Thread(target=self._target, daemon=True) for i in it)
-
-    def _target(self):
-        while (d := self.queue.get()) is not None:
-            self.callback(*d)
+        self.put(address, *osc_args)
