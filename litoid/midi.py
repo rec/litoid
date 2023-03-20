@@ -1,13 +1,11 @@
-from contextlib import contextmanager
-from functools import cached_property, wraps
-from pathlib import Path
+from functools import cached_property
 from threading import Thread
+from typing import Callable
 import datacls
 import mido
-import xmod
 
 
-@dataclass
+@datacls
 class Midi:
     callback: Callable
     name: str | None = None

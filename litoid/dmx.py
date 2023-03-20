@@ -1,7 +1,5 @@
 from . thread_queue import ThreadQueue
 from functools import cached_property
-from queue import Queue
-from threading import Thread
 import datacls
 import pyenttec
 

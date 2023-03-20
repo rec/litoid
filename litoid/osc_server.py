@@ -2,8 +2,6 @@ from . thread_queue import ThreadQueue
 from functools import cached_method
 from pythonosc.dispatcher import Dispatcher
 from pythonosc.osc_server import BlockingOSCUDPServer
-from queue import Queue
-from threading import Thread
 from typing import Callable
 import datacls
 
