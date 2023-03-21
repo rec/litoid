@@ -7,21 +7,29 @@ import datacls
 
 
 @datacls
-class Server(ThreadQueue):
-    callback: Callable
-    endpoints: tuple[str]
+class Desc:
+    endpoints: tuple[str] = ()
     ip: str = '127.0.0.1'
     port: int = 5005
     maxsize: int = 0
     thread_count: int = 1
 
-    def serve(self):
-        self.start()
-        self.server.serve_forever()
-
-    @cached_method
     def server(self):
         return BlockingOSCUDPServer(self.ip, self.port, self.dispatcher)
+
+
+class Data(tuple):
+    pass
+
+
+@datacls
+class Server(Desc, ThreadQueue):
+    callback: Callable | None = None
+
+    def serve(self):
+        assert self.callback
+        self.start()
+        self.desc.server().serve_forever()
 
     @cached_method
     def dispatcher(self):
@@ -31,4 +39,4 @@ class Server(ThreadQueue):
         return d
 
     def osc_callback(self, address, *osc_args):
-        self.put(address, *osc_args)
+        self.put(Data(address, *osc_args))

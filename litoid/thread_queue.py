@@ -31,13 +31,13 @@ class ThreadQueue(HasThread):
     def queue(self):
         return Queue(self.maxsize)
 
-    def put(self, *args):
-        self.queue.put_nowait(args)
+    def put(self, item):
+        self.queue.put_nowait(item)
 
     @cached_method
     def threads(self):
         return tuple(self.new_thread() for i in range(self.thread_count))
 
     def _target(self):
-        while (d := self.queue.get()) is not None:
-            self.callback(*d)
+        while (item := self.queue.get()) is not None:
+            self.callback(item)

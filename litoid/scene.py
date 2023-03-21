@@ -7,7 +7,7 @@ class Scene:
     def load(self, state: State) -> bool:
         pass
 
-    def midi_callback(self, state: State, msg) -> bool:
+    def callback(self, state: State, msg: object) -> bool:
         pass
 
     def unload(self, state: State) -> bool:
@@ -17,14 +17,14 @@ class Scene:
 @datacls
 class Compose(Scene):
     scenes: list[Scene] = datacls.field(list)
-    reverse_midi: bool = False
+    reverse_cb: bool = False
 
     def load(self, state: State) -> bool:
         return any(s.load(state) for s in self.scenes)
 
-    def midi_callback(self, state: State, msg) -> bool:
-        scenes = reversed(self.scenes) if self.reverse_midi else self.scenes
-        return any(s.midi_callback(state, msg) for s in scenes)
+    def callback(self, state: State, msg: object) -> bool:
+        scenes = reversed(self.scenes) if self.reverse_cb else self.scenes
+        return any(s.callback(state, msg) for s in scenes)
 
     def unload(self, state: State) -> bool:
         return any(s.unload(state) for s in reversed(self.scenes))
@@ -47,5 +47,5 @@ class SceneHolder:
             self._scene = scene
             self._scene.load(self.state)
 
-    def midi_callback(self, msg):
-        self._scene.midi_callback(self.state, msg)
+    def callback(self, msg: object):
+        self._scene.callback(self.state, msg)
