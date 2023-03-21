@@ -1,11 +1,11 @@
-channels = ["mode", "pattern", "zoom", "xrot", "yrot", "zrot", "hpos", "vpos", "color"]
-display = ["color", "pattern"]
+channels = [
+  "mode", "pattern", "zoom", "xrot", "yrot", "zrot", "hpos", "vpos", "color"
+]
 
 [splits]
 abs = [0, 127]
 speed = [128, 255]
 
-[value_names]
 [value_names.color]
 all = 0
 red = 64
