@@ -10,25 +10,34 @@ class Instrument:
     presets: dict = datacls.field(dict)
 
     @cached_property
-    def to_channel(self) -> dict[str, int]:
-        basic = {c: i for i, c in enumerate(self.channels)}
-        identity = {i: i for i, c in enumerate(self.channels)}
+    def channel_map(self) -> dict[str, int]:
+        base = {c: i for i, c in enumerate(self.channels)}
 
-        to_channel = {c: (i, None) for c, i in (basic | identity).items()}
-        for name, spl in self.splits.items():
-            to_channel |= {f'{c}_{name}': (i, spl) for c, i in basic.items()}
+        def split(name, split):
+            return {f'{c}_{name}': (i, split) for c, i in base.items()}
 
-        return to_channel
+        splits = [split(n, s) for n, s in self.splits.items()]
+
+        id1 = {i: i for i, c in enumerate(self.channels)}
+        id2 = {str(i): i for i, c in enumerate(self.channels)}
+
+        return combine([*splits, base, id1, id2])
 
     @cached_property
     def _value_namesl(self) -> tuple[dict, ...]:
         return tuple(self.value_names.get(c, {}) for c in self.channels)
 
+    @cached_property
+    def _presets(self) -> dict[str, dict]:
+        return {k: self.remap_dict(v) for k, v in self.presets.items()}
+
     def remap(self, channel: int | str, value: int | str) -> tuple[int, int]:
-        if ch_spl := self.to_channel.get(channel):
-            ch, spl = ch_spl
-        else:
+        if not (cm := self.channel_map.get(channel)):
             raise ValueError(f'Bad channel {channel}')
+        if isinstance(cm, tuple):
+            ch, spl = cm
+        else:
+            ch, spl = cm, None
 
         if not isinstance(v := value, int):
             if (v := self._value_names.get(ch, {}).get(value)) is None:
@@ -56,7 +65,7 @@ class Instrument:
         return self.to_tuple(self.default)
 
 
-def combine(dicts):  # not used
+def combine(dicts):
     result = {}
     for d in dicts:
         result |= d
