@@ -1,7 +1,6 @@
 from . thread_queue import ThreadQueue
 from functools import cached_property
 import datacls
-import pyenttec
 
 
 @datacls
@@ -10,7 +9,9 @@ class DMX(ThreadQueue):
 
     @cached_property
     def connection(self):
-        return pyenttec.DMXConnection(self.port)
+        import pyenttec
+
+        return pyenttec.DMXConnection(self.port, use_numpy=True)
 
     @cached_property
     def frame(self):
