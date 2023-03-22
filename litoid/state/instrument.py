@@ -12,15 +12,13 @@ class Instrument:
     @cached_property
     def channel_map(self) -> dict[str, int]:
         base = {c: i for i, c in enumerate(self.channels)}
+        id1 = {i: i for i, c in enumerate(self.channels)}
+        id2 = {str(i): i for i, c in enumerate(self.channels)}
 
         def split(name, split):
             return {f'{c}_{name}': (i, split) for c, i in base.items()}
 
         splits = [split(n, s) for n, s in self.splits.items()]
-
-        id1 = {i: i for i, c in enumerate(self.channels)}
-        id2 = {str(i): i for i, c in enumerate(self.channels)}
-
         return combine([*splits, base, id1, id2])
 
     @cached_property
@@ -28,7 +26,7 @@ class Instrument:
         return tuple(self.value_names.get(c, {}) for c in self.channels)
 
     @cached_property
-    def _presets(self) -> dict[str, dict]:
+    def mapped_presets(self) -> dict[str, dict]:
         return {k: self.remap_dict(v) for k, v in self.presets.items()}
 
     def remap(self, channel: int | str, value: int | str) -> tuple[int, int]:
@@ -53,16 +51,13 @@ class Instrument:
     def remap_dict(self, levels: dict):
         return dict(self.remap(c, v) for c, v in levels.items())
 
-    def to_tuple(self, levels: dict):
-        return tuple(levels.get(i, 0) for i in range(len(self.channels)))
+    @cached_property
+    def blackout(self):
+        return self.mapped_presets.get('blackout') or self.default
 
     @cached_property
-    def default(self) -> dict:
-        return self.remap_dict(self.presets.get('default', {}))
-
-    @cached_property
-    def default_tuple(self) -> tuple[int]:
-        return self.to_tuple(self.default)
+    def default(self):
+        return self.mapped_presets.get('default') or {}
 
 
 def combine(dicts):
