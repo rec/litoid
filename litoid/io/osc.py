@@ -1,4 +1,4 @@
-from .util.thread_queue import ThreadQueue
+from ..util.thread_queue import ThreadQueue
 from functools import cached_property
 from pythonosc.dispatcher import Dispatcher
 from pythonosc.osc_server import BlockingOSCUDPServer

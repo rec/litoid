@@ -1,4 +1,4 @@
-from . import osc
+from ..io import osc
 from functools import cached_property
 import datacls
 

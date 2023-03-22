@@ -1,4 +1,4 @@
-from .util.thread_queue import ThreadQueue
+from ..util.thread_queue import ThreadQueue
 from functools import cached_property
 import datacls
 
@@ -15,7 +15,9 @@ class DMX(ThreadQueue):
 
     @cached_property
     def frame(self):
-        return self.connection.dmx_frame
+        import numpy as np
+
+        return np.array(self.connection.dmx_frame, copy=False)
 
     def put(self, function, *args):
         assert callable(function)
