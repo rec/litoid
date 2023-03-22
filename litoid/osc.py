@@ -1,5 +1,5 @@
 from . thread_queue import ThreadQueue
-from functools import cached_method
+from functools import cached_property
 from pythonosc.dispatcher import Dispatcher
 from pythonosc.osc_server import BlockingOSCUDPServer
 from typing import Callable
@@ -31,7 +31,7 @@ class Server(Desc, ThreadQueue):
         self.start()
         self.desc.server().serve_forever()
 
-    @cached_method
+    @cached_property
     def dispatcher(self):
         d = Dispatcher()
         for e in self.endpoints:

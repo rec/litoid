@@ -1,4 +1,4 @@
-from functools import cached_method
+from functools import cached_property
 from queue import Queue
 import threading
 
@@ -10,7 +10,7 @@ class HasThread:
     def new_thread(self):
         return threading.Thread(target=self._target, daemon=self.daemon)
 
-    @cached_method
+    @cached_property
     def thread(self):
         return self.new_thread()
 
@@ -27,14 +27,14 @@ class ThreadQueue(HasThread):
     def start(self):
         [t.start() for t in self.threads]
 
-    @cached_method
+    @cached_property
     def queue(self):
         return Queue(self.maxsize)
 
     def put(self, item):
         self.queue.put_nowait(item)
 
-    @cached_method
+    @cached_property
     def threads(self):
         return tuple(self.new_thread() for i in range(self.thread_count))
 
