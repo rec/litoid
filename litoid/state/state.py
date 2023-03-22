@@ -25,7 +25,7 @@ class State:
 
     @cached_property
     def timed_heap(self):
-        from . timed_heap import TimedHeap
+        from .util.timed_heap import TimedHeap
 
         return TimedHeap()
 

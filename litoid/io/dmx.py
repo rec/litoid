@@ -1,4 +1,4 @@
-from . thread_queue import ThreadQueue
+from .util.thread_queue import ThreadQueue
 from functools import cached_property
 import datacls
 
