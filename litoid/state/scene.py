@@ -5,13 +5,13 @@ import datacls
 
 class Scene:
     def load(self, state: State) -> bool:
-        pass
+        print('load', self)
 
     def callback(self, state: State, msg: object) -> bool:
-        pass
+        print('callback', self, msg)
 
     def unload(self, state: State) -> bool:
-        pass
+        print('unload', self)
 
 
 @datacls

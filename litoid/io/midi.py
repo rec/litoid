@@ -1,18 +1,14 @@
+from ..util.has_thread import HasThread
 from functools import cached_property
-from threading import Thread
 from typing import Callable
 import datacls
 import mido
 
 
 @datacls
-class MidiInput:
+class MidiInput(HasThread):
     callback: Callable = print
     name: str | None = None
-
-    @cached_property
-    def thread(self):
-        return Thread(target=self._target, daemon=True)
 
     def _target(self):
         for msg in self.input:

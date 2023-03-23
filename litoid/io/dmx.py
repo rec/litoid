@@ -11,7 +11,7 @@ class DMX(ThreadQueue):
     def connection(self):
         import pyenttec
 
-        return pyenttec.DMXConnection(self.port, use_numpy=True)
+        return pyenttec.DMXConnection(self.port)
 
     @cached_property
     def frame(self):

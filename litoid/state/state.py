@@ -1,4 +1,3 @@
-from . import lamp
 from ..io import osc
 from functools import cached_property
 import datacls
@@ -7,13 +6,13 @@ import datacls
 @datacls
 class State:
     dmx_port: str = '/dev/cu.usbserial-6AYL2V8Z'
-    lamp_descs: list[lamp.LampDesc, ...] = datacls.field(list)
+    lamp_descs: list = datacls.field(list)
     midi_input_name: str | None = None
     osc_desc: osc.Desc = datacls.field(osc.Desc)
 
     @cached_property
     def dmx(self):
-        from . dmx import DMX
+        from .dmx import DMX
 
         return DMX(self.dmx_port)
 
@@ -31,7 +30,7 @@ class State:
 
     @cached_property
     def midi_input(self):
-        from . midi import MidiInput
+        from .midi import MidiInput
 
         return MidiInput(self.scene.midi_callback, self.midi_input_name)
 
@@ -43,7 +42,7 @@ class State:
 
     @cached_property
     def osc_server(self):
-        from . osc import Server
+        from .osc import Server
 
         return Server(self.scene.osc_callback, **self.osc_desc.asdict())
 
@@ -55,6 +54,6 @@ class State:
 
     @cached_property
     def scene(self):
-        from . scene import SceneHolder
+        from .scene import SceneHolder
 
         return SceneHolder(self)
