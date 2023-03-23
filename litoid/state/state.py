@@ -18,14 +18,28 @@ class State:
         return DMX(self.dmx_port)
 
     @cached_property
-    def lamps(self) -> lamp.Lamps:
-        return lamp.Lamps(self.dmx, self.lamp_descs)
+    def keyboard(self):
+        from .key_mouse import Keyboard
+
+        return Keyboard(self.scene.callback)
+
+    @cached_property
+    def lamps(self):
+        from .lamps import Lamps
+
+        return Lamps(self.dmx, self.lamp_descs)
 
     @cached_property
     def midi_input(self):
         from . midi import MidiInput
 
         return MidiInput(self.scene.midi_callback, self.midi_input_name)
+
+    @cached_property
+    def mouse(self):
+        from .key_mouse import Mouse
+
+        return Mouse(self.scene.callback)
 
     @cached_property
     def osc_server(self):
