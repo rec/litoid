@@ -428,6 +428,22 @@ files = [
 ]
 
 [[package]]
+name = "python-rtmidi"
+version = "1.4.9.dev0"
+description = "A Python binding for the RtMidi C++ library implemented using Cython."
+category = "main"
+optional = false
+python-versions = "*"
+files = []
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/SpotlightKid/python-rtmidi.git"
+reference = "eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba"
+resolved_reference = "eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba"
+
+[[package]]
 name = "python-xlib"
 version = "0.33"
 description = "Python X Library"
@@ -505,4 +521,4 @@ dek = ">=1.0.2,<2.0.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "714af69b43a4f5e4096de5581cd6fa78893f5fb6e5941ff6c5ef18eba76266e2"
+content-hash = "2f0e78f3adc169b763ebe73d69f78ec9100804953a97d2923a93aaa40d129f34"

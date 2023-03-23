@@ -1,10 +1,11 @@
+from ..util.read_write import ReadWrite
 from ..io import osc
 from functools import cached_property
 import datacls
 
 
 @datacls
-class State:
+class State(ReadWrite):
     dmx_port: str = '/dev/cu.usbserial-6AYL2V8Z'
     lamp_descs: list = datacls.field(list)
     midi_input_name: str | None = None
@@ -57,3 +58,12 @@ class State:
         from .scene import SceneHolder
 
         return SceneHolder(self)
+
+    def start_all(self):
+        self.dmx  # .start()
+        self.keyboard.start()
+        self.lamps
+        self.midi_input.start()
+        self.mouse.start()
+        self.osc_server.start()
+        self.timed_heap.start()

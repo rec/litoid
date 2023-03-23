@@ -15,13 +15,21 @@ class MidiInput(HasThread):
             self.callback(msg)
 
     @cached_property
+    def input_name(self):
+        return self.name or sorted(mido.get_input_names()[0])
+
+    @cached_property
     def input(self):
-        return mido.open_input(self.name)
+        return mido.open_input(self.input_name)
 
 
 @datacls
 class MidiOutput:
     name: str | None = None
+
+    @cached_property
+    def output_name(self):
+        return self.name or sorted(mido.get_output_names()[0])
 
     @cached_property
     def output(self):

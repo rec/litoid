@@ -1,3 +1,4 @@
+from ..util.read_write import ReadWrite
 from ..io.dmx import DMX
 from .instrument import Instrument
 from functools import cached_property
@@ -6,7 +7,7 @@ import numpy as np
 
 
 @datacls
-class LampDesc:
+class LampDesc(ReadWrite):
     instrument: Instrument
     name: str
     offset: int = 0

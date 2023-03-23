@@ -1,3 +1,4 @@
+from ..util.read_write import ReadWrite
 from ..util.thread_queue import ThreadQueue
 from functools import cached_property
 from pythonosc.dispatcher import Dispatcher
@@ -7,7 +8,7 @@ import datacls
 
 
 @datacls
-class Desc:
+class Desc(ReadWrite):
     endpoints: tuple[str] = ()
     ip: str = '127.0.0.1'
     port: int = 5005

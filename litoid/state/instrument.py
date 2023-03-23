@@ -1,9 +1,11 @@
+from ..util.read_write import ReadWrite
 from functools import cached_property
+import tomlkit
 import datacls
 
 
 @datacls
-class Instrument:
+class Instrument(ReadWrite):
     channels: list[str, ...]
     splits: dict = datacls.field(dict)
     value_names: dict = datacls.field(dict)
@@ -22,7 +24,7 @@ class Instrument:
         return combine([*splits, base, id1, id2])
 
     @cached_property
-    def _value_namesl(self) -> tuple[dict, ...]:
+    def _value_names(self) -> tuple[dict, ...]:
         return tuple(self.value_names.get(c, {}) for c in self.channels)
 
     @cached_property
@@ -30,15 +32,15 @@ class Instrument:
         return {k: self.remap_dict(v) for k, v in self.presets.items()}
 
     def remap(self, channel: int | str, value: int | str) -> tuple[int, int]:
-        if not (cm := self.channel_map.get(channel)):
-            raise ValueError(f'Bad channel {channel}')
+        if (cm := self.channel_map.get(channel)) is None:
+            raise ValueError(f'Bad channel "{channel}"')
         if isinstance(cm, tuple):
             ch, spl = cm
         else:
             ch, spl = cm, None
 
         if not isinstance(v := value, int):
-            if (v := self._value_names.get(ch, {}).get(value)) is None:
+            if (v := self.value_names.get(ch, {}).get(value)) is None:
                 raise ValueError(f'Bad channel value {channel}, {value}')
 
         if spl:
@@ -58,6 +60,10 @@ class Instrument:
     @cached_property
     def default(self):
         return self.mapped_presets.get('default') or {}
+
+    @classmethod
+    def read(cls, filename):
+        return cls(**tomlkit.loads(open(filename)))
 
 
 def combine(dicts):
