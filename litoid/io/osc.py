@@ -24,10 +24,9 @@ class Data(tuple):
 
 @datacls
 class Server(Desc, ThreadQueue):
-    callback: Callable | None = None
+    callback: Callable = print
 
     def serve(self):
-        assert self.callback
         self.start()
         self.desc.server().serve_forever()
 

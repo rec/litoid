@@ -7,7 +7,7 @@ import mido
 
 @datacls
 class MidiInput:
-    callback: Callable
+    callback: Callable = print
     name: str | None = None
 
     @cached_property

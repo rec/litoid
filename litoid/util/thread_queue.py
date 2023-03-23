@@ -21,7 +21,7 @@ class HasThread:
 class ThreadQueue(HasThread):
     maxsize = 1
     thread_count = 1
-    callback = None
+    callback = print
     thread = None
 
     def start(self):

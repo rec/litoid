@@ -7,7 +7,7 @@ import threading
 
 @datacls
 class _Base:
-    callback: Callable
+    callback: Callable = print
 
     @cached_property
     def thread(self):
