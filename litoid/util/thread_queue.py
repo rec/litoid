@@ -1,21 +1,6 @@
+from .has_thread import HasThread
 from functools import cached_property
 from queue import Queue
-import threading
-
-
-class HasThread:
-    _target = None
-    daemon = True
-
-    def new_thread(self):
-        return threading.Thread(target=self._target, daemon=self.daemon)
-
-    @cached_property
-    def thread(self):
-        return self.new_thread()
-
-    def start(self):
-        self.thread.start()
 
 
 class ThreadQueue(HasThread):
