@@ -1,4 +1,4 @@
-from . state import State
+from .state import State
 from threading import Lock
 import datacls
 
@@ -12,6 +12,10 @@ class Scene:
 
     def unload(self, state: State) -> bool:
         print('unload', self)
+
+    def run(self, state: State | None) -> None:
+        state = state or State()
+        state
 
 
 @datacls
@@ -48,4 +52,5 @@ class SceneHolder:
             self._scene.load(self.state)
 
     def callback(self, msg: object):
+        # should I lock this?
         self._scene.callback(self.state, msg)

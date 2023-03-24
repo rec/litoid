@@ -48,7 +48,14 @@ class State(read_write.ReadWrite):
 
         return SceneHolder(self)
 
-    def start_all(self):
+    @property
+    def running(self) -> bool:
+        return getattr(self, '_running', False)
+
+    def stop(self):
+        self.__dict__['_running'] = False
+
+    def start(self):
         self.dmx  # .start()
         self.keyboard.start()
         self.lamps
@@ -56,4 +63,4 @@ class State(read_write.ReadWrite):
         self.mouse.start()
         self.osc_server.start()
         self.timed_heap.start()
-        self.scene
+        self.__dict__['_running'] = True

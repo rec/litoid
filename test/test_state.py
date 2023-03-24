@@ -4,5 +4,5 @@ import time
 
 def test_state():
     state = State()
-    state.start_all()
+    state.start()
     time.sleep(0.1)

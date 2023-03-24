@@ -1,4 +1,3 @@
-from threading import Lock
 from typing import Callable
 import datacls
 import heapq
@@ -17,7 +16,6 @@ class Event:
 @datacls
 class TimedHeap(HasThread):
     _heap: list = datacls.field(list)
-    _lock: Lock = datacls.field(Lock)
     _time: Callable = time.time
     _sleep: Callable = time.sleep
 
