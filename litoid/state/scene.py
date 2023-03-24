@@ -15,7 +15,8 @@ class Scene:
 
     def run(self, state: State | None) -> None:
         state = state or State()
-        state
+        state.set_scene(self)
+        state.run()
 
 
 @datacls

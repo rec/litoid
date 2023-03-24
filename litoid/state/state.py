@@ -1,16 +1,21 @@
 from . import lamp
 from ..io import dmx, key_mouse, midi, osc
-from ..util import read_write, timed_heap
+from ..util import is_running, read_write, timed_heap
 from functools import cached_property
 import datacls
+import time
+
+SPIN_TIME = 0.05
 
 
 @datacls
-class State(read_write.ReadWrite):
+class State(read_write.ReadWrite, is_running.IsRunning):
     dmx_port: str = '/dev/cu.usbserial-6AYL2V8Z'
     lamp_descs: list = datacls.field(list)
-    midi_input_name: str | None = None
+    midi_input_name: str | None = 'nanoKONTROL SLIDER/KNOB'
     osc_desc: osc.Desc = datacls.field(osc.Desc)
+
+    use_mouse = False
 
     @cached_property
     def dmx(self):
@@ -48,19 +53,23 @@ class State(read_write.ReadWrite):
 
         return SceneHolder(self)
 
-    @property
-    def running(self) -> bool:
-        return getattr(self, '_running', False)
-
-    def stop(self):
-        self.__dict__['_running'] = False
-
     def start(self):
         self.dmx  # .start()
-        self.keyboard.start()
+        if not self.use_mouse:
+            self.keyboard.start()
         self.lamps
         self.midi_input.start()
-        self.mouse.start()
+        if self.use_mouse:
+            self.mouse.start()
         self.osc_server.start()
         self.timed_heap.start()
-        self.__dict__['_running'] = True
+        super().start()
+
+    def run(self):
+        self.start()
+        while self.running:
+            time.sleep(SPIN_TIME)
+
+
+if __name__ == '__main__':
+    State().run()
