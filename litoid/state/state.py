@@ -23,7 +23,7 @@ class State(read_write.ReadWrite, is_running.IsRunning):
 
     @cached_property
     def keyboard(self):
-        return key_mouse.Keyboard(self.scene.callback)
+        return key_mouse.Keyboard(self.callback)
 
     @cached_property
     def lamps(self):
@@ -31,27 +31,32 @@ class State(read_write.ReadWrite, is_running.IsRunning):
 
     @cached_property
     def midi_input(self):
-        return midi.MidiInput(self.scene.callback, self.midi_input_name)
+        return midi.MidiInput(self.callback, self.midi_input_name)
 
     @cached_property
     def mouse(self):
-        return key_mouse.Mouse(self.scene.callback)
+        return key_mouse.Mouse(self.callback)
 
     @cached_property
     def osc_server(self):
-        return osc.Server(
-            callback=self.scene.callback, **self.osc_desc.asdict()
-        )
+        return osc.Server(callback=self.callback, **self.osc_desc.asdict())
 
     @cached_property
     def timed_heap(self):
         return timed_heap.TimedHeap()
 
     @cached_property
-    def scene(self):
+    def _scene_holder(self):
         from .scene import SceneHolder
 
         return SceneHolder(self)
+
+    @property
+    def scene(self):
+        return self._scene_holder.scene
+
+    def set_scene(self, scene):
+        self._scene_holder.set_scene(scene)
 
     def start(self):
         self.dmx  # .start()
@@ -69,6 +74,9 @@ class State(read_write.ReadWrite, is_running.IsRunning):
         self.start()
         while self.running:
             time.sleep(SPIN_TIME)
+
+    def callback(self, msg):
+        return self.scene.callback(self, msg)
 
 
 if __name__ == '__main__':

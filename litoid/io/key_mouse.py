@@ -10,8 +10,8 @@ class _Base(HasThread):
 
     def _target(self):
         with self.event_module.Events() as events:
-            for e in events:
-                self.callback(e)
+            for msg in events:
+                self.callback(msg)
 
 
 class Keyboard(_Base):
