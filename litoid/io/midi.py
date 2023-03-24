@@ -16,7 +16,7 @@ class MidiInput(HasThread):
 
     @cached_property
     def input_name(self):
-        return self.name or sorted(mido.get_input_names()[0])
+        return self.name or sorted(mido.get_input_names())[0]
 
     @cached_property
     def input(self):

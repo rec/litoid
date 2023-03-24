@@ -1,5 +1,5 @@
-from ..util.read_write import ReadWrite
 from ..io.dmx import DMX
+from ..util.read_write import ReadWrite
 from .instrument import Instrument
 from functools import cached_property
 import datacls
