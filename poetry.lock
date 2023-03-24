@@ -257,15 +257,13 @@ description = "Control an Enttec Pro DMX from python."
 category = "main"
 optional = false
 python-versions = "*"
-files = []
-develop = false
+files = [
+    {file = "pyenttec-1.4-py3-none-any.whl", hash = "sha256:1ecbbc902d83fc19c3b95a1ef85f9f6f7cac171d2b13de740a4110f29d99c871"},
+    {file = "pyenttec-1.4.tar.gz", hash = "sha256:6327d94ff4e4d392a1f1d07a91c7d85bc1eed5926a7e449c97b185f90a9b64ea"},
+]
 
 [package.dependencies]
 pyserial = "*"
-
-[package.source]
-type = "directory"
-url = "../pyenttec"
 
 [[package]]
 name = "pyflakes"
@@ -521,4 +519,4 @@ dek = ">=1.0.2,<2.0.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "2f0e78f3adc169b763ebe73d69f78ec9100804953a97d2923a93aaa40d129f34"
+content-hash = "f6e10fee6f21e587ff79a97f0f5e2657c1e9b780194bc4e6e996cd7420e59495"
