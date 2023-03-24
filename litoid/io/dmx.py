@@ -1,6 +1,7 @@
 from ..util.thread_queue import ThreadQueue
 from functools import cached_property
 import datacls
+import pyenttec
 
 
 @datacls
@@ -9,15 +10,11 @@ class DMX(ThreadQueue):
 
     @cached_property
     def connection(self):
-        import pyenttec
-
         return pyenttec.DMXConnection(self.port)
 
     @cached_property
     def frame(self):
-        import numpy as np
-
-        return np.array(self.connection.dmx_frame, copy=False)
+        return memoryview(self.connection.dmx_frame)
 
     def put(self, function, *args):
         assert callable(function)

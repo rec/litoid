@@ -56,3 +56,4 @@ class State(read_write.ReadWrite):
         self.mouse.start()
         self.osc_server.start()
         self.timed_heap.start()
+        self.scene

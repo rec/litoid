@@ -3,7 +3,6 @@ from ..util.read_write import ReadWrite
 from .instrument import Instrument
 from functools import cached_property
 import datacls
-import numpy as np
 
 
 @datacls
@@ -28,7 +27,7 @@ class LampDesc(ReadWrite):
 
 @datacls
 class Lamp(LampDesc):
-    frame: np.ndarray = datacls.field(np.array)
+    frame: memoryview | None = None
 
     def render(self, d: dict):
         it = range(len(self.frame))
