@@ -1,7 +1,7 @@
 from .instrument import Instrument
 from functools import cache
 from pathlib import Path
-import tomlkit
+import tomllib
 import xmod
 
 __all__ = 'LASER', 'GANTOM'
@@ -15,7 +15,7 @@ assert DATA.exists()
 @cache
 def instruments():
     files = sorted(DATA.glob('*.toml'))
-    return {f.stem: Instrument(**tomlkit.load(f.open())) for f in files}
+    return {f.stem: Instrument(**tomllib.loads(f.read_text())) for f in files}
 
 
 LASER = instruments()['laser']

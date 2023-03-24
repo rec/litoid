@@ -1,6 +1,6 @@
 from ..util.read_write import ReadWrite
 from functools import cached_property
-import tomlkit
+import tomllib
 import datacls
 
 
@@ -25,7 +25,8 @@ class Instrument(ReadWrite):
 
     @cached_property
     def _value_names(self) -> tuple[dict, ...]:
-        return tuple(self.value_names.get(c, {}) for c in self.channels)
+        vn = self.value_names
+        return vn | {self.channel_map[k]: v for k, v in vn.items()}
 
     @cached_property
     def mapped_presets(self) -> dict[str, dict]:
@@ -40,7 +41,7 @@ class Instrument(ReadWrite):
             ch, spl = cm, None
 
         if not isinstance(v := value, int):
-            if (v := self.value_names.get(ch, {}).get(value)) is None:
+            if (v := self._value_names.get(ch, {}).get(value)) is None:
                 raise ValueError(f'Bad channel value {channel}, {value}')
 
         if spl:
@@ -63,7 +64,7 @@ class Instrument(ReadWrite):
 
     @classmethod
     def read(cls, filename):
-        return cls(**tomlkit.loads(open(filename)))
+        return cls(**tomllib.loads(open(filename)))
 
 
 def combine(dicts):
