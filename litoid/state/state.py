@@ -1,11 +1,16 @@
 from . import lamp
 from ..io import dmx, key_mouse, midi, osc
 from ..util import is_running, read_write, timed_heap
-from functools import cached_property
+from functools import cached_property, wraps
+from pathlib import Path
 import datacls
 import time
+import tomllib
+import xmod
 
 SPIN_TIME = 0.05
+STATE_FILE = Path(__file__).parents[2] / 'state.toml'
+assert STATE_FILE.exists()
 
 
 @datacls
@@ -15,6 +20,7 @@ class State(read_write.ReadWrite, is_running.IsRunning):
     midi_input_name: str | None = 'nanoKONTROL SLIDER/KNOB'
     osc_desc: osc.Desc = datacls.field(osc.Desc)
 
+    # Can't use both mouse and keyboard: https://github.com/rec/litoid/issues/5
     use_mouse = False
 
     @cached_property
@@ -59,13 +65,12 @@ class State(read_write.ReadWrite, is_running.IsRunning):
         self._scene_holder.set_scene(scene)
 
     def start(self):
-        self.dmx  # .start()
-        if not self.use_mouse:
+        if self.use_mouse:
+            self.mouse.start()
+        else:
             self.keyboard.start()
         self.lamps
         self.midi_input.start()
-        if self.use_mouse:
-            self.mouse.start()
         self.osc_server.start()
         self.timed_heap.start()
         super().start()
@@ -77,6 +82,13 @@ class State(read_write.ReadWrite, is_running.IsRunning):
 
     def callback(self, msg):
         return self.scene.callback(self, msg)
+
+
+@xmod
+@wraps(State)
+def state(**kwargs):
+    state = tomllib.loads(STATE_FILE.read_text()) | kwargs
+    return State(**state)
 
 
 if __name__ == '__main__':

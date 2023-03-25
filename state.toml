@@ -1,0 +1,13 @@
+dmx_port = '/dev/cu.usbserial-6AYL2V8Z'
+lamp_descs = [
+  ['gantom', 0],
+  ['laser', 49],
+]
+midi_input_name = 'nanoKONTROL SLIDER/KNOB'
+
+[osc_desc]
+endpoints = []
+ip = '127.0.0.1'
+port = 5005
+maxsize = 0
+thread_count = 1
