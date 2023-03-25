@@ -1,9 +1,10 @@
 dmx_port = '/dev/cu.usbserial-6AYL2V8Z'
-lamp_descs = [
-  ['gantom', 0],
-  ['laser', 49],
-]
-midi_input_name = 'nanoKONTROL SLIDER/KNOB'
+
+# midi_input_name = 'nanoKONTROL SLIDER/KNOB'
+
+[lamp_descs]
+gantom = ['gantom', 0]
+laser = ['laser', 49]
 
 [osc_desc]
 endpoints = []

@@ -15,10 +15,10 @@ assert STATE_FILE.exists()
 
 @datacls
 class State(read_write.ReadWrite, is_running.IsRunning):
-    dmx_port: str = '/dev/cu.usbserial-6AYL2V8Z'
-    lamp_descs: list = datacls.field(list)
-    midi_input_name: str | None = 'nanoKONTROL SLIDER/KNOB'
-    osc_desc: osc.Desc = datacls.field(osc.Desc)
+    dmx_port: str
+    lamp_descs: dict
+    osc_desc: dict
+    midi_input_name: str | None = None
 
     # Can't use both mouse and keyboard: https://github.com/rec/litoid/issues/5
     use_mouse = False
@@ -37,7 +37,8 @@ class State(read_write.ReadWrite, is_running.IsRunning):
 
     @cached_property
     def midi_input(self):
-        return midi.MidiInput(self.callback, self.midi_input_name)
+        if self.midi_input_name:
+            return midi.MidiInput(self.callback, self.midi_input_name)
 
     @cached_property
     def mouse(self):
@@ -45,7 +46,7 @@ class State(read_write.ReadWrite, is_running.IsRunning):
 
     @cached_property
     def osc_server(self):
-        return osc.Server(callback=self.callback, **self.osc_desc.asdict())
+        return osc.Server(callback=self.callback, **self.osc_desc)
 
     @cached_property
     def timed_heap(self):
@@ -70,7 +71,7 @@ class State(read_write.ReadWrite, is_running.IsRunning):
         else:
             self.keyboard.start()
         self.lamps
-        self.midi_input.start()
+        self.midi_input and self.midi_input.start()
         self.osc_server.start()
         self.timed_heap.start()
         super().start()

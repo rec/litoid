@@ -1,46 +1,53 @@
 from . import instruments
 from ..io.dmx import DMX
-from .instrument import Instrument
 from functools import cached_property
 import datacls
 
 
 @datacls
 class LampDesc:
-    instrument: str
+    name: str
+    instrument_name: str
     offset: int
 
+    @cached_property
+    def instrument(self):
+        return instruments()[self.instrument_name]
+
+    @cached_property
+    def size(self):
+        return len(self.instrument.channels)
+
     def make(self, dmx: DMX):
-        instrument = instruments()[self.intrument]
-        size = len(instrument.channels)
-        frame = dmx.dmx_frame[self.offset:self.offset + size]
-        return Lamp(frame=frame, instrument=instrument, offset=self.offset)
+        frame = dmx.frame[self.offset:self.offset + self.size]
+        return Lamp(frame=frame, **self.asdict())
 
 
 @datacls
-class Lamp:
+class Lamp(LampDesc):
     frame: memoryview
-    instrument: Instrument
-    offset: int
 
     @cached_property
     def presets(self):
         return self.instrument.mapped_presets
 
-    @cached_property
-    def label(self):
-        return f'{self.instrument.name}_{self.offset}'
-
     def render(self, d: dict):
         it = range(len(self.frame))
         self.frame[:] = (max(0, min(255, d.get(i, 0))) for i in it)
 
+    def __getitem__(self, i):
+        return self.frame[i]
 
-def lamps(dmx: DMX, descs: list):
-    lamps = [LampDesc(**d).make(dmx) for d in descs]
+    def __setitem__(self, i, v):
+        if isinstance(i, slice):
+            v = (max(0, min(255, i)) for i in v)
+        else:
+            v = max(0, min(255, v))
+        self.frame[i] = v
 
-    assert len(set(la.label for la in lamps)) == len(lamps)
-    lamps = {la.label: la for la in lamps}
+
+def lamps(dmx: DMX, descs: dict[str, dict]):
+    lamps = {k: LampDesc(k, *v).make(dmx) for k, v in descs.items()}
 
     # Check for overlapping lamps
     entries = {}

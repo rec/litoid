@@ -1,4 +1,4 @@
-from .state import State
+from .state import State, state as _state
 from threading import Lock
 import datacls
 
@@ -14,7 +14,7 @@ class Scene:
         pass
 
     def run(self, state: State | None = None) -> None:
-        state = state or State()
+        state = state or _state()
         state.set_scene(self)
         state.run()
 
