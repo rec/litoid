@@ -31,9 +31,9 @@ class Lamp(LampDesc):
     def presets(self):
         return self.instrument.mapped_presets
 
-    def render(self, d: dict):
+    def set_levels(self, d: dict):
         it = range(len(self.frame))
-        self.frame[:] = (max(0, min(255, d.get(i, 0))) for i in it)
+        self.frame[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
 
     def __getitem__(self, i):
         return self.frame[i]
@@ -44,6 +44,9 @@ class Lamp(LampDesc):
         else:
             v = max(0, min(255, v))
         self.frame[i] = v
+
+    def blackout(self):
+        self.set_levels(self.instrument.blackout)
 
 
 def lamps(dmx: DMX, descs: dict[str, dict]):
