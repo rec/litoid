@@ -27,7 +27,7 @@ class State(read_write.ReadWrite, is_running.IsRunning):
 
     @cached_property
     def lamps(self):
-        return lamp.Lamps(self.dmx, self.lamp_descs)
+        return lamp.lamps(self.dmx, self.lamp_descs)
 
     @cached_property
     def midi_input(self):

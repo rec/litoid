@@ -34,17 +34,17 @@ class Lamp(LampDesc):
         self.frame[:] = (max(0, min(255, d.get(i, 0))) for i in it)
 
 
-class Lamps:
-    def __init__(self, dmx: DMX, descs: list[LampDesc, ...]):
-        lamps = [d.make(dmx) for d in descs]
+def lamps(dmx: DMX, descs: list[LampDesc, ...]):
+    lamps = [d.make(dmx) for d in descs]
+    lamps = {m.label: m for m in lamps}
 
-        # Check for overlapping lamps
-        entries = {}
-        for p in lamps:
-            for i in range(len(p.frame)):
-                entries.setdefault(p.offset + i, []).append((p, i))
+    # Check for overlapping lamps
+    entries = {}
+    for p in lamps.values():
+        for i in range(len(p.frame)):
+            entries.setdefault(p.offset + i, []).append((p, i))
 
-        if bad := {k: v for k, v in entries.items() if len(v) > 1}:
-            raise ValueError(str(bad))
+    if bad := {k: v for k, v in entries.items() if len(v) > 1}:
+        raise ValueError(str(bad))
 
-        self.lamps = {m.label: m for m in lamps}
+    return lamps
