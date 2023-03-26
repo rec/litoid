@@ -17,6 +17,7 @@ pynput = "^1.7.6"
 python-rtmidi = {git = "https://github.com/SpotlightKid/python-rtmidi.git", rev = "eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba"}
 xmod = "^1.4.0"
 pyenttec = "^1.4"
+ipython = "^8.11.0"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
