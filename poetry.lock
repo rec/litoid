@@ -810,4 +810,4 @@ dek = ">=1.0.2,<2.0.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "aac590df22c38fed97009291e4918dc61381df3748f930ed0cbdfe2e3b2c8169"
+content-hash = "843a51d8e93490e886cc08a917ea00cddea87b370826686622bc98e0962b0b08"
