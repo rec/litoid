@@ -1,5 +1,7 @@
+import datacls
 import IPython
-from typer import Argument, Option, Typer
+from dtyper import Argument, Option, Typer
+from pathlib import Path
 
 app = Typer(
     add_completion=False,
@@ -7,17 +9,28 @@ app = Typer(
 )
 command = app.command
 
+assert Argument, Option
+
+
+@datacls.mutable
+class Litoid:
+    """
+    Help is on the way.
+    """
+
+    state_path: Path | None
+
 
 @command()
 def main(
-    host: str = Argument('localhost', help='Host to connect to.'),
+    state_path: Path = Argument(None, help='Path to the state file'),
 ):
-    scope_vars = dict(locals())
+    litoid = Litoid(**locals())
+    scope_vars = {'lit': litoid, **locals()}
 
     print('            LITOID')
     IPython.start_ipython(argv=[], user_ns=scope_vars)
     print('            litoid')
-
 
 
 if __name__ == '__main__':

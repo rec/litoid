@@ -1,11 +1,10 @@
 from . import lamp
 from ..io import dmx, key_mouse, midi, osc
-from ..util import is_running, read_write, timed_heap
+from ..util import file, is_running, read_write, timed_heap
 from functools import cached_property, wraps
 from pathlib import Path
 import datacls
 import time
-import tomllib
 import xmod
 
 SPIN_TIME = 0.05
@@ -92,9 +91,8 @@ class State(read_write.ReadWrite, is_running.IsRunning):
 
 @xmod
 @wraps(State)
-def state(**kwargs):
-    state = tomllib.loads(STATE_FILE.read_text()) | kwargs
-    return State(**state)
+def state(path: Path | None = None, **kwargs):
+    return State(**file.load(path or STATE_FILE), **kwargs)
 
 
 if __name__ == '__main__':

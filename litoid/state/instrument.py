@@ -1,11 +1,10 @@
-from ..util.read_write import ReadWrite
+from ..util import file, read_write
 from functools import cached_property
-import tomllib
 import datacls
 
 
 @datacls
-class Instrument(ReadWrite):
+class Instrument(read_write.ReadWrite):
     channels: list[str, ...]
     splits: dict = datacls.field(dict)
     value_names: dict = datacls.field(dict)
@@ -64,7 +63,7 @@ class Instrument(ReadWrite):
 
     @classmethod
     def read(cls, filename):
-        return cls(**tomllib.loads(open(filename)))
+        return cls(**file.load(filename))
 
 
 def combine(dicts):
