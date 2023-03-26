@@ -65,6 +65,8 @@ class State(read_write.ReadWrite, is_running.IsRunning):
         self._scene_holder.set_scene(scene)
 
     def start(self):
+        if super().start():
+            return True
         if self.use_mouse:
             self.mouse.start()
         else:
@@ -73,10 +75,10 @@ class State(read_write.ReadWrite, is_running.IsRunning):
         self.midi_input and self.midi_input.start()
         self.osc_server.start()
         self.timed_heap.start()
-        super().start()
 
     def run(self):
-        self.start()
+        s = self.start()
+        assert not s, 'Another instance is running'
         try:
             while self.running:
                 time.sleep(SPIN_TIME)
