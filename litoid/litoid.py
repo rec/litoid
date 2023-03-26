@@ -1,5 +1,6 @@
 from . import app
 from .state import state
+from functools import cached_property
 from pathlib import Path
 import IPython
 import dtyper
@@ -19,5 +20,12 @@ def litoid(
 
 @dtyper.dataclass(litoid)
 class Litoid:
-    def __post_init__(self):
-        self.state = state(self.state_path)
+    @cached_property
+    def state(self):
+        return state(self.state_path)
+
+    def __dir__(self):
+        return sorted(set(dir(super()) + ['state'] + dir(self.state)))
+
+    def __getattr__(self, k):
+        return getattr(self.state, k)
