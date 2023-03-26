@@ -1,35 +1,24 @@
-import click
+import IPython
+from typer import Argument, Option, Typer
+
+app = Typer(
+    add_completion=False,
+    context_settings={'help_option_names': ['-h', '--help']},
+)
+command = app.command
 
 
-class DeepThought:
-    def __init__(self, host):
-        super().__init__()
-        self.host = host
+@command()
+def main(
+    host: str = Argument('localhost', help='Host to connect to.'),
+):
+    scope_vars = dict(locals())
 
-    @property
-    def answer(self):
-        print(f"Connecting to {self.host}...")
-        return 42
-
-
-@click.command()
-@click.option("--host", default="localhost", help="Host to connect to.")
-def main(host):
-    header = "Deep Thought initialised as `cpu`.  Type `help(cpu)` for assistance."
-    footer = ""
-
-    scope_vars = {"cpu": DeepThought(host)}
-
-    try:
-        import IPython
-    except ImportError:
-        from code import InteractiveConsole
-        InteractiveConsole(locals=scope_vars).interact(header, footer)
-    else:
-        print(header)
-        IPython.start_ipython(argv=[], user_ns=scope_vars)
-        print(footer)
+    print('            LITOID')
+    IPython.start_ipython(argv=[], user_ns=scope_vars)
+    print('            litoid')
 
 
-if __name__ == "__main__":
-    main()
+
+if __name__ == '__main__':
+    app(standalone_mode=False)
