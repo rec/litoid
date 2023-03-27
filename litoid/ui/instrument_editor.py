@@ -15,7 +15,6 @@ LAYOUT = [
 ]
 
 
-
 @datacls
 class UIDesc:
     theme: str = 'DarkAmber'
@@ -34,13 +33,11 @@ class UI(UIDesc, IsRunning):
 
     def start(self):
         print('start')
-        sg.theme(self.theme)
-        sg.set_options(font=self.font)
         super().start()
 
         while self.running:
             print('reading')
-            event, values = window.read()
+            event, values = self.window.read()
             print('read', event)
             if event == sg.WIN_CLOSED or event == 'Cancel':
                 print('stop!!!')
@@ -49,13 +46,13 @@ class UI(UIDesc, IsRunning):
             self.callback and self.callback((event, values))
 
 
-if False:
+if not False:
     U = ui.UI
 else:
     U = UI
 
 
-class InstrumentEditorApp(U):
+class InstrumentEditorApp(ui.UI):
     pass
 
 
