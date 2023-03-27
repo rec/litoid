@@ -21,7 +21,6 @@ ipython = "^8.11.0"
 typer = "^0.7.0"
 dtyper = "^2.1.0"
 textual = {extras = ["dev"], version = "^0.16.0"}
-dearpygui = "^1.9.0"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
