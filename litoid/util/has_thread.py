@@ -10,7 +10,7 @@ class HasThread(IsRunning):
     daemon = True
     looping = False
 
-    def target(self):
+    def _thread_target(self):
         while self.running:
             try:
                 self._target()
@@ -22,7 +22,7 @@ class HasThread(IsRunning):
                 self.stop()
 
     def new_thread(self, run_loop=False):
-        return Thread(target=self.target, daemon=self.daemon)
+        return Thread(target=self._thread_target, daemon=self.daemon)
 
     @cached_property
     def thread(self):
