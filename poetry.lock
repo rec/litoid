@@ -239,6 +239,21 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "psgdemos"
+version = "1.12.1"
+description = "Installs the full set of PySimpleGUI Demo Programs and the Demo Browser."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "psgdemos-1.12.1-py3-none-any.whl", hash = "sha256:a035540dd0ff92f410aed9b7af8d5a641d9d5a9eac3e0072ef115adf06abb447"},
+    {file = "psgdemos-1.12.1.tar.gz", hash = "sha256:4108af795477531a9b1c8675b9aa9b6628c109e660f6954baf8ba2dc3b5806e9"},
+]
+
+[package.dependencies]
+PySimpleGUI = "*"
+
+[[package]]
 name = "pycodestyle"
 version = "2.10.0"
 description = "Python style guide checker"
@@ -531,4 +546,4 @@ dek = ">=1.0.2,<2.0.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "bae66a89bddf8f9ce6bfd854c4f1128a312eb0f9da1fd4f97a5b8d2916dac1e0"
+content-hash = "5106134c8ac40bb5fccaf69d01a0fdbe0eb766485e074077041de4da8ab47e97"
