@@ -1,8 +1,9 @@
+# DEPRECATED
+
 from . import app
 from .state import state
 from functools import cached_property
 from pathlib import Path
-import IPython
 import dtyper
 import xmod
 
@@ -12,6 +13,7 @@ import xmod
 def litoid(
     state_path: Path = app.Argument(None, help='Path to the state file'),
 ):
+    import IPython
     litoid = Litoid(**locals())
 
     scope_vars = {'li': litoid, 'litoid': litoid}
