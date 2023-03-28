@@ -1,4 +1,4 @@
-from litoid.ui.instrument_editor import app
+from litoid.ui.ie import app
 
 if __name__ == "__main__":
-    app.run()
+    app.start()
