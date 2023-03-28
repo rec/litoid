@@ -10,8 +10,10 @@ sg.theme('DarkAmber')
 @datacls
 class UIDesc:
     font: tuple[str, int] = ('Helvetica', 18)
-    layout: list = datacls.field(list)
     title: str = '💡 Litoid 💡'
+
+    def layout(self):
+        raise NotImplementedError
 
 
 @datacls(slots=True)
@@ -30,7 +32,7 @@ class UI(UIDesc, ThreadQueue):
 
     @cached_property
     def window(self):
-        return sg.Window(self.title, self.layout, font=self.font)
+        return sg.Window(self.title, self.layout(), font=self.font)
 
     def start(self):
         """Must be run on the main thread, blocks until quit"""

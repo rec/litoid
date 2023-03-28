@@ -1,8 +1,17 @@
 from . import ui
 import PySimpleGUI as sg
 
-sg.theme('DarkAmber')
-sg.set_options(font=('Helvetica', 18))
+
+def T(key, *a, **ka):
+    return sg.Text(key, key=key, *a, **ka)
+
+
+def B(key, *a, **ka):
+    return sg.Button(key, key=key, *a, **ka)
+
+
+HEADER = T('preset_name'), T('instrument_name'), T('offset')
+NAMED_CHANNEL = []
 
 LAYOUT = [
     [sg.Text('Some text on Row 1')],
@@ -12,10 +21,11 @@ LAYOUT = [
 
 
 class InstrumentEditorApp(ui.UI):
-    pass
+    def layout(self):
+        return LAYOUT
 
 
-app = InstrumentEditorApp(layout=LAYOUT)
+app = InstrumentEditorApp()
 
 if __name__ == "__main__":
     app.start()
