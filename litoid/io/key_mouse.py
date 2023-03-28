@@ -13,6 +13,10 @@ class _Base(HasThread):
             for msg in events:
                 self.callback(msg)
 
+    @classmethod
+    def Message(cls) -> type:
+        return cls.event_module.Events.Event
+
 
 class Keyboard(_Base):
     event_module = pynput.keyboard

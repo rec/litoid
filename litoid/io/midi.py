@@ -4,6 +4,8 @@ from typing import Callable
 import datacls
 import mido
 
+Message = mido.Message
+
 
 @datacls
 class MidiInput(HasThread):

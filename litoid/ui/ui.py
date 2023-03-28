@@ -15,7 +15,7 @@ class UIDesc:
 
 
 @datacls(slots=True)
-class UIEvent:
+class Message:
     event: str
     values: list[str, ...]
 
@@ -36,7 +36,7 @@ class UI(UIDesc, ThreadQueue):
         """Must be run on the main thread, blocks until quit"""
         if not super().start():
             while self.running:
-                self.put(e := UIEvent(*self.window.read()))
+                self.put(e := Message(*self.window.read()))
                 if e.is_close:
                     self.stop()
                     self.put(None)

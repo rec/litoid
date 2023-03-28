@@ -26,7 +26,6 @@ class HasThread(IsRunning):
                 if not self.looping:
                     break
 
-
     def new_thread(self, run_loop=False):
         return Thread(target=self._thread_target, daemon=self.daemon)
 
