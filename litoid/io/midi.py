@@ -8,7 +8,7 @@ import mido
 @datacls
 class MidiInput(HasThread):
     callback: Callable = print
-    name: str | None = None
+    name: str = ''
 
     def _target(self):
         for msg in self.input:

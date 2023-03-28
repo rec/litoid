@@ -19,7 +19,7 @@ class Desc(ReadWrite):
         return BlockingOSCUDPServer(self.ip, self.port, self.dispatcher)
 
 
-class Data(tuple):
+class Message(tuple):
     pass
 
 
@@ -39,4 +39,4 @@ class Server(Desc, ThreadQueue):
         return d
 
     def osc_callback(self, address, *osc_args):
-        self.put(Data(address, *osc_args))
+        self.put(Message(address, *osc_args))

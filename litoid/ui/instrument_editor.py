@@ -15,43 +15,6 @@ LAYOUT = [
 ]
 
 
-@datacls
-class UIDesc:
-    theme: str = 'DarkAmber'
-    font: tuple[str, int] = ('Helvetica', 18)
-    layout: list = datacls.field(list)
-    title: str = '💡 Litoid 💡'
-
-
-@datacls
-class UI(UIDesc, IsRunning):
-    callback: Callable | None = None
-
-    @cached_property
-    def window(self):
-        return sg.Window(self.title, self.layout)
-
-    def start(self):
-        print('start')
-        super().start()
-
-        while self.running:
-            print('reading')
-            event, values = self.window.read()
-            print('read', event)
-            if event == sg.WIN_CLOSED or event == 'Cancel':
-                print('stop!!!')
-                self.stop()
-                assert not self.running
-            self.callback and self.callback((event, values))
-
-
-if not False:
-    U = ui.UI
-else:
-    U = UI
-
-
 class InstrumentEditorApp(ui.UI):
     pass
 
