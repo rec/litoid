@@ -69,6 +69,9 @@ class InstrumentEditorApp(ui.UI):
         return self.state.lamps
 
     def callback(self, msg):
+        if msg.key is None:
+            return
+
         def set_value(key, value):
             msg.values[key] = value
             self.window[key].update(value=value)
@@ -101,6 +104,11 @@ class InstrumentEditorApp(ui.UI):
 
     def layout(self):
         return [_column(lamp) for lamp in self.lamps.values()]
+
+    def start(self):
+        super().start()
+        for lamp in self.state.lamps.values():
+            lamp.blackout()
 
 
 def main():

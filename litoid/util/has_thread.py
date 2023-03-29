@@ -18,10 +18,11 @@ class HasThread(IsRunning):
         while self.running:
             try:
                 self._target()
-            except Exception:
-                print('Exception in thread', self.name, file=sys.stderr)
-                traceback.print_exc()
+            except Exception as e:
+                print('Exception in thread', self.name, e, file=sys.stderr)
+                traceback.print_stack()
                 self.stop()
+                raise
             else:
                 if not self.looping:
                     break

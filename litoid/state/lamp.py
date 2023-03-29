@@ -35,6 +35,7 @@ class Lamp(LampDesc):
     def set_levels(self, d: dict):
         it = range(len(self.frame))
         self.frame[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
+        self.dmx.render()
 
     def __getitem__(self, i):
         return self.frame[i]
