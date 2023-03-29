@@ -9,7 +9,7 @@ sg.theme('DarkAmber')
 
 @datacls
 class UIDesc:
-    font: tuple[str, int] = ('Helvetica', 18)
+    font: tuple[str, int] = ('Courier', 18)
     title: str = '💡 Litoid 💡'
 
     def layout(self):

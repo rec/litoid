@@ -2,9 +2,12 @@ from ..util import file, read_write
 from functools import cached_property
 import datacls
 
+Channel = int | str
+
 
 @datacls
 class Instrument(read_write.ReadWrite):
+    name: str
     channels: list[str, ...]
     splits: dict = datacls.field(dict)
     value_names: dict = datacls.field(dict)
@@ -20,27 +23,42 @@ class Instrument(read_write.ReadWrite):
             return {f'{c}_{name}': (i, split) for c, i in base.items()}
 
         splits = [split(n, s) for n, s in self.splits.items()]
-        return combine([*splits, base, id1, id2])
+        bases = base, id1, id2
+        bases = [{k: (v, None) for k, v in b.items()} for b in bases]
+        return combine(splits + bases)
 
     @cached_property
-    def _value_names(self) -> tuple[dict, ...]:
-        vn = self.value_names
-        return vn | {self.channel_map[k]: v for k, v in vn.items()}
+    def full_value_names(self) -> tuple[dict, ...]:
+        def sort(d):
+            items = sorted((v, k) for k, v in d.items())
+            return {k: v for v, k in items}
+
+        vn = {k: sort(v) for k, v in self.value_names.items()}
+        return vn | {self.map_channel(k)[0]: v for k, v in vn.items()}
+
+    def map_channel(self, channel:  Channel) -> tuple:
+        if (cm := self.channel_map.get(channel)) is not None:
+            return cm
+        raise ValueError(f'Bad channel "{channel}"')
+
+    def level_to_name(self, channel: Channel, level: int) -> str | None:
+        if names := self.full_value_names.get(channel):
+            for k, v in reversed(names.items()):
+                if v <= level:
+                    return k
 
     @cached_property
     def mapped_presets(self) -> dict[str, dict]:
         return {k: self.remap_dict(v) for k, v in self.presets.items()}
 
-    def remap(self, channel: int | str, value: int | str) -> tuple[int, int]:
-        if (cm := self.channel_map.get(channel)) is None:
-            raise ValueError(f'Bad channel "{channel}"')
-        if isinstance(cm, tuple):
-            ch, spl = cm
-        else:
-            ch, spl = cm, None
-
+    def remap(self, channel: Channel, value: int | str) -> tuple[int, int]:
+        ch, spl = self.map_channel(channel)
         if not isinstance(v := value, int):
-            if (v := self._value_names.get(ch, {}).get(value)) is None:
+            if (v := self.full_value_names.get(ch, {}).get(value)) is None:
+                print('XXX')
+                import json
+                print(json.dumps(self.value_names, indent=2))
+                print(json.dumps(self.full_value_names, indent=2))
                 raise ValueError(f'Bad channel value {channel}, {value}')
 
         if spl:
@@ -63,7 +81,7 @@ class Instrument(read_write.ReadWrite):
 
     @classmethod
     def read(cls, filename):
-        return cls(**file.load(filename))
+        return cls(filename.stem, **file.load(filename))
 
 
 def combine(dicts):

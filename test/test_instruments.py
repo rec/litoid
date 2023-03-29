@@ -15,4 +15,4 @@ def test_instruments():
 
     assert len(cm := laser.channel_map) == 45
     assert cm['xrot_abs'] == (3, [0, 127])
-    assert cm['xrot'] == 3
+    assert cm['xrot'] == (3, None)

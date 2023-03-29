@@ -15,7 +15,7 @@ assert DATA.exists()
 @cache
 def instruments():
     files = sorted(DATA.glob('*.toml'))
-    return {f.stem: Instrument(**file.load(f)) for f in files}
+    return {f.stem: Instrument(f.stem, **file.load(f)) for f in files}
 
 
 LASER = instruments()['laser']
