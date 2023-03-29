@@ -1,6 +1,6 @@
 from . import ui
-from ..state import instruments
-from functools import cache
+from ..state import instruments, lamp
+from functools import cache, partial
 import PySimpleGUI as sg
 import datacls
 
@@ -9,6 +9,7 @@ SLIDER = {
     'orientation': 'h',
     'expand_x': True,
     'enable_events': True,
+    'disable_number_display': True,
 }
 COMBO = {
     'enable_events': True,
@@ -21,30 +22,37 @@ TEXT = {
    'justification': 'center',
 }
 SIZE = 32, 30
+T = partial(sg.T, **TEXT)
 
 
-def _column(instrument, i):
-    name = instrument.name
-    header = [
-        sg.T(instrument.name, s=(8, 1), **TEXT),
-        sg.T('<no preset>', k=f'{name}.preset', s=(16, 1), **TEXT),
-        sg.T('offset = 000', k=f'{name}.offset', **TEXT),
-    ]
-
+def _channel(lamp):
+    instrument = lamp.instrument
+    name = lamp.name
     label_size = max(len(c) for c in instrument.channels), 1
 
     def strip(n, ch):
-        name = sg.Text(ch, s=label_size, **TEXT)
-        kwargs = {'k':  f'{name}.channel.{ch}', 's': SIZE}
+        k = f'{name}.{ch}.'
+        label = T(ch, s=label_size)
 
+        num = sg.Input('0', s=(3, 1), k=k + 'input', enable_events=True)
         if names := instrument.value_names.get(ch):
-            value = sg.Combo(list(names), **COMBO, **kwargs)
+            value = sg.Combo(list(names), **COMBO, s=SIZE, k=k + 'combo')
         else:
-            value = sg.Slider(**SLIDER, **kwargs)
-        return name, value
+            value = sg.Slider(**SLIDER, s=SIZE, k=k + 'slider')
+        return label, num, value
 
-    body = [strip(n, ch) for n, ch in enumerate(instrument.channels)]
-    return [sg.Column([header] + body, k=f'{name}.column', visible=not i)]
+    header = [
+        T(name, s=(8, 1)),
+        T('<no preset>', k=f'{name}.preset', s=(16, 1)),
+        T(f'offset = {lamp.offset:03}', k=f'{name}.offset'),
+    ]
+
+    body = (strip(n, ch) for n, ch in enumerate(instrument.channels))
+    return [header, *body]
+
+
+def _column(lamp):
+    return [sg.Column(_channel(lamp), k=f'{lamp.name}.column')]
 
 
 @cache
@@ -54,16 +62,31 @@ def columns():
 
 @datacls
 class InstrumentEditorApp(ui.UI):
+    lamps: list[lamp.Lamp, ...] = datacls.field(list)
+
+    def callback(self, msg):
+        def set_value(key, value):
+            msg.values[key] = value
+            self.window[key].update(value=value)
+
+        value = msg.values[msg.key]
+        print(msg.key, value)
+        address, _, el = msg.key.rpartition('.')
+        if el == 'slider':
+            set_value(f'{address}.input', int(value))
+        elif el == 'combo':
+            pass
+
     def layout(self):
-        return list(columns().values())
+        return [_column(lamp) for lamp in self.lamps.values()]
 
 
-app = InstrumentEditorApp()
-LAYOUT = [
-    [sg.Text('Some text on Row 1')],
-    [sg.Text('Enter something on Row 2'), sg.InputText()],
-    [sg.Button('Ok'), sg.Button('Cancel')]
-]
+def main():
+    from litoid.state import state
+
+    app = InstrumentEditorApp(lamps=state().lamps)
+    app.start()
+
 
 if __name__ == "__main__":
-    app.start()
+    main()

@@ -1,6 +1,5 @@
 from ..util.thread_queue import ThreadQueue
 from functools import cached_property
-from typing import Callable
 import PySimpleGUI as sg
 import datacls
 
@@ -18,17 +17,18 @@ class UIDesc:
 
 @datacls(slots=True)
 class Message:
-    event: str
+    key: str
     values: list[str, ...]
 
     @property
     def is_close(self):
-        return self.event in (sg.WIN_CLOSED, 'Cancel')
+        return self.key in (sg.WIN_CLOSED, 'Cancel')
 
 
 @datacls
 class UI(UIDesc, ThreadQueue):
-    callback: Callable = print
+    def callback(self, msg):
+        print(msg)
 
     @cached_property
     def window(self):

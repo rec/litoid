@@ -1,4 +1,4 @@
-from litoid.ui.ie import app
+from litoid.ui.ie import main
 
 if __name__ == "__main__":
-    app.start()
+    main()
