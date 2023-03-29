@@ -32,7 +32,11 @@ class UI(UIDesc, ThreadQueue):
 
     @cached_property
     def window(self):
-        return sg.Window(self.title, self.layout(), font=self.font)
+        w = sg.Window(self.title, self.layout(), font=self.font)
+        v = w.key_dict['gantom.red.slider']
+        print(dir(v))
+        # print(w2)
+        return w
 
     def start(self):
         """Must be run on the main thread, blocks until quit"""

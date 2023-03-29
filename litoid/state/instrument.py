@@ -28,7 +28,7 @@ class Instrument(read_write.ReadWrite):
         return combine(splits + bases)
 
     @cached_property
-    def full_value_names(self) -> tuple[dict, ...]:
+    def full_value_names(self) -> dict:
         def sort(d):
             items = sorted((v, k) for k, v in d.items())
             return {k: v for v, k in items}
@@ -55,10 +55,6 @@ class Instrument(read_write.ReadWrite):
         ch, spl = self.map_channel(channel)
         if not isinstance(v := value, int):
             if (v := self.full_value_names.get(ch, {}).get(value)) is None:
-                print('XXX')
-                import json
-                print(json.dumps(self.value_names, indent=2))
-                print(json.dumps(self.full_value_names, indent=2))
                 raise ValueError(f'Bad channel value {channel}, {value}')
 
         if spl:

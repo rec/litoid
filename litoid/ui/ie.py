@@ -69,13 +69,29 @@ class InstrumentEditorApp(ui.UI):
             msg.values[key] = value
             self.window[key].update(value=value)
 
-        value = msg.values[msg.key]
-        print(msg.key, value)
-        address, _, el = msg.key.rpartition('.')
+        new_value = msg.values[msg.key]
+        print(msg.key, new_value)
+        lamp_name, ch, el = msg.key.split('.')
+        lamp = self.lamps[lamp_name]
+        instrument = lamp.instrument
+        value_names = instrument.value_names
+        ch_names = value_names.get(ch)
+
+        k = f'{lamp_name}.{ch}.'
         if el == 'slider':
-            set_value(f'{address}.input', int(value))
+            set_value(k + 'input', int(new_value))
         elif el == 'combo':
-            pass
+            set_value(k + 'input', ch_names[new_value])
+        elif el == 'input':
+            try:
+                level = max(0, min(255, int(new_value)))
+            except (ValueError, TypeError):
+                level = 0
+            set_value(k + 'input', level)
+            if ch_names:
+                set_value(k + 'combo', instrument.level_to_name(ch, level))
+            else:
+                set_value(k + 'slider', level)
 
     def layout(self):
         return [_column(lamp) for lamp in self.lamps.values()]
