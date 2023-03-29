@@ -1,5 +1,5 @@
 from . import ui
-from ..state import instruments, lamp
+from ..state import instruments, state as _state
 from functools import cache, partial
 import PySimpleGUI as sg
 import datacls
@@ -62,7 +62,11 @@ def columns():
 
 @datacls
 class InstrumentEditorApp(ui.UI):
-    lamps: list[lamp.Lamp, ...] = datacls.field(list)
+    state: _state.State = datacls.field(_state)
+
+    @property
+    def lamps(self):
+        return self.state.lamps
 
     def callback(self, msg):
         def set_value(key, value):
@@ -70,7 +74,6 @@ class InstrumentEditorApp(ui.UI):
             self.window[key].update(value=value)
 
         new_value = msg.values[msg.key]
-        print(msg.key, new_value)
         lamp_name, ch, el = msg.key.split('.')
         lamp = self.lamps[lamp_name]
         instrument = lamp.instrument
@@ -79,9 +82,9 @@ class InstrumentEditorApp(ui.UI):
 
         k = f'{lamp_name}.{ch}.'
         if el == 'slider':
-            set_value(k + 'input', int(new_value))
+            set_value(k + 'input', level := int(new_value))
         elif el == 'combo':
-            set_value(k + 'input', ch_names[new_value])
+            set_value(k + 'input', level := ch_names[new_value])
         elif el == 'input':
             try:
                 level = max(0, min(255, int(new_value)))
@@ -92,15 +95,16 @@ class InstrumentEditorApp(ui.UI):
                 set_value(k + 'combo', instrument.level_to_name(ch, level))
             else:
                 set_value(k + 'slider', level)
+        ch, level = instrument.remap(ch, level)
+        lamp.frame[ch] = level
+        lamp.dmx.render()
 
     def layout(self):
         return [_column(lamp) for lamp in self.lamps.values()]
 
 
 def main():
-    from litoid.state import state
-
-    app = InstrumentEditorApp(lamps=state().lamps)
+    app = InstrumentEditorApp()
     app.start()
 
 

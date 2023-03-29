@@ -20,12 +20,13 @@ class LampDesc:
 
     def make(self, dmx: DMX):
         frame = dmx.frame[self.offset:self.offset + self.size]
-        return Lamp(frame=frame, **self.asdict())
+        return Lamp(frame=frame, dmx=dmx, **self.asdict())
 
 
 @datacls
 class Lamp(LampDesc):
     frame: memoryview
+    dmx: DMX
 
     @cached_property
     def presets(self):
