@@ -7,29 +7,40 @@ import datacls
 SLIDER = {
     'range': (0, 255),
     'orientation': 'h',
+    'expand_x': True,
+    'enable_events': True,
 }
 COMBO = {
     'enable_events': True,
     'readonly': True,
 }
+TEXT = {
+   'relief': 'raised',
+   'border_width': 1,
+   'expand_x': not True,
+   'justification': 'center',
+}
+SIZE = 32, 30
 
 
 def _column(instrument, i):
     name = instrument.name
     header = [
-        sg.T(instrument.name),
-        sg.T('<no preset>', k=f'{name}.preset'),
-        sg.T('offset=0', k=f'{name}.offset'),
+        sg.T(instrument.name, s=(8, 1), **TEXT),
+        sg.T('<no preset>', k=f'{name}.preset', s=(16, 1), **TEXT),
+        sg.T('offset = 000', k=f'{name}.offset', **TEXT),
     ]
 
+    label_size = max(len(c) for c in instrument.channels), 1
+
     def strip(n, ch):
-        name = sg.T(ch)
-        key = f'{name}.channel.{ch}'
+        name = sg.Text(ch, s=label_size, **TEXT)
+        kwargs = {'k':  f'{name}.channel.{ch}', 's': SIZE}
 
         if names := instrument.value_names.get(ch):
-            value = sg.Combo(list(names), **COMBO, k=key)
+            value = sg.Combo(list(names), **COMBO, **kwargs)
         else:
-            value = sg.Slider(**SLIDER, k=key)
+            value = sg.Slider(**SLIDER, **kwargs)
         return name, value
 
     body = [strip(n, ch) for n, ch in enumerate(instrument.channels)]

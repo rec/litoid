@@ -4,7 +4,7 @@ from typing import Callable
 import PySimpleGUI as sg
 import datacls
 
-sg.theme('DarkAmber')
+sg.theme('Material1')
 
 
 @datacls
