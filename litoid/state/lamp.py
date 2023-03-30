@@ -41,7 +41,7 @@ class Lamp(LampDesc):
 
     def __setitem__(self, i, v):
         if isinstance(i, slice):
-            v = (max(0, min(255, i)) for i in v)
+            v = bytes(max(0, min(255, i)) for i in v)
         else:
             v = max(0, min(255, v))
         self.frame[i] = v

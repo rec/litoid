@@ -52,8 +52,7 @@ def _channel(lamp):
 
 
 def _make_lamp(lamp, comp_name):
-    comp = getattr(sg, comp_name)
-    return [comp(_channel(lamp), k=f'{lamp.name}.{comp_name.lower()}')]
+    return [sg.Column(_channel(lamp), k=f'{lamp.name}.column')]
 
 
 @datacls
@@ -72,7 +71,11 @@ class InstrumentEditorApp(ui.UI):
             msg.values[key] = value
             self.window[key].update(value=value)
 
-        new_value = msg.values[msg.key]
+        try:
+            new_value = msg.values[msg.key]
+        except Exception:
+            return
+
         lamp_name, ch, el = msg.key.split('.')
         lamp = self.lamps[lamp_name]
         instrument = lamp.instrument
@@ -99,18 +102,25 @@ class InstrumentEditorApp(ui.UI):
         ch, level = instrument.remap(ch, level)
         lamp[ch] = level
 
+    def row(self, lamp):
+        return [sg.Column(_channel(lamp), k=f'{lamp.name}.column')]
+
     def layout(self):
-        return [[_make_lamp(lamp, 'Column')] for lamp in self.lamps.values()]
+        return [[self.row(lamp)] for lamp in self.lamps.values()]
 
     def start(self):
-        super().start()
-        for lamp in self.state.lamps.values():
-            lamp.blackout()
+        try:
+            super().start()
+        finally:
+            for lamp in self.state.lamps.values():
+                lamp.blackout()
 
 
 def main():
     app = InstrumentEditorApp()
     app.start()
+    import time
+    time.sleep(0.5)
 
 
 if __name__ == "__main__":

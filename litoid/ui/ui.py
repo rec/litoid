@@ -10,6 +10,8 @@ assert ICON_PATH.exists(), str(ICON_PATH)
 sg.theme('Material1')
 sg.set_options(icon=str(ICON_PATH))
 
+CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT
+
 
 @datacls
 class UIDesc:
@@ -28,7 +30,7 @@ class Message:
 
     @property
     def is_close(self):
-        return self.key in (sg.WIN_CLOSED, 'Cancel')
+        return self.key in CLOSERS
 
 
 @datacls
@@ -38,13 +40,19 @@ class UI(UIDesc, ThreadQueue):
 
     @cached_property
     def window(self):
-        return sg.Window(self.title, self.layout(), font=self.font)
+        return sg.Window(
+            self.title,
+            self.layout(),
+            font=self.font,
+            enable_close_attempted_event=True
+        )
 
     def start(self):
         """Must be run on the main thread, blocks until quit"""
         if not super().start():
             while self.running:
-                self.put(e := Message(*self.window.read()))
-                if e.is_close:
+                if msg := self.window.read():
+                    self.put(msg := Message(*msg))
+                if not msg or msg.is_close:
                     self.stop()
                     self.put(None)
