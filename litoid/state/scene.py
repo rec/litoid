@@ -15,7 +15,7 @@ class Scene:
 
     def run(self, state: State | None = None) -> None:
         state = state or _state()
-        state.set_scene(self)
+        state.scene = self
         state.run()
 
 
@@ -30,10 +30,10 @@ class PrintScene:
         print('unload', self)
 
 
-@datacls
+@datacls.mutable
 class SceneHolder:
     state: State
-    _scene: Scene = PrintScene()
+    _scene: Scene | None = None
     _lock: Lock = datacls.field(Lock)
 
     @property
@@ -42,10 +42,15 @@ class SceneHolder:
 
     def set_scene(self, scene: Scene):
         with self._lock:
-            self._scene.unload(self.state)
+            if self._scene:
+                self._scene.unload(self.state)
             self.__dict__['_scene'] = scene
-            self._scene.load(self.state)
+            if self._scene:
+                self._scene.load(self.state)
 
     def callback(self, msg: object):
-        # should I lock this?
-        self._scene.callback(self.state, msg)
+        with self._lock:
+            scene = self._scene
+        if scene:
+            # should I lock this?
+            scene.callback(self.state, msg)

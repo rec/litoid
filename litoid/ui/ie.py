@@ -1,5 +1,6 @@
 from . import ui
-from ..state import state as _state
+from ..io import midi
+from ..state import scene, state as _state
 from functools import partial
 import PySimpleGUI as sg
 import datacls
@@ -51,17 +52,25 @@ def _channel(lamp):
     return [header, *body]
 
 
-@datacls
+@datacls.mutable
 class InstrumentEditorApp(ui.UI):
     state: _state.State = datacls.field(_state)
+
+    lamp = None
 
     @property
     def lamps(self):
         return self.state.lamps
 
     def callback(self, msg):
+        if msg.key == 'tabgroup':
+            name = msg.values['tabgroup'].split('.')[0]
+            self.lamp = self.lamps[name]
+            return
+
         try:
             new_value = msg.values[msg.key]
+
         except Exception:
             return
 
@@ -100,23 +109,54 @@ class InstrumentEditorApp(ui.UI):
         return sg.Tab(lamp.name, _channel(lamp), k=f'{lamp.name}.tab')
 
     def layout(self):
-        lamps = self.lamps.values()
+        lamps = list(self.lamps.values())
         tabs = [self.tab(lamp) for lamp in lamps]
-        return [[sg.TabGroup([tabs])]]
+        self.lamp = lamps[0]
+
+        return [[sg.TabGroup([tabs], enable_events=True, k='tabgroup')]]
 
     def start(self):
+        self.state.set_scene(Scene(self))
+        self.state.midi_input.start()
         try:
             super().start()
         finally:
             for lamp in self.state.lamps.values():
                 lamp.blackout()
 
+    def set_level(self, ch, v):
+        if self.lamp[ch] == v:
+            return
+        self.lamp[ch] = v
+        channel = self.lamp.instrument.channels[ch]
+        k = f'{self.lamp.name}.{channel}.'
+        self.window[k + 'input'].update(value=v)
+        if (name := self.lamp.instrument.level_to_name(ch, v)) is not None:
+            self.window[k + 'combo'].update(value=name)
+        else:
+            self.window[k + 'slider'].update(value=v)
+
+
+class Scene(scene.Scene):
+    def __init__(self, ie):
+        self.ie = ie
+
+    def callback(self, state: _state.State, m: object) -> bool:
+        if (
+            isinstance(m, midi.Message)
+            and m.type == 'control_change'
+            and m.channel == 0
+            and (m.control <= 18)  # or 50 <= m.control <= 68)
+        ):
+            d = m.control >= 10
+            channel = m.control - d * 10
+            value = m.value + 128 * d
+            self.ie.set_level(channel, value)
+
 
 def main():
     app = InstrumentEditorApp()
     app.start()
-    import time
-    time.sleep(0.5)
 
 
 if __name__ == "__main__":

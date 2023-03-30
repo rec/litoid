@@ -13,7 +13,7 @@ sg.set_options(icon=str(ICON_PATH))
 CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT
 
 
-@datacls
+@datacls.mutable
 class UIDesc:
     font: tuple[str, int] = ('Courier', 18)
     title: str = '💡 Litoid 💡'
@@ -33,7 +33,7 @@ class Message:
         return self.key in CLOSERS
 
 
-@datacls
+@datacls.mutable
 class UI(UIDesc, ThreadQueue):
     def callback(self, msg):
         print(msg)

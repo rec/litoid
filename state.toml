@@ -1,6 +1,6 @@
 dmx_port = '/dev/cu.usbserial-6AYL2V8Z'
 
-# midi_input_name = 'nanoKONTROL SLIDER/KNOB'
+midi_input_name = 'nanoKONTROL SLIDER/KNOB'
 
 [lamp_descs]
 gantom = ['gantom', 0]
