@@ -16,6 +16,10 @@ COMBO = {
     'enable_events': True,
     'readonly': True,
 }
+BUTTON = {
+   'border_width': 1,
+   'expand_x': not True,
+}
 TEXT = {
    'relief': 'raised',
    'border_width': 1,
@@ -46,6 +50,7 @@ def _channel(lamp):
         T(name, s=(8, 1)),
         T('<no preset>', k=f'{name}.preset', s=(16, 1)),
         T(f'offset = {lamp.offset:03}', k=f'{name}.offset'),
+        sg.Button('Blackout', **BUTTON, k=f'{name}.blackout'),
     ]
 
     body = (strip(n, ch) for n, ch in enumerate(instrument.channels))
@@ -66,6 +71,11 @@ class InstrumentEditorApp(ui.UI):
         if msg.key == 'tabgroup':
             name = msg.values['tabgroup'].split('.')[0]
             self.lamp = self.lamps[name]
+            return
+
+        if msg.key.endswith('blackout'):
+            self.lamp.blackout()
+            self.reset_levels()
             return
 
         try:
@@ -128,6 +138,10 @@ class InstrumentEditorApp(ui.UI):
         if self.lamp[ch] == v:
             return
         self.lamp[ch] = v
+        self.reset_level(ch)
+
+    def reset_level(self, ch):
+        v = self.lamp[ch]
         channel = self.lamp.instrument.channels[ch]
         k = f'{self.lamp.name}.{channel}.'
         self.window[k + 'input'].update(value=v)
@@ -135,6 +149,10 @@ class InstrumentEditorApp(ui.UI):
             self.window[k + 'combo'].update(value=name)
         else:
             self.window[k + 'slider'].update(value=v)
+
+    def reset_levels(self):
+        for i in range(len(self.lamp.instrument.channels)):
+            self.reset_level(i)
 
 
 class Scene(scene.Scene):

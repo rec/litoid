@@ -83,9 +83,11 @@ class State(read_write.ReadWrite, is_running.IsRunning):
             while self.running:
                 time.sleep(SPIN_TIME)
         finally:
-            for la in self.lamps.values():
-                la.blackout()
-            self.dmx.render()
+            self.blackout()
+
+    def blackout(self):
+        for la in self.lamps.values():
+            la.blackout()
 
     def callback(self, msg):
         return self.scene.callback(self, msg)
