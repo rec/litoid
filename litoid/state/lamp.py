@@ -34,8 +34,7 @@ class Lamp(LampDesc):
 
     def set_levels(self, d: dict):
         it = range(len(self.frame))
-        self.frame[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
-        self.dmx.render()
+        self[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
 
     def __getitem__(self, i):
         return self.frame[i]
@@ -46,6 +45,7 @@ class Lamp(LampDesc):
         else:
             v = max(0, min(255, v))
         self.frame[i] = v
+        self.dmx.render()
 
     def blackout(self):
         self.set_levels(self.instrument.blackout)

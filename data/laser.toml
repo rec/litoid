@@ -2,7 +2,7 @@ channels = [
   "mode", "pattern", "zoom", "xrot", "yrot", "zrot", "hpos", "vpos", "color"
 ]
 
-[splits]
+[ranges]
 abs = [0, 127]
 speed = [128, 255]
 

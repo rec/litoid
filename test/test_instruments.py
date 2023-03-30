@@ -1,4 +1,5 @@
 from litoid.state import instruments
+from litoid.state.instrument import ChannelRange
 
 
 def test_instruments():
@@ -13,6 +14,9 @@ def test_instruments():
     }
     assert laser.mapped_presets == mapped_presets
 
-    assert len(cm := laser.channel_map) == 45
-    assert cm['xrot_abs'] == (3, [0, 127])
-    assert cm['xrot'] == (3, None)
+    import pprint
+    pprint.pprint(laser.channel_ranges)
+
+    assert len(cm := laser.channel_ranges) == 45
+    assert cm['xrot_abs'] == ChannelRange(3, [0, 127])
+    assert cm['xrot'] == ChannelRange(3)
