@@ -51,10 +51,6 @@ def _channel(lamp):
     return [header, *body]
 
 
-def _make_lamp(lamp, comp_name):
-    return [sg.Column(_channel(lamp), k=f'{lamp.name}.column')]
-
-
 @datacls
 class InstrumentEditorApp(ui.UI):
     state: _state.State = datacls.field(_state)
@@ -64,13 +60,6 @@ class InstrumentEditorApp(ui.UI):
         return self.state.lamps
 
     def callback(self, msg):
-        if msg.key is None:
-            return
-
-        def set_value(key, value):
-            msg.values[key] = value
-            self.window[key].update(value=value)
-
         try:
             new_value = msg.values[msg.key]
         except Exception:
@@ -81,32 +70,39 @@ class InstrumentEditorApp(ui.UI):
         instrument = lamp.instrument
         ch_names = instrument.value_names.get(ch)
 
-        k = f'{lamp_name}.{ch}.'
+        def set_value(key, value):
+            k = f'{lamp_name}.{ch}.{key}'
+            msg.values[k] = value
+            self.window[k].update(value=value)
+
         if el == 'slider':
-            set_value(k + 'input', level := int(new_value))
+            set_value('input', level := int(new_value))
 
         elif el == 'combo':
-            set_value(k + 'input', level := ch_names[new_value])
+            set_value('input', level := ch_names[new_value])
 
         elif el == 'input':
             try:
                 level = max(0, min(255, int(new_value)))
             except (ValueError, TypeError):
                 level = 0
-            set_value(k + 'input', level)
+
+            set_value('input', level)
             if ch_names:
-                set_value(k + 'combo', instrument.level_to_name(ch, level))
+                set_value('combo', instrument.level_to_name(ch, level))
             else:
-                set_value(k + 'slider', level)
+                set_value('slider', level)
 
         ch, level = instrument.remap(ch, level)
         lamp[ch] = level
 
-    def row(self, lamp):
-        return [sg.Column(_channel(lamp), k=f'{lamp.name}.column')]
+    def tab(self, lamp):
+        return sg.Tab(lamp.name, _channel(lamp), k=f'{lamp.name}.tab')
 
     def layout(self):
-        return [[self.row(lamp)] for lamp in self.lamps.values()]
+        lamps = self.lamps.values()
+        tabs = [self.tab(lamp) for lamp in lamps]
+        return [[sg.TabGroup([tabs])]]
 
     def start(self):
         try:
