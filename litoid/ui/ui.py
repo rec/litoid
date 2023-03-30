@@ -1,15 +1,21 @@
 from ..util.thread_queue import ThreadQueue
 from functools import cached_property
+from pathlib import Path
 import PySimpleGUI as sg
 import datacls
 
+SUFFIX = '.ico'
+ICON_PATH = Path(__file__).parents[2] / 'images/tom-swirly.ico'
+assert ICON_PATH.exists(), str(ICON_PATH)
 sg.theme('Material1')
+sg.set_options(icon=str(ICON_PATH))
 
 
 @datacls
 class UIDesc:
     font: tuple[str, int] = ('Courier', 18)
     title: str = '💡 Litoid 💡'
+    icon: Path = ICON_PATH
 
     def layout(self):
         raise NotImplementedError
