@@ -29,6 +29,7 @@ class Instrument(read_write.ReadWrite):
     ranges: dict = datacls.field(dict)
     value_names: dict = datacls.field(dict)
     presets: dict = datacls.field(dict)
+    user_presets: dict = datacls.field(dict)
 
     @cached_property
     def channel_ranges(self) -> dict[str, int]:
@@ -40,10 +41,7 @@ class Instrument(read_write.ReadWrite):
             return {f'{c}_{n}': cr.replace(range=r) for c, cr in base.items()}
 
         ranges = [channel_ranges(n, r) for n, r in self.ranges.items()]
-        r = combine(base, id1, id2, *ranges)
-        assert 1 in id1
-        assert 1 in r and '1' in r
-        return r
+        return combine(base, id1, id2, *ranges)
 
     @cached_property
     def full_value_names(self) -> dict:
@@ -67,7 +65,8 @@ class Instrument(read_write.ReadWrite):
 
     @cached_property
     def mapped_presets(self) -> dict[str, dict]:
-        return {k: self.remap_dict(v) for k, v in self.presets.items()}
+        presets = self.presets | self.user_presets
+        return {k: self.remap_dict(v) for k, v in presets.items()}
 
     def remap(self, channel: Channel, value: int | str) -> tuple[int, int]:
         cr = self.map_channel(channel)

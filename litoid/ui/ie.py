@@ -67,6 +67,10 @@ class InstrumentEditorApp(ui.UI):
     def lamps(self):
         return self.state.lamps
 
+    @property
+    def instrument(self):
+        return self.lamp.instrument
+
     def callback(self, msg):
         if msg.key == 'tabgroup':
             name = msg.values['tabgroup'].split('.')[0]
@@ -86,6 +90,8 @@ class InstrumentEditorApp(ui.UI):
 
         lamp_name, ch, el = msg.key.split('.')
         lamp = self.lamps[lamp_name]
+        assert lamp == self.lamp
+
         instrument = lamp.instrument
         ch_names = instrument.value_names.get(ch)
 
