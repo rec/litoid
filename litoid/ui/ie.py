@@ -20,9 +20,27 @@ class InstrumentEditorApp(ui.UI):
     def instrument(self):
         return self.lamp.instrument
 
+    def set(self, key, value):
+        if not isinstance(key, str):
+            key = '.'.join(str(k) for k in key)
+        self.window[key].update(value=value)
+
+    def set_ui(self, ch, new_value):
+        try:
+            level = max(0, min(255, int(new_value)))
+        except (ValueError, TypeError):
+            level = 0
+
+        k = f'{self.lamp.name}.{ch}.'
+        self.set(k + 'input', level)
+        if name := self.instrument.level_to_name(ch, level):
+            self.set(k + 'combo', name)
+        else:
+            self.set(k + 'slider', level)
+
     def callback(self, msg):
         print(msg.key)
-        *rest, el = msg.key.split('.')
+        address, _, el = msg.key.rpartition('.')
 
         if el == 'tabgroup':
             name = msg.values['tabgroup'].split('.')[0]
@@ -40,38 +58,25 @@ class InstrumentEditorApp(ui.UI):
         except Exception:
             return
 
-        def set_value(key, value):
-            k = f'{lamp_name}.{ch}.{key}'
-            msg.values[k] = value
-            self.window[k].update(value=value)
-
-        def set_all(new_value):
-            try:
-                level = max(0, min(255, int(new_value)))
-            except (ValueError, TypeError):
-                level = 0
-
-            set_value('input', level)
-            if ch_names:
-                set_value('combo', self.instrument.level_to_name(ch, level))
-            else:
-                set_value('slider', level)
-
         if el == 'preset':
             self.preset = new_value
-            self.lamp.send_preset(new_value)
+            preset = self.lamp.send_preset(new_value)
+            for ch in self.instrument.channels:
+                self.set_ui(ch, preset[ch])
+            return
 
-        lamp_name, ch = rest
+        lamp_name, ch = address.split('.')
+        k = f'{address}.'
         ch_names = self.instrument.value_names.get(ch)
 
         if el == 'slider':
-            set_value('input', level := int(new_value))
+            self.set(k + 'input', level := int(new_value))
 
         elif el == 'combo':
-            set_value('input', level := ch_names[new_value])
+            self.set(k + 'input', level := ch_names[new_value])
 
         elif el == 'input':
-            set_all(new_value)
+            self.set_ui(ch, new_value)
 
         else:
             print('unknown', msg.key)

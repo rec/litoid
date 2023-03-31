@@ -41,7 +41,7 @@ class Lamp(LampDesc):
         preset = self.instrument.mapped_preset(name)
         buffer = bytearray(preset.get(i, 0) for i in range(len(self)))
         self.frame[:] = buffer
-        return buffer
+        return self.instrument.presets[name]
 
     def __len__(self):
         return len(self.frame)

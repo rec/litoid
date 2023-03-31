@@ -17,7 +17,7 @@ def lamp_page(lamp):
         sg.Button('Blackout', **BUTTON, k=f'{name}.blackout'),
     ]
 
-    def strip(n, ch):
+    def strip(ch):
         k = f'{name}.{ch}.'
         label = T(ch, s=label_size)
 
@@ -28,5 +28,5 @@ def lamp_page(lamp):
             value = sg.Slider(**SLIDER, s=SIZE, k=k + 'slider')
         return label, num, value
 
-    strips = (strip(n, ch) for n, ch in enumerate(instrument.channels))
+    strips = (strip(ch) for ch in instrument.channels)
     return [header, *strips]
