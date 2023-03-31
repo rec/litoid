@@ -9,11 +9,13 @@ def lamp_page(lamp):
     name = lamp.name
     label_size = max(len(c) for c in instrument.channels), 1
     presets = sorted(instrument.presets)
+    commands = ['Copy', 'Restore', 'Save']
 
     header = [
         T(name, s=(8, 1)),
         sg.Combo(presets, k=f'{name}.preset', s=(16, 1), **COMBO),
         T(f'offset = {lamp.offset:03}', k=f'{name}.offset'),
+        sg.ButtonMenu('Menu', ['', commands], k=f'{name}.menu'),
         sg.Button('Blackout', **BUTTON, k=f'{name}.blackout'),
     ]
 

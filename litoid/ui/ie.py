@@ -39,7 +39,6 @@ class InstrumentEditorApp(ui.UI):
             self.set(k + 'slider', level)
 
     def callback(self, msg):
-        print(msg.key)
         address, _, el = msg.key.rpartition('.')
 
         if el == 'tabgroup':
@@ -63,6 +62,10 @@ class InstrumentEditorApp(ui.UI):
             preset = self.lamp.send_preset(new_value)
             for ch in self.instrument.channels:
                 self.set_ui(ch, preset[ch])
+            return
+
+        if el == 'menu':
+            print('menu:', new_value)
             return
 
         lamp_name, ch = address.split('.')
