@@ -132,6 +132,7 @@ class InstrumentEditorApp(ui.UI):
         return [[sg.TabGroup([tabs], enable_events=True, k='tabgroup')]]
 
     def start(self):
+        self.state.blackout()
         self.state.set_scene(Scene(self))
         self.state.midi_input.start()
         try:
