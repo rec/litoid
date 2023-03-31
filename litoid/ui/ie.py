@@ -141,10 +141,11 @@ class InstrumentEditorApp(ui.UI):
                 lamp.blackout()
 
     def set_level(self, ch, v):
-        if self.lamp[ch] == v:
-            return
-        self.lamp[ch] = v
-        self.reset_level(ch)
+        if ch < len(self.lamp):
+            if self.lamp[ch] == v:
+                return
+            self.lamp[ch] = v
+            self.reset_level(ch)
 
     def reset_level(self, ch):
         v = self.lamp[ch]
