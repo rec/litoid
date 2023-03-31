@@ -20,12 +20,14 @@ class InstrumentEditorApp(ui.UI):
         return self.lamp.instrument
 
     def callback(self, msg):
-        if msg.key == 'tabgroup':
+        *rest, el = msg.key.split('.')
+
+        if el == 'tabgroup':
             name = msg.values['tabgroup'].split('.')[0]
             self.lamp = self.lamps[name]
             return
 
-        if msg.key.endswith('blackout'):
+        if el == 'blackout':
             self.lamp.blackout()
             self.reset_levels()
             return
@@ -36,12 +38,8 @@ class InstrumentEditorApp(ui.UI):
         except Exception:
             return
 
-        lamp_name, ch, el = msg.key.split('.')
-        lamp = self.lamps[lamp_name]
-        assert lamp == self.lamp
-
-        instrument = lamp.instrument
-        ch_names = instrument.value_names.get(ch)
+        lamp_name, ch = rest
+        ch_names = self.instrument.value_names.get(ch)
 
         def set_value(key, value):
             k = f'{lamp_name}.{ch}.{key}'
@@ -62,19 +60,18 @@ class InstrumentEditorApp(ui.UI):
 
             set_value('input', level)
             if ch_names:
-                set_value('combo', instrument.level_to_name(ch, level))
+                set_value('combo', self.instrument.level_to_name(ch, level))
             else:
                 set_value('slider', level)
 
-        ch, level = instrument.remap(ch, level)
-        lamp[ch] = level
-
-    def tab(self, lamp):
-        return sg.Tab(lamp.name, lamp_page(lamp), k=f'{lamp.name}.tab')
+        self.lamp[ch] = level
 
     def layout(self):
+        def tab(lamp):
+            return sg.Tab(lamp.name, lamp_page(lamp), k=f'{lamp.name}.tab')
+
         lamps = list(self.lamps.values())
-        tabs = [self.tab(lamp) for lamp in lamps]
+        tabs = [tab(lamp) for lamp in lamps]
         self.lamp = lamps[0]
 
         return [[sg.TabGroup([tabs], enable_events=True, k='tabgroup')]]
