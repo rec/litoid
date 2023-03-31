@@ -39,6 +39,9 @@ class InstrumentEditorApp(ui.UI):
             self.set(k + 'slider', level)
 
     def callback(self, msg):
+        if msg.is_close:
+            return
+
         address, _, el = msg.key.rpartition('.')
 
         if el == 'tabgroup':
@@ -79,10 +82,11 @@ class InstrumentEditorApp(ui.UI):
             self.set(k + 'input', level := ch_names[new_value])
 
         elif el == 'input':
-            self.set_ui(ch, new_value)
+            self.set_ui(ch, level := new_value)
 
         else:
             print('unknown', msg.key)
+            return
 
         self.lamp[ch] = level
 

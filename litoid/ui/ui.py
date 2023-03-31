@@ -9,8 +9,9 @@ ICON_PATH = Path(__file__).parents[2] / 'images/tom-swirly.ico'
 assert ICON_PATH.exists(), str(ICON_PATH)
 sg.theme('Material1')
 sg.set_options(icon=str(ICON_PATH))
+LITOID_CLOSE = 'litoid.run.close'
 
-CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT
+CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT, LITOID_CLOSE
 
 
 @datacls.mutable
@@ -40,12 +41,18 @@ class UI(UIDesc, ThreadQueue):
 
     @cached_property
     def window(self):
-        return sg.Window(
+        w = sg.Window(
             self.title,
             self.layout(),
+            enable_close_attempted_event=True,
+            finalize=True,
             font=self.font,
-            enable_close_attempted_event=True
         )
+        sg.Window.hidden_master_root.createcommand('tk::mac::Quit', self.quit)
+        return w
+
+    def quit(self):
+        self.window.write_event_value(LITOID_CLOSE, None)
 
     def start(self):
         """Must be run on the main thread, blocks until quit"""
