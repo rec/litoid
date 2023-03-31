@@ -9,6 +9,13 @@ def lamp_page(lamp):
     name = lamp.name
     label_size = max(len(c) for c in instrument.channels), 1
 
+    header = [
+        T(name, s=(8, 1)),
+        sg.Combo('<no preset>', k=f'{name}.preset', s=(16, 1)),
+        T(f'offset = {lamp.offset:03}', k=f'{name}.offset'),
+        sg.Button('Blackout', **BUTTON, k=f'{name}.blackout'),
+    ]
+
     def strip(n, ch):
         k = f'{name}.{ch}.'
         label = T(ch, s=label_size)
@@ -20,12 +27,5 @@ def lamp_page(lamp):
             value = sg.Slider(**SLIDER, s=SIZE, k=k + 'slider')
         return label, num, value
 
-    header = [
-        T(name, s=(8, 1)),
-        T('<no preset>', k=f'{name}.preset', s=(16, 1)),
-        T(f'offset = {lamp.offset:03}', k=f'{name}.offset'),
-        sg.Button('Blackout', **BUTTON, k=f'{name}.blackout'),
-    ]
-
-    body = (strip(n, ch) for n, ch in enumerate(instrument.channels))
-    return [header, *body]
+    strips = (strip(n, ch) for n, ch in enumerate(instrument.channels))
+    return [header, *strips]

@@ -20,7 +20,7 @@ class Instrument(read_write.ReadWrite):
     name: str
     channels: list[str, ...]
     value_names: dict = datacls.field(dict)
-    presets: dict = datacls.field(dict)
+    builtin_presets: dict = datacls.field(dict)
     user_presets: dict = datacls.field(dict)
 
     @cached_property
@@ -39,9 +39,10 @@ class Instrument(read_write.ReadWrite):
         return self.value_names[channel].inv[level]
 
     @cached_property
-    def mapped_presets(self) -> dict[str, dict]:
-        presets = self.presets | self.user_presets
-        return {k: self.remap_dict(v) for k, v in presets.items()}
+    def presets(self) -> dict[str, dict]:
+        from collections import ChainMap
+
+        return ChainMap(self.user_presets, self.builtin_presets)
 
     def remap(self, channel: Channel, value: int | str) -> tuple[int, int]:
         if isinstance(channel, str):
@@ -58,11 +59,11 @@ class Instrument(read_write.ReadWrite):
 
     @cached_property
     def blackout(self):
-        return self.mapped_presets.get('blackout') or self.default
+        return self.presets.get('blackout') or self.default
 
     @cached_property
     def default(self):
-        return self.mapped_presets.get('default') or {}
+        return self.presets.get('default') or {}
 
     @classmethod
     def read(cls, filename):

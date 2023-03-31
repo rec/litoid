@@ -51,7 +51,7 @@ dotted_line = 232
 dotted_semicircle = 240
 random_dots = 248
 
-[presets.default]
+[builtin_presets.default]
 mode = "manual"
 pattern = "circle"
 zoom = 64

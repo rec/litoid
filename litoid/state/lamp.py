@@ -30,7 +30,7 @@ class Lamp(LampDesc):
 
     @cached_property
     def presets(self):
-        return self.instrument.mapped_presets
+        return self.instrument.presets
 
     def set_levels(self, d: dict):
         it = range(len(self.frame))
