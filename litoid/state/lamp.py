@@ -36,6 +36,9 @@ class Lamp(LampDesc):
         it = range(len(self.frame))
         self[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
 
+    def __len__(self):
+        return len(self.frame)
+
     def __getitem__(self, i):
         return self.frame[i]
 

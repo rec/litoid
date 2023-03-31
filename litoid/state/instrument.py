@@ -63,6 +63,12 @@ class Instrument(read_write.ReadWrite):
                 if v <= level:
                     return k
 
+    def __len__(self):
+        return len(self.channels)
+
+    def __getitem__(self, i):
+        return self.channels[i]
+
     @cached_property
     def mapped_presets(self) -> dict[str, dict]:
         presets = self.presets | self.user_presets
