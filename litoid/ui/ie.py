@@ -1,60 +1,8 @@
-from . import ui
+from . import lamp_page, ui
 from ..io import midi
 from ..state import scene, state as _state
-from functools import partial
 import PySimpleGUI as sg
 import datacls
-
-SLIDER = {
-    'range': (0, 255),
-    'orientation': 'h',
-    'expand_x': True,
-    'enable_events': True,
-    'disable_number_display': True,
-}
-COMBO = {
-    'enable_events': True,
-    'readonly': True,
-}
-BUTTON = {
-   'border_width': 1,
-   'expand_x': not True,
-}
-TEXT = {
-   'relief': 'raised',
-   'border_width': 1,
-   'expand_x': not True,
-   'justification': 'center',
-}
-SIZE = 32, 30
-T = partial(sg.T, **TEXT)
-
-
-def _channel(lamp):
-    instrument = lamp.instrument
-    name = lamp.name
-    label_size = max(len(c) for c in instrument.channels), 1
-
-    def strip(n, ch):
-        k = f'{name}.{ch}.'
-        label = T(ch, s=label_size)
-
-        num = sg.Input('0', s=(3, 1), k=k + 'input', enable_events=True)
-        if names := instrument.value_names.get(ch):
-            value = sg.Combo(list(names), **COMBO, s=SIZE, k=k + 'combo')
-        else:
-            value = sg.Slider(**SLIDER, s=SIZE, k=k + 'slider')
-        return label, num, value
-
-    header = [
-        T(name, s=(8, 1)),
-        T('<no preset>', k=f'{name}.preset', s=(16, 1)),
-        T(f'offset = {lamp.offset:03}', k=f'{name}.offset'),
-        sg.Button('Blackout', **BUTTON, k=f'{name}.blackout'),
-    ]
-
-    body = (strip(n, ch) for n, ch in enumerate(instrument.channels))
-    return [header, *body]
 
 
 @datacls.mutable
@@ -122,7 +70,7 @@ class InstrumentEditorApp(ui.UI):
         lamp[ch] = level
 
     def tab(self, lamp):
-        return sg.Tab(lamp.name, _channel(lamp), k=f'{lamp.name}.tab')
+        return sg.Tab(lamp.name, lamp_page(lamp), k=f'{lamp.name}.tab')
 
     def layout(self):
         lamps = list(self.lamps.values())
