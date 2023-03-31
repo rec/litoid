@@ -10,6 +10,7 @@ class InstrumentEditorApp(ui.UI):
     state: _state.State = datacls.field(_state)
 
     lamp = None
+    preset = None
 
     @property
     def lamps(self):
@@ -20,6 +21,7 @@ class InstrumentEditorApp(ui.UI):
         return self.lamp.instrument
 
     def callback(self, msg):
+        print(msg.key)
         *rest, el = msg.key.split('.')
 
         if el == 'tabgroup':
@@ -38,21 +40,12 @@ class InstrumentEditorApp(ui.UI):
         except Exception:
             return
 
-        lamp_name, ch = rest
-        ch_names = self.instrument.value_names.get(ch)
-
         def set_value(key, value):
             k = f'{lamp_name}.{ch}.{key}'
             msg.values[k] = value
             self.window[k].update(value=value)
 
-        if el == 'slider':
-            set_value('input', level := int(new_value))
-
-        elif el == 'combo':
-            set_value('input', level := ch_names[new_value])
-
-        elif el == 'input':
+        def set_all(new_value):
             try:
                 level = max(0, min(255, int(new_value)))
             except (ValueError, TypeError):
@@ -63,6 +56,25 @@ class InstrumentEditorApp(ui.UI):
                 set_value('combo', self.instrument.level_to_name(ch, level))
             else:
                 set_value('slider', level)
+
+        if el == 'preset':
+            self.preset = new_value
+            self.lamp.send_preset(new_value)
+
+        lamp_name, ch = rest
+        ch_names = self.instrument.value_names.get(ch)
+
+        if el == 'slider':
+            set_value('input', level := int(new_value))
+
+        elif el == 'combo':
+            set_value('input', level := ch_names[new_value])
+
+        elif el == 'input':
+            set_all(new_value)
+
+        else:
+            print('unknown', msg.key)
 
         self.lamp[ch] = level
 

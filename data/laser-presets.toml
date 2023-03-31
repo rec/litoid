@@ -1,0 +1,21 @@
+[test1]
+mode = "manual"
+pattern = "circle"
+zoom = 64
+xrot = 64
+yrot = 64
+zrot = 64
+hpos = 64
+vpos = 64
+color = "blue"
+
+[test2]
+mode = "manual"
+pattern = "circle"
+zoom = 64
+xrot = 64
+yrot = 64
+zrot = 64
+hpos = 64
+vpos = 64
+color = "blue"

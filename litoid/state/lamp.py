@@ -34,7 +34,14 @@ class Lamp(LampDesc):
 
     def set_levels(self, d: dict):
         it = range(len(self.frame))
-        self[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
+        self.frame[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
+        self.dmx.render()
+
+    def send_preset(self, name: str):
+        preset = self.instrument.mapped_preset(name)
+        buffer = bytearray(preset.get(i, 0) for i in range(len(self)))
+        self.frame[:] = buffer
+        return buffer
 
     def __len__(self):
         return len(self.frame)

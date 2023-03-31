@@ -36,13 +36,19 @@ class Instrument(read_write.ReadWrite):
         return d | {self._channels_inv[k]: v for k, v in d.items()}
 
     def level_to_name(self, channel: Channel, level: int) -> str | None:
-        return self.value_names[channel].inv[level]
+        try:
+            return self._value_names[channel].inv[level]
+        except KeyError:
+            return
 
     @cached_property
     def presets(self) -> dict[str, dict]:
         from collections import ChainMap
 
         return ChainMap(self.user_presets, self.builtin_presets)
+
+    def mapped_preset(self, name: str):
+        return self.remap_dict(self.presets[name])
 
     def remap(self, channel: Channel, value: int | str) -> tuple[int, int]:
         if isinstance(channel, str):
