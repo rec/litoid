@@ -43,6 +43,8 @@ class Lamp(LampDesc):
         return self.frame[i]
 
     def __setitem__(self, i, v):
+        if isinstance(i, str):
+            i, v = self.instrument.remap(i, v)
         if isinstance(i, slice):
             v = bytes(max(0, min(255, i)) for i in v)
         else:
