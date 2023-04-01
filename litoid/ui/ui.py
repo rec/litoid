@@ -56,10 +56,12 @@ class UI(UIDesc, ThreadQueue):
 
     def start(self):
         """Must be run on the main thread, blocks until quit"""
-        if not super().start():
-            while self.running:
-                if msg := self.window.read():
-                    self.put(msg := Message(*msg))
-                if not msg or msg.is_close:
-                    self.stop()
-                    self.put(None)
+        if r := super().start():
+            return r
+
+        while self.running:
+            if msg := self.window.read():
+                self.put(msg := Message(*msg))
+            if not msg or msg.is_close:
+                self.stop()
+                self.put(None)
