@@ -12,6 +12,16 @@ class InstrumentEditorApp(ui.UI):
     lamp = None
     preset = None
 
+    def start(self):
+        self.state.blackout()
+        self.state.set_scene(MidiScene(self))
+        self.state.midi_input.start()
+        try:
+            super().start()
+        finally:
+            for lamp in self.state.lamps.values():
+                lamp.blackout()
+
     @property
     def lamps(self):
         return self.state.lamps
@@ -100,16 +110,6 @@ class InstrumentEditorApp(ui.UI):
         self.lamp = lamps[0]
 
         return [[sg.TabGroup([tabs], enable_events=True, k='tabgroup')]]
-
-    def start(self):
-        self.state.blackout()
-        self.state.set_scene(MidiScene(self))
-        self.state.midi_input.start()
-        try:
-            super().start()
-        finally:
-            for lamp in self.state.lamps.values():
-                lamp.blackout()
 
     def set_level(self, ch, v, scale_name=False):
         if ch < len(self.lamp):
