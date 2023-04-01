@@ -58,6 +58,7 @@ class InstrumentEditorApp(ui.UI):
             new_value = msg.values[msg.key]
 
         except Exception:
+            print('unknown', msg.key)
             return
 
         if el == 'preset':
@@ -110,8 +111,11 @@ class InstrumentEditorApp(ui.UI):
             for lamp in self.state.lamps.values():
                 lamp.blackout()
 
-    def set_level(self, ch, v):
+    def set_level(self, ch, v, scale_name=False):
         if ch < len(self.lamp):
+            if scale_name:
+                if self.instrument.channels[ch] in self.instrument.value_names:
+                    v *= 2
             if self.lamp[ch] == v:
                 return
             self.lamp[ch] = v
@@ -146,7 +150,7 @@ class MidiScene(scene.Scene):
             d = m.control >= 10
             channel = m.control - d * 10
             value = m.value + 128 * d
-            self.ie.set_level(channel, value)
+            self.ie.set_level(channel, value, scale_name=True)
 
 
 def main():
