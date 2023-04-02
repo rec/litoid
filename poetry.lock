@@ -392,6 +392,17 @@ pyobjc-core = ">=9.0.1"
 pyobjc-framework-Cocoa = ">=9.0.1"
 
 [[package]]
+name = "pyperclip"
+version = "1.8.2"
+description = "A cross-platform clipboard module for Python. (Only handles plain text for now.)"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyperclip-1.8.2.tar.gz", hash = "sha256:105254a8b04934f0bc84e9c24eb360a591aaf6535c9def5f29d92af107a9bf57"},
+]
+
+[[package]]
 name = "pyserial"
 version = "3.5"
 description = "Python Serial Port Extension"
@@ -546,4 +557,4 @@ dek = ">=1.0.2,<2.0.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "5106134c8ac40bb5fccaf69d01a0fdbe0eb766485e074077041de4da8ab47e97"
+content-hash = "d5fd756d040b6c54450627477fe070a9941c80316fbe397f23b6b6dd04e8dacc"

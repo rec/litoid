@@ -21,6 +21,7 @@ typer = "^0.7.0"
 dtyper = "^2.1.0"
 pysimplegui = "^4.60.4"
 psgdemos = "^1.12.1"
+pyperclip = "^1.8.2"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
