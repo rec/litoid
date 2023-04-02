@@ -1,3 +1,7 @@
+import pyperclip
+import json
+
+
 class Action:
     def __init__(self, ie, msg):
         self.ie = ie
@@ -29,12 +33,13 @@ class Action:
 
     def _unknown(self):
         print('unknown', self.msg.key)
+        self.ie.bell()
 
     def blackout(self):
         self.ie.blackout()
 
     def copy(self):
-        self.ie.bell()
+        pyperclip.copy(json.dumps(self.ie.lamp.state))
 
     def duplicate(self):
         self.ie.bell()
@@ -53,7 +58,18 @@ class Action:
         self.ie.set_ui(self._channel, value)
 
     def paste(self):
-        self.ie.bell()
+        text = pyperclip.paste()
+        try:
+            state = json.loads(text)
+        except Exception:
+            error = 'Cannot parse cut buffer'
+        if self.ie.set_state(state):
+            error = ''
+        else:
+            error = 'Failed to set state'
+        if error:
+            print(error)
+            self.ie.bell()
 
     def preset(self):
         self.ie.set_preset(self._value)

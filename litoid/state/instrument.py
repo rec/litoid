@@ -64,6 +64,16 @@ class Instrument(read_write.ReadWrite):
     def remap_dict(self, levels: dict):
         return dict(self.remap(c, v) for c, v in levels.items())
 
+    def unmap(self, channel: Channel, value: int | str):
+        if isinstance(channel, int):
+            channel = self.channels[channel]
+        if not isinstance(v := value, str):
+            v = self.level_to_name(channel, v) or v
+        return channel, v
+
+    def unmap_frame(self, frame):
+        return dict(self.unmap(i, v) for i, v in enumerate(frame))
+
     @cached_property
     def blackout(self):
         return self.presets.get('blackout') or self.default

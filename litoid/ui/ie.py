@@ -70,6 +70,13 @@ class InstrumentEditorApp(ui.UI):
         msg = ui.Message(name.split()[0].strip('.').lower())
         self.callback(msg)
 
+    def set_state(self, state):
+        if self.lamp.set_state(state):
+            self.reset_levels()
+            return True
+        else:
+            self.ie.bell()
+
     def set_preset(self, new_value):
         self.preset = new_value
         preset = self.lamp.send_preset(new_value)
@@ -111,7 +118,7 @@ class InstrumentEditorApp(ui.UI):
             self.window[k + 'slider'].update(value=v)
 
     def reset_levels(self):
-        for i in range(len(self.lamp.instrument.channels)):
+        for i in range(len(self.instrument.channels)):
             self.reset_level(i)
 
 
