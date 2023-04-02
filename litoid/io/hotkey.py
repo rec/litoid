@@ -7,12 +7,12 @@ import datacls
 
 @datacls
 class HotKeys(HasThread):
-    keys: list[str, ...] = datacls.field(list)
+    keys: dict[str, str] = datacls.field(dict)
     callback: Callable = print
 
     @cached_property
     def hotkeys(self):
-        keys = {k: partial(self.callback, k) for k in self.keys}
+        keys = {k: partial(self.callback, v) for k, v in self.keys.items()}
         return keyboard.GlobalHotKeys(keys)
 
     def _target(self):

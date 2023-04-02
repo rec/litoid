@@ -1,18 +1,15 @@
-from . import defaults, lamp_page, ui
+from . import action, defaults, lamp_page, ui
 from ..io import hotkey, midi
 from ..state import scene, state as _state
 from functools import cached_property
-from typing import Sequence
 import PySimpleGUI as sg
 import datacls
-
-HOTKEYS = tuple(f'<cmd>+{c}' for c in defaults.COMMANDS)
 
 
 @datacls.mutable
 class InstrumentEditorApp(ui.UI):
     state: _state.State = datacls.field(_state)
-    hotkeys: Sequence[str] = HOTKEYS
+    commands: dict[str, str] = datacls.field(lambda: dict(defaults.COMMANDS))
 
     lamp = None
     preset = None
@@ -21,7 +18,7 @@ class InstrumentEditorApp(ui.UI):
         self.state.blackout()
         self.state.set_scene(MidiScene(self))
         self.state.midi_input.start()
-        self._hotkeys.start()
+        self.hotkeys.start()
 
         try:
             super().start()
@@ -30,8 +27,8 @@ class InstrumentEditorApp(ui.UI):
                 lamp.blackout()
 
     @cached_property
-    def _hotkeys(self):
-        return hotkey.HotKeys(self.hotkeys)
+    def hotkeys(self):
+        return hotkey.HotKeys(self.commands)
 
     @cached_property
     def lamps(self):
@@ -47,10 +44,14 @@ class InstrumentEditorApp(ui.UI):
         self.window[key].update(value=value)
 
     def set_ui(self, ch, new_value):
+        chan, new_value = self.instrument.remap(ch, new_value)
+
         try:
             level = max(0, min(255, int(new_value)))
         except (ValueError, TypeError):
             level = 0
+
+        self.lamp[chan] = level
 
         k = f'{self.lamp.name}.{ch}.'
         self.set(k + 'input', level)
@@ -60,57 +61,17 @@ class InstrumentEditorApp(ui.UI):
             self.set(k + 'slider', level)
 
     def callback(self, msg):
-        if msg.is_close:
-            return
+        return action.Action(self, msg)()
 
-        address, _, el = msg.key.rpartition('.')
+    def set_preset(self, new_value):
+        self.preset = new_value
+        preset = self.lamp.send_preset(new_value)
+        for ch in self.instrument.channels:
+            self.set_ui(ch, preset[ch])
 
-        if el == 'tabgroup':
-            name = msg.values['tabgroup'].split('.')[0]
-            self.lamp = self.lamps[name]
-            return
-
-        if el == 'blackout':
-            self.lamp.blackout()
-            self.reset_levels()
-            return
-
-        try:
-            new_value = msg.values[msg.key]
-
-        except Exception:
-            print('unknown', msg.key)
-            return
-
-        if el == 'preset':
-            self.preset = new_value
-            preset = self.lamp.send_preset(new_value)
-            for ch in self.instrument.channels:
-                self.set_ui(ch, preset[ch])
-            return
-
-        if el == 'menu':
-            print('menu:', new_value)
-            return
-
-        lamp_name, ch = address.split('.')
-        k = f'{address}.'
-        ch_names = self.instrument.value_names.get(ch)
-
-        if el == 'slider':
-            self.set(k + 'input', level := int(new_value))
-
-        elif el == 'combo':
-            self.set(k + 'input', level := ch_names[new_value])
-
-        elif el == 'input':
-            self.set_ui(ch, level := new_value)
-
-        else:
-            print('unknown', msg.key)
-            return
-
-        self.lamp[ch] = level
+    def blackout(self):
+        self.lamp.blackout()
+        self.reset_levels()
 
     def layout(self):
         def tab(lamp):

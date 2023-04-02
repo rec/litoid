@@ -58,6 +58,7 @@ class Instrument(read_write.ReadWrite):
             v = self._value_names.get(channel, {}).get(v)
             if v is None:
                 raise ValueError(f'Bad channel value {channel}, {value}')
+
         return channel, v
 
     def remap_dict(self, levels: dict):
