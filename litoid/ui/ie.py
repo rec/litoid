@@ -28,7 +28,7 @@ class InstrumentEditorApp(ui.UI):
 
     @cached_property
     def hotkeys(self):
-        return hotkey.HotKeys(self.commands)
+        return hotkey.HotKeys(self.commands, self._callback_name)
 
     @cached_property
     def lamps(self):
@@ -61,7 +61,14 @@ class InstrumentEditorApp(ui.UI):
             self.set(k + 'slider', level)
 
     def callback(self, msg):
-        return action.Action(self, msg)()
+        if msg.key == 'menu':
+            self._callback_name(msg.values['menu'])
+        else:
+            return action.Action(self, msg)()
+
+    def _callback_name(self, name):
+        msg = ui.Message(name.split()[0].strip('.').lower(), None)
+        self.callback(msg)
 
     def set_preset(self, new_value):
         self.preset = new_value
@@ -126,8 +133,12 @@ class MidiScene(scene.Scene):
 
 
 def main():
-    app = InstrumentEditorApp()
-    app.start()
+    try:
+        app = InstrumentEditorApp()
+        app.start()
+    finally:
+        import time
+        time.sleep(0.1)
 
 
 if __name__ == "__main__":

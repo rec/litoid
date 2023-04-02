@@ -7,8 +7,13 @@ class Action:
         if self.msg.is_close:
             return
 
-        _, _, el = self.msg.key.rpartition('.')
-        getattr(self, el, 'unknown')()
+        if self.msg.key.startswith('+'):
+            print(self.msg.key)
+            return
+
+        el = self.msg.key.split('.')[-1]
+        if self.ie.has_focus or el in ('combo', 'focus'):
+            getattr(self, el, self.unknown)()
 
     @property
     def _address(self):
@@ -23,7 +28,7 @@ class Action:
         return self.msg.values.get(self.msg.key)
 
     def unknown(self):
-        print('unknown', self.msg.value)
+        print('unknown', self.msg.key)
 
     def tabgroup(self):
         name = self.msg.values['tabgroup'].split('.')[0]
@@ -50,3 +55,6 @@ class Action:
         except Exception:
             value = 0
         self.ie.set_ui(self._channel, value)
+
+    def focus(self):
+        self.ie.has_focus = self._address == 'has'

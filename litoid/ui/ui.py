@@ -12,6 +12,8 @@ sg.set_options(icon=str(ICON_PATH))
 LITOID_CLOSE = 'litoid.run.close'
 
 CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT, LITOID_CLOSE
+HAS_FOCUS = 'has.focus'
+NO_FOCUS = 'no.focus'
 
 
 @datacls.mutable
@@ -36,6 +38,8 @@ class Message:
 
 @datacls.mutable
 class UI(UIDesc, ThreadQueue):
+    has_focus = False
+
     def callback(self, msg):
         print(msg)
 
@@ -49,6 +53,9 @@ class UI(UIDesc, ThreadQueue):
             font=self.font,
         )
         sg.Window.hidden_master_root.createcommand('tk::mac::Quit', self.quit)
+        w.bind('<FocusIn>', HAS_FOCUS)
+        w.bind('<FocusOut>', NO_FOCUS)
+
         return w
 
     def quit(self):
@@ -62,6 +69,7 @@ class UI(UIDesc, ThreadQueue):
         while self.running:
             if msg := self.window.read():
                 self.put(msg := Message(*msg))
+
             if not msg or msg.is_close:
                 self.stop()
                 self.put(None)

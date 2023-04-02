@@ -16,8 +16,8 @@ def lamp_page(lamp):
     header = [
         T(name, s=(8, 1)),
         C(presets, k=f'{name}.preset', s=(16, 1)),
-        T(f'offset = {lamp.offset:03}', k=f'{name}.offset'),
-        sg.ButtonMenu('Menu', ['', CMDS], k=f'{name}.menu'),
+        T(f'offset = {lamp.offset:03}'),
+        sg.ButtonMenu('Menu', ['Commands', CMDS], k='menu'),
         sg.Button('Blackout', **BUTTON, k=f'{name}.blackout'),
     ]
 
