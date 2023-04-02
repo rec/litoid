@@ -12,8 +12,11 @@ class HotKeys(HasThread):
 
     @cached_property
     def hotkeys(self):
-        keys = {k: partial(self.callback, v) for k, v in self.keys.items()}
-        return keyboard.GlobalHotKeys(keys)
+        def cmd(k):
+            return k if '<' in k else f'<cmd>+{k}'
+
+        k = {cmd(k): partial(self.callback, v) for k, v in self.keys.items()}
+        return keyboard.GlobalHotKeys(k)
 
     def _target(self):
         with self.hotkeys as h:
