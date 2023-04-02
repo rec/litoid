@@ -1,13 +1,18 @@
-from . import lamp_page, ui
-from ..io import midi
+from . import defaults, lamp_page, ui
+from ..io import hotkey, midi
 from ..state import scene, state as _state
+from functools import cached_property
+from typing import Sequence
 import PySimpleGUI as sg
 import datacls
+
+HOTKEYS = tuple(f'<cmd>+{c}' for c in defaults.COMMANDS)
 
 
 @datacls.mutable
 class InstrumentEditorApp(ui.UI):
     state: _state.State = datacls.field(_state)
+    hotkeys: Sequence[str] = HOTKEYS
 
     lamp = None
     preset = None
@@ -16,17 +21,23 @@ class InstrumentEditorApp(ui.UI):
         self.state.blackout()
         self.state.set_scene(MidiScene(self))
         self.state.midi_input.start()
+        self._hotkeys.start()
+
         try:
             super().start()
         finally:
             for lamp in self.state.lamps.values():
                 lamp.blackout()
 
-    @property
+    @cached_property
+    def _hotkeys(self):
+        return hotkey.HotKeys(self.hotkeys)
+
+    @cached_property
     def lamps(self):
         return self.state.lamps
 
-    @property
+    @cached_property
     def instrument(self):
         return self.lamp.instrument
 

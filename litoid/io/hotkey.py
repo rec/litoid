@@ -6,7 +6,7 @@ import datacls
 
 
 @datacls
-class Hotkeys(HasThread):
+class HotKeys(HasThread):
     keys: list[str, ...] = datacls.field(list)
     callback: Callable = print
 
@@ -23,4 +23,4 @@ class Hotkeys(HasThread):
 if __name__ == '__main__':
     s = 'abcdefghijklmnopqrstuvwxyz'
     keys = [f'<ctrl>+{i}' for i in s]
-    Hotkeys(keys)._target()
+    HotKeys(keys)._target()

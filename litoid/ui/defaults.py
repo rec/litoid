@@ -25,6 +25,17 @@ TEXT = {
 T = partial(sg.T, **TEXT)
 SIZE = 32, 30
 
+COMMANDS = {
+    'b': 'Blackout',
+    'c': 'Copy',
+    'd': 'Duplicate...',
+    'r': 'Restore',
+    's': 'Save...',
+    'v': 'Paste',
+    'y': 'Redo',
+    'z': 'Undo',
+}
+
 
 def C(items, *a, **ka):
     if items:
