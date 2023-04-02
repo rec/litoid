@@ -13,7 +13,7 @@ class Action:
 
         el = self.msg.key.split('.')[-1]
         if self.ie.has_focus or el in ('combo', 'focus'):
-            getattr(self, el, self.unknown)()
+            getattr(self, el, self._unknown)()
 
     @property
     def _address(self):
@@ -27,27 +27,17 @@ class Action:
     def _value(self):
         return self.msg.values.get(self.msg.key)
 
-    def unknown(self):
+    def _unknown(self):
         print('unknown', self.msg.key)
-
-    def tabgroup(self):
-        name = self.msg.values['tabgroup'].split('.')[0]
-        self.ie.lamp = self.ie.lamps[name]
 
     def blackout(self):
         self.ie.blackout()
 
-    def preset(self):
-        self.ie.set_preset(self._value)
-
-    def menu(self):
-        print('menu:', self._value)
-
-    def slider(self):
-        self.ie.set_ui(self._channel, int(self._value))
-
     def combo(self):
         self.ie.set_ui(self._channel, self._value)
+
+    def focus(self):
+        self.ie.has_focus = self._address == 'has'
 
     def input(self):
         try:
@@ -56,5 +46,12 @@ class Action:
             value = 0
         self.ie.set_ui(self._channel, value)
 
-    def focus(self):
-        self.ie.has_focus = self._address == 'has'
+    def preset(self):
+        self.ie.set_preset(self._value)
+
+    def slider(self):
+        self.ie.set_ui(self._channel, int(self._value))
+
+    def tabgroup(self):
+        name = self.msg.values['tabgroup'].split('.')[0]
+        self.ie.lamp = self.ie.lamps[name]
