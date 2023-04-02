@@ -33,6 +33,12 @@ class Action:
     def blackout(self):
         self.ie.blackout()
 
+    def copy(self):
+        ...
+
+    def duplicate(self):
+        ...
+
     def combo(self):
         self.ie.set_ui(self._channel, self._value)
 
@@ -46,8 +52,20 @@ class Action:
             value = 0
         self.ie.set_ui(self._channel, value)
 
+    def paste(self):
+        ...
+
     def preset(self):
         self.ie.set_preset(self._value)
+
+    def redo(self):
+        ...
+
+    def revert(self):
+        ...
+
+    def save(self):
+        ...
 
     def slider(self):
         self.ie.set_ui(self._channel, int(self._value))
@@ -55,3 +73,6 @@ class Action:
     def tabgroup(self):
         name = self.msg.values['tabgroup'].split('.')[0]
         self.ie.lamp = self.ie.lamps[name]
+
+    def undo(self):
+        ...

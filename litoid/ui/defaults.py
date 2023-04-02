@@ -29,7 +29,7 @@ COMMANDS = {
     'b': 'Blackout',
     'c': 'Copy',
     'd': 'Duplicate...',
-    'r': 'Restore',
+    'r': 'Revert',
     's': 'Save...',
     'v': 'Paste',
     'y': 'Redo',
