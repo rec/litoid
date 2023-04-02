@@ -67,7 +67,7 @@ class InstrumentEditorApp(ui.UI):
             return action.Action(self, msg)()
 
     def _callback_name(self, name):
-        msg = ui.Message(name.split()[0].strip('.').lower(), None)
+        msg = ui.Message(name.split()[0].strip('.').lower())
         self.callback(msg)
 
     def set_preset(self, new_value):

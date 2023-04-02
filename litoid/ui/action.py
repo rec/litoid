@@ -34,10 +34,10 @@ class Action:
         self.ie.blackout()
 
     def copy(self):
-        ...
+        self.ie.bell()
 
     def duplicate(self):
-        ...
+        self.ie.bell()
 
     def combo(self):
         self.ie.set_ui(self._channel, self._value)
@@ -53,19 +53,19 @@ class Action:
         self.ie.set_ui(self._channel, value)
 
     def paste(self):
-        ...
+        self.ie.bell()
 
     def preset(self):
         self.ie.set_preset(self._value)
 
     def redo(self):
-        ...
+        self.ie.bell()
 
     def revert(self):
-        ...
+        self.ie.bell()
 
     def save(self):
-        ...
+        self.ie.bell()
 
     def slider(self):
         self.ie.set_ui(self._channel, int(self._value))
@@ -75,4 +75,4 @@ class Action:
         self.ie.lamp = self.ie.lamps[name]
 
     def undo(self):
-        ...
+        self.ie.bell()
