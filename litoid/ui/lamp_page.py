@@ -15,10 +15,10 @@ def lamp_page(lamp):
 
     header = [
         T(name, s=(8, 1)),
-        C(presets, k=f'{name}.preset', s=(16, 1)),
+        C(presets, k=f'{name}.(none).preset', s=(16, 1)),
         T(f'offset = {lamp.offset:03}'),
-        sg.ButtonMenu('Menu', ['Commands', CMDS], k='menu'),
-        sg.Button('Blackout', **BUTTON, k=f'{name}.blackout'),
+        sg.ButtonMenu('Menu', ['Commands', CMDS], k=f'{name}.(none).menu'),
+        sg.Button('Blackout', **BUTTON, k=f'{name}.(none).blackout'),
     ]
 
     def strip(ch):

@@ -52,8 +52,10 @@ class Controller:
 
     def callback(self, msg):
         if isinstance(msg, str):
+            print('one', msg)
             name, values = msg, None
-        elif msg.key == 'menu':
+        elif msg.comp == 'menu':
+            print('two', msg.key)
             name, values = msg.values['menu'], msg.values
         else:
             name = None

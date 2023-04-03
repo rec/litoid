@@ -55,7 +55,7 @@ class Action:
         self._set_channel_level(self._value)
 
     def focus(self):
-        self.ie.has_focus = (self._address == 'has')
+        self.ie.has_focus = (self.msg.iname == 'has')
 
     def input(self):
         try:

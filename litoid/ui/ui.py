@@ -12,8 +12,8 @@ sg.set_options(icon=str(ICON_PATH))
 LITOID_CLOSE = 'litoid.run.close'
 
 CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT, LITOID_CLOSE
-HAS_FOCUS = 'has.focus'
-NO_FOCUS = 'no.focus'
+HAS_FOCUS = 'has.(none).focus'
+NO_FOCUS = 'no.(none).focus'
 
 
 @datacls.mutable
@@ -26,7 +26,7 @@ class UIDesc:
         raise NotImplementedError
 
 
-@datacls(slots=True)
+@datacls
 class Message:
     key: str
     values: list[str, ...] | None = None
@@ -34,6 +34,21 @@ class Message:
     @property
     def is_close(self):
         return self.key in CLOSERS
+
+    @cached_property
+    def iname(self):
+        iname, channel, comp = self.key.split('.')
+        return iname
+
+    @cached_property
+    def channnel(self):
+        iname, channel, comp = self.key.split('.')
+        return channel
+
+    @cached_property
+    def comp(self):
+        iname, channel, comp = self.key.split('.')
+        return comp
 
 
 @datacls.mutable

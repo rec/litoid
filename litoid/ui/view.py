@@ -6,6 +6,8 @@ from typing import Callable
 import PySimpleGUI as sg
 import datacls
 
+TABGROUP_KEY = '(none).(none).tabgroup'
+
 
 @datacls.mutable
 class View(ui.UI):
@@ -44,7 +46,7 @@ class View(ui.UI):
             return sg.Tab(lamp.name, lamp_page(lamp), k=f'{lamp.name}.tab')
 
         tabs = [tab(lamp) for lamp in self.lamps.values()]
-        return [[sg.TabGroup([tabs], enable_events=True, k='tabgroup')]]
+        return [[sg.TabGroup([tabs], enable_events=True, k=TABGROUP_KEY)]]
 
     def set_channel_strip(self, iname, channel, value):
         instrument = instruments()[iname]
