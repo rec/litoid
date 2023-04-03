@@ -1,3 +1,4 @@
+from ..util import play
 import pyperclip
 import json
 
@@ -33,7 +34,7 @@ class Action:
 
     def _unknown(self):
         print('unknown', self.msg.key)
-        self.ie.bell()
+        play()
 
     def blackout(self):
         self.ie.blackout()
@@ -41,8 +42,11 @@ class Action:
     def copy(self):
         pyperclip.copy(json.dumps(self.ie.lamp.state))
 
+    def cut(self):
+        play()
+
     def duplicate(self):
-        self.ie.bell()
+        play()
 
     def combo(self):
         self.ie.set_ui(self._channel, self._value)
@@ -69,19 +73,19 @@ class Action:
             error = 'Failed to set state'
         if error:
             print(error)
-            self.ie.bell()
+            play()
 
     def preset(self):
         self.ie.set_preset(self._value)
 
     def redo(self):
-        self.ie.bell()
+        play()
 
     def revert(self):
-        self.ie.bell()
+        play()
 
     def save(self):
-        self.ie.bell()
+        play()
 
     def slider(self):
         self.ie.set_ui(self._channel, int(self._value))
@@ -91,4 +95,4 @@ class Action:
         self.ie.lamp = self.ie.lamps[name]
 
     def undo(self):
-        self.ie.bell()
+        play()

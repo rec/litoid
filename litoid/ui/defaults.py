@@ -32,8 +32,9 @@ COMMANDS = {
     'r': 'Revert',
     's': 'Save...',
     'v': 'Paste',
-    'y': 'Redo',
-    'z': 'Undo',
+    'x': 'Cut',
+    # 'y': 'Redo',
+    # 'z': 'Undo',
 }
 
 

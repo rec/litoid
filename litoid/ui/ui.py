@@ -1,5 +1,4 @@
 from ..util.thread_queue import ThreadQueue
-from ..util import play
 from functools import cached_property
 from pathlib import Path
 import PySimpleGUI as sg
@@ -61,9 +60,6 @@ class UI(UIDesc, ThreadQueue):
 
     def quit(self):
         self.window.write_event_value(LITOID_CLOSE, None)
-
-    def bell(self):
-        play()
 
     def start(self):
         """Must be run on the main thread, blocks until quit"""

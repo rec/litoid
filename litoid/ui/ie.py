@@ -1,6 +1,7 @@
 from . import action, defaults, lamp_page, ui
 from ..io import hotkey, midi
 from ..state import scene, state as _state
+from ..util import play
 from functools import cached_property
 import PySimpleGUI as sg
 import datacls
@@ -75,7 +76,7 @@ class InstrumentEditorApp(ui.UI):
             self.reset_levels()
             return True
         else:
-            self.ie.bell()
+            play()
 
     def set_preset(self, new_value):
         self.preset = new_value
