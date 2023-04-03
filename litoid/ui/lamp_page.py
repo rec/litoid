@@ -9,7 +9,7 @@ CMDS = tuple(f'{v:{_LEN}} (⌘{k.upper()})' for k, v in COMMANDS.items())
 @xmod
 def lamp_page(lamp):
     instrument = lamp.instrument
-    name = lamp.name
+    name = instrument.name
     label_size = max(len(c) for c in instrument.channels), 1
     presets = sorted(instrument.presets)
 
