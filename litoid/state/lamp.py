@@ -33,6 +33,7 @@ class Lamp(LampDesc):
         return self.instrument.presets
 
     def set_levels(self, d: dict):
+        d = self.instrument.remap_dict(d)
         it = range(len(self.frame))
         self.frame[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
         self.dmx.render()
@@ -58,14 +59,8 @@ class Lamp(LampDesc):
         self.frame[i] = v
         self.dmx.render()
 
-    @property
-    def state(self) -> dict:
-        return {self.instrument.name: self.instrument.unmap_frame(self.frame)}
-
-    def set_state(self, state: dict):
-        if d := state.get(self.instrument.name):
-            self.set_levels(self.instrument.remap_dict(d))
-            return True
+    def levels(self) -> dict:
+        return self.instrument.unmap_frame(self.frame)
 
     def blackout(self):
         self.set_levels(self.instrument.blackout)

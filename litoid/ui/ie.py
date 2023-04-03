@@ -71,12 +71,16 @@ class InstrumentEditorApp(ui.UI):
         msg = ui.Message(name.split()[0].strip('.').lower())
         self.callback(msg)
 
-    def set_state(self, state):
-        if self.lamp.set_state(state):
+    def levels(self):
+        return {self.lamp.instrument.name: self.lamp.levels()}
+
+    def set_levels(self, levels):
+        if value := levels.get(name := self.lamp.instrument.name):
+            self.lamp.set_levels(value)
             self.reset_levels()
             return True
         else:
-            play_error()
+            play_error(f'Wrong instrument {name}')
 
     def set_preset(self, new_value):
         self.preset = new_value

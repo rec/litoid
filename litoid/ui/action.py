@@ -40,7 +40,7 @@ class Action:
         self.ie.blackout()
 
     def copy(self):
-        pyperclip.copy(json.dumps(self.ie.lamp.state))
+        pyperclip.copy(json.dumps(self.ie.levels()))
 
     def cut(self):
         self.copy()
@@ -67,8 +67,8 @@ class Action:
         try:
             state = json.loads(text)
         except Exception:
-            error = 'Cannot parse cut buffer'
-        if self.ie.set_state(state):
+            error = 'Bad JSON in cut buffer'
+        if self.ie.set_levels(state):
             error = ''
         else:
             error = 'Failed to set state'
