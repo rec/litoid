@@ -30,7 +30,6 @@ class View(ui.UI):
 
     def start(self):
         self.state.blackout()
-        self.state.set_scene(MidiScene(self))
         self.state.midi_input.start()
         self.hotkeys.start()
 
@@ -42,7 +41,7 @@ class View(ui.UI):
     @cached_property
     def lamps(self):
         lamps = {}
-        for la in self.state.lamps:
+        for la in self.state.lamps.values():
             lamps.setdefault(la.instrument.name, la)
         return dict(sorted(lamps.items()))
 
@@ -64,6 +63,8 @@ class View(ui.UI):
 
     def set_channel_strip(self, iname, channel, value):
         instrument = instruments()[iname]
+        if isinstance(channel, int):
+            channel = instrument.channels[channel]
         _, value = instrument.remap(channel, value)
         vname = instrument.level_to_name(channel, value)
 
@@ -86,18 +87,25 @@ class Controller:
     @classmethod
     def make(cls):
         view = View()
-        model = Model(list(view.lamps())[0])
-        return cls(model, view)
+        model = Model(list(view.lamps)[0])
+        cont = cls(model, view)
+        view.callback = cont.callback
+        return cont
 
     @property
     def iname(self):
-        return self.lamp.instrument.name
+        return self.instrument.name
+
+    @property
+    def instrument(self):
+        return self.lamp.instrument
 
     @property
     def lamp(self):
         return self.view.lamps[self.model.current_instrument]
 
     def start(self):
+        self.view.state.set_scene(MidiScene(self))
         self.view.start()
 
     def callback(self, msg):
@@ -118,7 +126,7 @@ class Controller:
     def paste(self, levels):
         if value := levels.get(self.iname):
             self.lamp.set_levels(value)
-            self.set_channel_strips(self.iname, levels)
+            self.set_channel_levels(self.iname, value)
             return True
         else:
             play_error(f'Wrong instrument {levels}')
@@ -133,17 +141,22 @@ class Controller:
 
     def blackout(self):
         self.lamp.blackout()
-        self.set_channel_strips(self.iname, self.lamp.levels())
+        self.set_channel_levels(self.iname, self.lamp.levels())
+
+    def set_channel_level(self, iname, ch, v):
+        self.lamp[ch] = v
+        self.view.set_channel_strip(iname, ch, v)
+
+    def set_channel_levels(self, iname, d):
+        for k, v in d.items():
+            self.set_channel_level(iname, k, v)
 
     def set_midi_level(self, ch, v, scale_name=False):
         if ch < len(self.lamp):
             if scale_name:
                 if self.instrument.channels[ch] in self.instrument.value_names:
                     v *= 2
-            if self.lamp[ch] == v:
-                return
-            self.lamp[ch] = v
-            self.view.set_channel_strip(self.iname, ch, v)
+            self.set_channel_level(self.iname, ch, v)
 
 
 @datacls.mutable
@@ -298,7 +311,7 @@ class MidiScene(scene.Scene):
 
 def main():
     try:
-        if True:
+        if not True:
             app = InstrumentEditorApp()
         else:
             app = Controller.make()

@@ -4,8 +4,10 @@ import json
 
 
 class Action:
-    def __init__(self, ie, msg):
-        self.ie = ie
+    def __init__(self, controller, msg):
+        self.controller = controller
+        self.ie = controller.view
+        self.model = self.controller.model
         self.msg = msg
 
     def __call__(self):
@@ -32,22 +34,25 @@ class Action:
     def _value(self):
         return self.msg.values.get(self.msg.key)
 
+    def _set_channel_level(self, value):
+        self.controller.set_channel_level(*self._address.split('.'), value)
+
     def _unknown(self):
         print('unknown', self.msg.key)
         play_error()
 
     def blackout(self):
-        self.ie.blackout()
+        self.controller.blackout()
 
     def copy(self):
-        pyperclip.copy(json.dumps(self.ie.levels()))
+        pyperclip.copy(json.dumps(self.controller.copy()))
 
     def cut(self):
         self.copy()
         play_error()
 
     def combo(self):
-        self.ie.set_address_value(self._address, self._value)
+        self._set_channel_level(self._value)
 
     def focus(self):
         self.ie.has_focus = (self._address == 'has')
@@ -57,7 +62,7 @@ class Action:
             value = int(self._value)
         except Exception:
             value = 0
-        self.ie.set_address_value(self._address, value)
+        self._set_channel_level(value)
 
     def new(self):
         play_error()
@@ -68,7 +73,7 @@ class Action:
             state = json.loads(text)
         except Exception:
             error = 'Bad JSON in cut buffer'
-        if self.ie.set_levels(state):
+        if self.controller.paste(state):
             error = ''
         else:
             error = 'Failed to set state'
@@ -77,6 +82,7 @@ class Action:
             play_error()
 
     def preset(self):
+        # BROKEN
         self.ie.set_preset(self._value)
 
     def redo(self):
@@ -89,11 +95,11 @@ class Action:
         play_error()
 
     def slider(self):
-        self.ie.set_address_value(self._address, int(self._value))
+        self._set_channel_level(int(self._value))
 
     def tabgroup(self):
-        name = self.msg.values['tabgroup'].split('.')[0]
-        self.ie.lamp = self.ie.lamps[name]
+        name = self._value.split('.')[0]
+        self.model.current_instrument = name
 
     def undo(self):
         play_error()
