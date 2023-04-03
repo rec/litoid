@@ -29,7 +29,7 @@ class InstrumentEditorApp(ui.UI):
 
     @cached_property
     def hotkeys(self):
-        return hotkey.HotKeys(self.commands, self._callback_name)
+        return hotkey.HotKeys(self.commands, self.callback)
 
     @cached_property
     def lamps(self):
@@ -72,14 +72,11 @@ class InstrumentEditorApp(ui.UI):
             self.set(k + 'slider', level)
 
     def callback(self, msg):
+        if isinstance(msg, str):
+            msg = _message(msg)
         if msg.key == 'menu':
-            self._callback_name(msg.values['menu'])
-        else:
-            return action.Action(self, msg)()
-
-    def _callback_name(self, name):
-        msg = ui.Message(name.split()[0].strip('.').lower())
-        self.callback(msg)
+            msg = _message(msg.values['menu'], msg.values)
+        return action.Action(self, msg)()
 
     def levels(self):
         return {self.lamp.instrument.name: self.lamp.levels()}
@@ -137,6 +134,10 @@ class InstrumentEditorApp(ui.UI):
     def reset_levels(self):
         for i in range(len(self.instrument.channels)):
             self.reset_level(i)
+
+
+def _message(name, values=None):
+    return ui.Message(name.split()[0].strip('.').lower(), values)
 
 
 class MidiScene(scene.Scene):
