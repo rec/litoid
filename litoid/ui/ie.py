@@ -73,9 +73,14 @@ class InstrumentEditorApp(ui.UI):
 
     def callback(self, msg):
         if isinstance(msg, str):
-            msg = _message(msg)
-        if msg.key == 'menu':
-            msg = _message(msg.values['menu'], msg.values)
+            name, values = msg, None
+        elif msg.key == 'menu':
+            name, values = msg.values['menu'], msg.values
+        else:
+            name = None
+        if name is not None:
+            name = name.split()[0].strip('.').lower()
+            msg = ui.Message(name, values)
         return action.Action(self, msg)()
 
     def levels(self):
@@ -134,10 +139,6 @@ class InstrumentEditorApp(ui.UI):
     def reset_levels(self):
         for i in range(len(self.instrument.channels)):
             self.reset_level(i)
-
-
-def _message(name, values=None):
-    return ui.Message(name.split()[0].strip('.').lower(), values)
 
 
 class MidiScene(scene.Scene):
