@@ -50,7 +50,7 @@ class Action:
         self.ie.set_address_value(self._address, self._value)
 
     def focus(self):
-        self.ie.has_focus = self._address == 'has'
+        self.ie.has_focus = (self._address == 'has')
 
     def input(self):
         try:

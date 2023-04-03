@@ -8,6 +8,79 @@ import copy
 import datacls
 
 
+@datacls
+class Model:
+    state: _state.State = datacls.field(_state)
+
+    @cached_property
+    def all_presets(self):
+        return {k: copy.deepcopy(v.presets) for k, v in instruments().items()}
+
+    @cached_property
+    def current_presets(self):
+        return {k: None for k in self.all_presets}
+
+
+@datacls.mutable
+class InstrumentsView(ui.UI):
+    state: _state.State = datacls.field(_state)
+    commands: dict[str, str] = datacls.field(lambda: dict(defaults.COMMANDS))
+
+    def start(self):
+        self.state.blackout()
+        self.state.set_scene(MidiScene(self))
+        self.state.midi_input.start()
+        self.hotkeys.start()
+
+        super().start()
+
+    @cached_property
+    def hotkeys(self):
+        return hotkey.HotKeys(self.commands, self.callback)
+
+    def set_window(self, key, value):
+        if not isinstance(key, str):
+            key = '.'.join(str(k) for k in key)
+        self.window[key].update(value=value)
+
+    def set_address_value(self, address, new_value):
+        iname, ch = address.split('.')
+        instrument = instruments()[iname]
+        chan, new_value = instrument.remap(ch, new_value)
+
+        try:
+            level = max(0, min(255, int(new_value)))
+        except (ValueError, TypeError):
+            level = 0
+
+        self.lamp[chan] = level
+
+        k = f'{self.lamp.name}.{ch}.'
+        self.set_window(k + 'input', level)
+        if name := instrument.level_to_name(ch, level):
+            self.set_window(k + 'combo', name)
+        else:
+            self.set_window(k + 'slider', level)
+
+    def layout(self):
+        def tab(lamp):
+            return sg.Tab(lamp.name, lamp_page(lamp), k=f'{lamp.name}.tab')
+
+        lamps = list(self.lamps.values())
+        tabs = [tab(lamp) for lamp in lamps]
+        self.lamp = lamps[0]
+
+        return [[sg.TabGroup([tabs], enable_events=True, k='tabgroup')]]
+
+    def reset_level(self, lamp_name, channel, value, name=None):
+        k = f'{lamp_name}.{channel}.'
+        self.set_window([k + 'input'], value)
+        if name:
+            self.set_window([k + 'combo'], name)
+        else:
+            self.set_window([k + 'slider'], value)
+
+
 @datacls.mutable
 class InstrumentEditorApp(ui.UI):
     state: _state.State = datacls.field(_state)
@@ -47,7 +120,7 @@ class InstrumentEditorApp(ui.UI):
     def current_presets(self):
         return {k: None for k in self.all_presets}
 
-    def set(self, key, value):
+    def set_window(self, key, value):
         if not isinstance(key, str):
             key = '.'.join(str(k) for k in key)
         self.window[key].update(value=value)
@@ -65,11 +138,11 @@ class InstrumentEditorApp(ui.UI):
         self.lamp[chan] = level
 
         k = f'{self.lamp.name}.{ch}.'
-        self.set(k + 'input', level)
+        self.set_window(k + 'input', level)
         if name := self.instrument.level_to_name(ch, level):
-            self.set(k + 'combo', name)
+            self.set_window(k + 'combo', name)
         else:
-            self.set(k + 'slider', level)
+            self.set_window(k + 'slider', level)
 
     def callback(self, msg):
         if isinstance(msg, str):
