@@ -46,9 +46,6 @@ class Action:
         self.copy()
         play_error()
 
-    def duplicate(self):
-        play_error()
-
     def combo(self):
         self.ie.set_ui(self._channel, self._value)
 
@@ -61,6 +58,9 @@ class Action:
         except Exception:
             value = 0
         self.ie.set_ui(self._channel, value)
+
+    def new(self):
+        play_error()
 
     def paste(self):
         text = pyperclip.paste()
