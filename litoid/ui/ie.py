@@ -1,9 +1,10 @@
 from . import action, defaults, lamp_page, ui
 from ..io import hotkey, midi
-from ..state import scene, state as _state
+from ..state import instruments, scene, state as _state
 from ..util.play import play_error
 from functools import cached_property
 import PySimpleGUI as sg
+import copy
 import datacls
 
 
@@ -13,7 +14,6 @@ class InstrumentEditorApp(ui.UI):
     commands: dict[str, str] = datacls.field(lambda: dict(defaults.COMMANDS))
 
     lamp = None
-    preset = None
 
     def start(self):
         self.state.blackout()
@@ -39,12 +39,22 @@ class InstrumentEditorApp(ui.UI):
     def instrument(self):
         return self.lamp.instrument
 
+    @cached_property
+    def all_presets(self):
+        return {k: copy.deepcopy(v.presets) for k, v in instruments().items()}
+
+    @cached_property
+    def current_presets(self):
+        return {k: None for k in self.all_presets}
+
     def set(self, key, value):
         if not isinstance(key, str):
             key = '.'.join(str(k) for k in key)
         self.window[key].update(value=value)
 
-    def set_ui(self, ch, new_value):
+    def set_ui(self, address, new_value):
+        # TODO remove dependency on the current lamp
+        iname, ch = address.split('.')
         chan, new_value = self.instrument.remap(ch, new_value)
 
         try:
@@ -82,11 +92,13 @@ class InstrumentEditorApp(ui.UI):
         else:
             play_error(f'Wrong instrument {name}')
 
-    def set_preset(self, new_value):
-        self.preset = new_value
-        preset = self.lamp.send_preset(new_value)
-        for ch in self.instrument.channels:
-            self.set_ui(ch, preset[ch])
+    def set_preset(self, name):
+        # BROKEN
+        if preset := self.all_presets.get(self.iname, {}).get(name):
+            for ch in self.instrument.channels:
+                self.set_ui(ch, preset[ch])
+        else:
+            play_error(f'No preset named {name}')
 
     def blackout(self):
         self.lamp.blackout()
