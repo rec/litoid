@@ -3,6 +3,7 @@ from ..io import hotkey, midi
 from ..state import instruments, scene, state as _state
 from ..util.play import play_error
 from functools import cached_property
+from typing import Callable
 import PySimpleGUI as sg
 import copy
 import datacls
@@ -10,8 +11,6 @@ import datacls
 
 @datacls
 class Model:
-    state: _state.State = datacls.field(_state)
-
     @cached_property
     def all_presets(self):
         return {k: copy.deepcopy(v.presets) for k, v in instruments().items()}
@@ -22,9 +21,10 @@ class Model:
 
 
 @datacls.mutable
-class InstrumentsView(ui.UI):
+class View(ui.UI):
     state: _state.State = datacls.field(_state)
     commands: dict[str, str] = datacls.field(lambda: dict(defaults.COMMANDS))
+    callback: Callable = print
 
     def start(self):
         self.state.blackout()
@@ -32,7 +32,10 @@ class InstrumentsView(ui.UI):
         self.state.midi_input.start()
         self.hotkeys.start()
 
-        super().start()
+        try:
+            super().start()
+        finally:
+            self.state.blackout()
 
     @cached_property
     def hotkeys(self):
@@ -42,25 +45,6 @@ class InstrumentsView(ui.UI):
         if not isinstance(key, str):
             key = '.'.join(str(k) for k in key)
         self.window[key].update(value=value)
-
-    def set_address_value(self, address, new_value):
-        iname, ch = address.split('.')
-        instrument = instruments()[iname]
-        chan, new_value = instrument.remap(ch, new_value)
-
-        try:
-            level = max(0, min(255, int(new_value)))
-        except (ValueError, TypeError):
-            level = 0
-
-        self.lamp[chan] = level
-
-        k = f'{self.lamp.name}.{ch}.'
-        self.set_window(k + 'input', level)
-        if name := instrument.level_to_name(ch, level):
-            self.set_window(k + 'combo', name)
-        else:
-            self.set_window(k + 'slider', level)
 
     def layout(self):
         def tab(lamp):
@@ -72,13 +56,95 @@ class InstrumentsView(ui.UI):
 
         return [[sg.TabGroup([tabs], enable_events=True, k='tabgroup')]]
 
-    def reset_level(self, lamp_name, channel, value, name=None):
-        k = f'{lamp_name}.{channel}.'
-        self.set_window([k + 'input'], value)
-        if name:
-            self.set_window([k + 'combo'], name)
+    def set_channel_strip(self, address, value):
+        iname, channel = address.split('.')
+        instrument = instruments()[iname]
+        _, value = instrument.remap(channel, value)
+        vname = instrument.level_to_name(channel, value)
+
+        self.set_window(address + '.input', value)
+        if vname:
+            self.set_window(address + '.combo', vname)
         else:
-            self.set_window([k + 'slider'], value)
+            self.set_window(address + '.slider', value)
+
+
+@datacls
+class Controller:
+    model: Model
+    view: View
+
+    def start(self):
+        self.view.start()
+
+    def callback(self, msg):
+        if isinstance(msg, str):
+            name, values = msg, None
+        elif msg.key == 'menu':
+            name, values = msg.values['menu'], msg.values
+        else:
+            name = None
+        if name is not None:
+            name = name.split()[0].strip('.').lower()
+            msg = ui.Message(name, values)
+        return action.Action(self, msg)()
+
+    def levels(self):
+        return {self.lamp.instrument.name: self.lamp.levels()}
+
+    def set_levels(self, levels):
+        if value := levels.get(name := self.lamp.instrument.name):
+            self.lamp.set_levels(value)
+            self.set_channel_strips()
+            return True
+        else:
+            play_error(f'Wrong instrument {name}')
+
+    def set_preset(self, name):
+        # BROKEN
+        if preset := self.all_presets.get(self.iname, {}).get(name):
+            for ch in self.instrument.channels:
+                self.set_address_value(ch, preset[ch])  # NO
+        else:
+            play_error(f'No preset named {name}')
+
+    def blackout(self):
+        self.lamp.blackout()
+        self.set_channel_strips()
+
+    def layout(self):
+        def tab(lamp):
+            return sg.Tab(lamp.name, lamp_page(lamp), k=f'{lamp.name}.tab')
+
+        lamps = list(self.lamps.values())
+        tabs = [tab(lamp) for lamp in lamps]
+        self.lamp = lamps[0]
+
+        return [[sg.TabGroup([tabs], enable_events=True, k='tabgroup')]]
+
+    def set_level(self, ch, v, scale_name=False):
+        if ch < len(self.lamp):
+            if scale_name:
+                if self.instrument.channels[ch] in self.instrument.value_names:
+                    v *= 2
+            if self.lamp[ch] == v:
+                return
+            self.lamp[ch] = v
+            self.set_channel_strip(ch)
+
+    def set_channel_strip(self, ch):
+        v = self.lamp[ch]
+        channel = self.lamp.instrument.channels[ch]
+        k = f'{self.lamp.name}.{channel}.'
+        self.window[k + 'input'].update(value=v)
+        if (name := self.lamp.instrument.level_to_name(ch, v)) is not None:
+            self.window[k + 'combo'].update(value=name)
+        else:
+            self.window[k + 'slider'].update(value=v)
+
+    def set_channel_strips(self):
+        for i in range(len(self.instrument.channels)):
+            self.set_channel_strip(i)
 
 
 @datacls.mutable
@@ -162,7 +228,7 @@ class InstrumentEditorApp(ui.UI):
     def set_levels(self, levels):
         if value := levels.get(name := self.lamp.instrument.name):
             self.lamp.set_levels(value)
-            self.reset_levels()
+            self.set_channel_strips()
             return True
         else:
             play_error(f'Wrong instrument {name}')
@@ -177,7 +243,7 @@ class InstrumentEditorApp(ui.UI):
 
     def blackout(self):
         self.lamp.blackout()
-        self.reset_levels()
+        self.set_channel_strips()
 
     def layout(self):
         def tab(lamp):
@@ -197,9 +263,9 @@ class InstrumentEditorApp(ui.UI):
             if self.lamp[ch] == v:
                 return
             self.lamp[ch] = v
-            self.reset_level(ch)
+            self.set_channel_strip(ch)
 
-    def reset_level(self, ch):
+    def set_channel_strip(self, ch):
         v = self.lamp[ch]
         channel = self.lamp.instrument.channels[ch]
         k = f'{self.lamp.name}.{channel}.'
@@ -209,9 +275,9 @@ class InstrumentEditorApp(ui.UI):
         else:
             self.window[k + 'slider'].update(value=v)
 
-    def reset_levels(self):
+    def set_channel_strips(self):
         for i in range(len(self.instrument.channels)):
-            self.reset_level(i)
+            self.set_channel_strip(i)
 
 
 class MidiScene(scene.Scene):
