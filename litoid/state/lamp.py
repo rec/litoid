@@ -28,10 +28,6 @@ class Lamp(LampDesc):
     frame: memoryview
     dmx: DMX
 
-    @cached_property
-    def presets(self):
-        return self.instrument.presets
-
     def set_levels(self, d: dict):
         d = self.instrument.remap_dict(d)
         it = range(len(self.frame))
