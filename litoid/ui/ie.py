@@ -52,7 +52,7 @@ class InstrumentEditorApp(ui.UI):
             key = '.'.join(str(k) for k in key)
         self.window[key].update(value=value)
 
-    def set_ui(self, address, new_value):
+    def set_address_value(self, address, new_value):
         # TODO remove dependency on the current lamp
         iname, ch = address.split('.')
         chan, new_value = self.instrument.remap(ch, new_value)
@@ -98,7 +98,7 @@ class InstrumentEditorApp(ui.UI):
         # BROKEN
         if preset := self.all_presets.get(self.iname, {}).get(name):
             for ch in self.instrument.channels:
-                self.set_ui(ch, preset[ch])
+                self.set_address_value(ch, preset[ch])
         else:
             play_error(f'No preset named {name}')
 

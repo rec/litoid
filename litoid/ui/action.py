@@ -47,7 +47,7 @@ class Action:
         play_error()
 
     def combo(self):
-        self.ie.set_ui(self._address, self._value)
+        self.ie.set_address_value(self._address, self._value)
 
     def focus(self):
         self.ie.has_focus = self._address == 'has'
@@ -57,7 +57,7 @@ class Action:
             value = int(self._value)
         except Exception:
             value = 0
-        self.ie.set_ui(self._address, value)
+        self.ie.set_address_value(self._address, value)
 
     def new(self):
         play_error()
@@ -89,7 +89,7 @@ class Action:
         play_error()
 
     def slider(self):
-        self.ie.set_ui(self._address, int(self._value))
+        self.ie.set_address_value(self._address, int(self._value))
 
     def tabgroup(self):
         name = self.msg.values['tabgroup'].split('.')[0]
