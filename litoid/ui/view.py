@@ -34,7 +34,12 @@ class View(ui.UI):
 
     @cached_property
     def hotkeys(self):
-        return hotkey.HotKeys(self.commands, self.callback)
+        items = self.commands.items()
+        commands = {k: v.split()[0].strip('.').lower() for k, v in items}
+        return hotkey.HotKeys(commands, self.hotkey_callback)
+
+    def hotkey_callback(self, command: str):
+        self.window.write_event_value(f'hotkey.(none).{command}', None)
 
     def set_window(self, key, value):
         if not isinstance(key, str):

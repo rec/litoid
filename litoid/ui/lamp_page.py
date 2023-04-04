@@ -9,20 +9,20 @@ CMDS = tuple(f'{v:{_LEN}} (⌘{k.upper()})' for k, v in COMMANDS.items())
 @xmod
 def lamp_page(lamp):
     instrument = lamp.instrument
-    name = instrument.name
+    iname = instrument.name
     label_size = max(len(c) for c in instrument.channels), 1
     presets = sorted(instrument.presets)
 
     header = [
-        T(name, s=(8, 1)),
-        C(presets, k=f'{name}.(none).preset', s=(16, 1)),
+        T(iname, s=(8, 1)),
+        C(presets, k=f'{iname}.(none).preset', s=(16, 1)),
         T(f'offset = {lamp.offset:03}'),
-        sg.ButtonMenu('Menu', ['Commands', CMDS], k=f'{name}.(none).menu'),
-        sg.Button('Blackout', **BUTTON, k=f'{name}.(none).blackout'),
+        sg.ButtonMenu('Menu', ['Commands', CMDS], k=f'{iname}.(none).menu'),
+        sg.Button('Blackout', **BUTTON, k=f'{iname}.(none).blackout'),
     ]
 
     def strip(ch):
-        k = f'{name}.{ch}.'
+        k = f'{iname}.{ch}.'
         label = T(ch, s=label_size)
 
         num = sg.Input('0', s=(3, 1), k=k + 'input', enable_events=True)

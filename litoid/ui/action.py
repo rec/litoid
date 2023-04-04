@@ -1,4 +1,5 @@
 from ..util.play import play_error
+import PySimpleGUI as sg
 import pyperclip
 import json
 
@@ -64,8 +65,14 @@ class Action:
             value = 0
         self._set_channel_level(value)
 
+    def menu(self):
+        name = self._value.split()[0].strip('.').lower()
+        method = getattr(self, name)
+        method()
+
     def new(self):
-        play_error()
+        name = sg.popup_get_text('Enter new patch name')
+        print(name)
 
     def paste(self):
         text = pyperclip.paste()

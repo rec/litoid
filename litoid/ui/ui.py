@@ -37,18 +37,18 @@ class Message:
 
     @cached_property
     def iname(self):
-        iname, channel, comp = self.key.split('.')
+        iname, channel, component = self.key.split('.')
         return iname
 
     @cached_property
     def channnel(self):
-        iname, channel, comp = self.key.split('.')
+        iname, channel, component = self.key.split('.')
         return channel
 
     @cached_property
-    def comp(self):
-        iname, channel, comp = self.key.split('.')
-        return comp
+    def component(self):
+        iname, channel, component = self.key.split('.')
+        return component
 
 
 @datacls.mutable
@@ -56,7 +56,7 @@ class UI(UIDesc, ThreadQueue):
     has_focus = False
 
     def callback(self, msg):
-        print(msg)
+        print('UI.callback', msg)
 
     @cached_property
     def window(self):

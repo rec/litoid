@@ -1,4 +1,4 @@
-from . import action, ui
+from . import action
 from . view import View
 from ..io import midi
 from ..state import instruments, scene, state as _state
@@ -51,17 +51,6 @@ class Controller:
         self.view.start()
 
     def callback(self, msg):
-        if isinstance(msg, str):
-            print('one', msg)
-            name, values = msg, None
-        elif msg.comp == 'menu':
-            print('two', msg.key)
-            name, values = msg.values['menu'], msg.values
-        else:
-            name = None
-        if name is not None:
-            name = name.split()[0].strip('.').lower()
-            msg = ui.Message(name, values)
         return action.Action(self, msg)()
 
     def copy(self):
