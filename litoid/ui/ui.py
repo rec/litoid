@@ -81,11 +81,9 @@ class UI(UIDesc, ThreadQueue):
     def quit(self):
         self.window.write_event_value(LITOID_CLOSE, None)
 
-    def start(self):
+    def _start(self):
         """Must be run on the main thread, blocks until quit"""
-        if r := super().start():
-            return r
-
+        super()._start()
         while self.running:
             if raw_msg := self.window.read():
                 self.put(msg := Message(*raw_msg))

@@ -64,9 +64,7 @@ class State(read_write.ReadWrite, is_running.IsRunning):
     def set_scene(self, scene):
         self._scene_holder.set_scene(scene)
 
-    def start(self):
-        if super().start():
-            return True
+    def _start(self):
         if self.use_mouse:
             self.mouse.start()
         else:
@@ -77,6 +75,7 @@ class State(read_write.ReadWrite, is_running.IsRunning):
         self.timed_heap.start()
 
     def run(self):
+        # TODO: deprecated
         s = self.start()
         assert not s, 'Another instance is running'
         try:

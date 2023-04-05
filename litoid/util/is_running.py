@@ -16,7 +16,10 @@ class IsRunning:
             return r
 
     def start(self):
-        return self.set_running(True)
+        return self.set_running(True) or self._start()
+
+    def _start(self):
+        pass
 
     def stop(self):
         # Might not do anything.

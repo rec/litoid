@@ -34,5 +34,5 @@ class HasThread(IsRunning):
     def thread(self):
         return self.new_thread()
 
-    def start(self):
-        return super().start() or self.thread.start()
+    def _start(self):
+        self.thread.start()

@@ -9,9 +9,8 @@ class ThreadQueue(HasThread):
     callback = print
     thread = None
 
-    def start(self):
-        if not self.set_running(True):
-            [t.start() for t in self.threads]
+    def _start(self):
+        [t.start() for t in self.threads]
 
     @cached_property
     def queue(self):
