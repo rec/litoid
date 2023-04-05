@@ -1,12 +1,9 @@
-from . import defaults, lamp_page, ui
+from . import defaults, layout_tabgroup, ui
 from ..io import hotkey
 from ..state import instruments, state as _state
 from functools import cached_property
 from typing import Callable
-import PySimpleGUI as sg
 import datacls
-
-TABGROUP_KEY = '(none).(none).tabgroup'
 
 
 @datacls.mutable
@@ -47,11 +44,7 @@ class View(ui.UI):
         self.window[key].update(value=value)
 
     def layout(self):
-        def tab(lamp):
-            return sg.Tab(lamp.name, lamp_page(lamp), k=f'{lamp.name}.tab')
-
-        tabs = [tab(lamp) for lamp in self.lamps.values()]
-        return [[sg.TabGroup([tabs], enable_events=True, k=TABGROUP_KEY)]]
+        return [[layout_tabgroup(self.lamps.values())]]
 
     def set_channel_strip(self, iname, channel, value):
         instrument = instruments()[iname]

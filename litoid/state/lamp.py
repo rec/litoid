@@ -29,6 +29,10 @@ class Lamp(LampDesc):
     dmx: DMX
 
     @property
+    def iname(self) -> str:
+        return self.instrument.name
+
+    @property
     def levels(self) -> dict:
         return self.instrument.unmap_frame(self.frame)
 

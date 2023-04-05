@@ -6,10 +6,9 @@ _LEN = max(len(c) for c in COMMANDS.values())
 CMDS = tuple(f'{v:{_LEN}} (⌘{k.upper()})' for k, v in COMMANDS.items())
 
 
-@xmod
-def lamp_page(lamp):
+def tab(lamp):
     instrument = lamp.instrument
-    iname = instrument.name
+    iname = lamp.iname
     label_size = max(len(c) for c in instrument.channels), 1
     presets = sorted(instrument.presets)
 
@@ -33,4 +32,11 @@ def lamp_page(lamp):
         return label, num, value
 
     strips = (strip(ch) for ch in instrument.channels)
-    return [header, *strips]
+    layout = [header, *strips]
+    return sg.Tab(iname, layout, k=f'{iname}.(none).tab')
+
+
+@xmod
+def layout_tabgroup(lamps):
+    tabs = [tab(lamp) for lamp in lamps]
+    return sg.TabGroup([tabs], enable_events=True, k='(none).(none).tabgroup')
