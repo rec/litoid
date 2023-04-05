@@ -79,14 +79,11 @@ class Action:
         try:
             state = json.loads(text)
         except Exception:
-            error = 'Bad JSON in cut buffer'
-        if self.controller.paste(state):
-            error = ''
+            play_error('Bad JSON in cut buffer\n\n', text)
+            raise
         else:
-            error = 'Failed to set state'
-        if error:
-            print(error)
-            play_error()
+            if not self.controller.paste(state):
+                play_error('Failed to set state')
 
     def preset(self):
         # BROKEN

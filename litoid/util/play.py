@@ -17,6 +17,8 @@ def play_later(filename=None):
     Thread(target=play_now, args=(filename,), daemon=True).start()
 
 
-def play_error(message=None, filename=None):
+def play_error(*messages, filename=None):
     play_later(filename)
-    print('ERROR', message or inspect.currentframe().f_back.f_code.co_name)
+    if not messages:
+        messages = (inspect.currentframe().f_back.f_code.co_name,)
+    print('ERROR', *messages)
