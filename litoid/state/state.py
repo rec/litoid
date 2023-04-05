@@ -1,6 +1,6 @@
 from . import lamp
 from ..io import dmx, key_mouse, midi, osc
-from ..util import file, is_running, read_write, timed_heap
+from ..util import file, is_running, timed_heap
 from functools import cached_property, wraps
 from pathlib import Path
 import datacls
@@ -13,7 +13,7 @@ assert STATE_FILE.exists()
 
 
 @datacls.mutable
-class State(read_write.ReadWrite, is_running.IsRunning):
+class State(is_running.IsRunning):
     dmx_port: str
     lamp_descs: dict
     osc_desc: dict

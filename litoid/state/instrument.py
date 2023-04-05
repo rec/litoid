@@ -1,4 +1,4 @@
-from ..util import file, read_write
+from ..util import file
 from functools import cached_property
 import datacls
 
@@ -16,7 +16,7 @@ class ValueNames(dict):
 
 
 @datacls
-class Instrument(read_write.ReadWrite):
+class Instrument:
     name: str
     channels: list[str, ...]
     value_names: dict = datacls.field(dict)
