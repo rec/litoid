@@ -52,7 +52,8 @@ class Controller:
 
     def callback(self, msg):
         if 'focus' not in msg.key:
-            print('ccb', msg.key)
+            value = (msg.values or {}).get(msg.key, '(none)')
+            print('callback', msg.key, value)
         return action.Action(self, msg)()
 
     def copy(self):
