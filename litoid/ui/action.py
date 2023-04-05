@@ -7,7 +7,7 @@ import json
 class Action:
     def __init__(self, controller, msg):
         self.controller = controller
-        self.ie = controller.view
+        self.view = controller.view
         self.model = self.controller.model
         self.msg = msg
 
@@ -20,7 +20,7 @@ class Action:
             return
 
         el = self.msg.key.split('.')[-1]
-        if self.ie.has_focus or el in ('combo', 'focus'):
+        if self.view.has_focus or el in ('combo', 'focus'):
             getattr(self, el, self._unknown)()
 
     @property
@@ -56,7 +56,7 @@ class Action:
         self._set_channel_level(self._value)
 
     def focus(self):
-        self.ie.has_focus = (self.msg.name == 'has')
+        self.view.has_focus = (self.msg.name == 'has')
 
     def input(self):
         try:
@@ -87,7 +87,7 @@ class Action:
 
     def preset(self):
         # BROKEN
-        self.ie.set_preset(self._value)
+        self.view.set_preset(self._value)
 
     def redo(self):
         play_error()
