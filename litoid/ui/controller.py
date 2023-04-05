@@ -51,6 +51,8 @@ class Controller:
         self.view.start()
 
     def callback(self, msg):
+        if 'focus' not in msg.key:
+            print('ccb', msg.key)
         return action.Action(self, msg)()
 
     def copy(self):
@@ -77,6 +79,7 @@ class Controller:
         self.set_channel_levels(self.iname, self.lamp.levels())
 
     def set_channel_level(self, iname, ch, v):
+        print(self.lamp)
         self.lamp[ch] = v
         self.view.set_channel_strip(iname, ch, v)
 

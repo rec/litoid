@@ -104,6 +104,7 @@ class Action:
     def tabgroup(self):
         name = self._value.split('.')[0]
         self.model.current_instrument = name
+        self.view.window.refresh()
 
     def undo(self):
         play_error()
