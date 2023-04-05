@@ -40,7 +40,8 @@ class SceneHolder:
     def scene(self) -> Scene:
         return self._scene
 
-    def set_scene(self, scene: Scene):
+    @scene.setter
+    def scene(self, scene: Scene):
         with self._lock:
             if self._scene:
                 self._scene.unload(self.state)

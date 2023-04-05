@@ -47,7 +47,7 @@ class Controller:
         return self.view.lamps[self.model.current_instrument]
 
     def start(self):
-        self.view.state.set_scene(MidiScene(self))
+        self.view.state.scene = MidiScene(self)
         self.view.start()
 
     def callback(self, msg):
@@ -58,7 +58,7 @@ class Controller:
 
     def paste(self, levels):
         if value := levels.get(self.iname):
-            self.lamp.set_levels(value)
+            self.lamp.levels = value
             self.set_channel_levels(self.iname, value)
             return True
         else:

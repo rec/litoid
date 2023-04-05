@@ -12,7 +12,7 @@ STATE_FILE = Path(__file__).parents[2] / 'state.toml'
 assert STATE_FILE.exists()
 
 
-@datacls
+@datacls.mutable
 class State(read_write.ReadWrite, is_running.IsRunning):
     dmx_port: str
     lamp_descs: dict
@@ -61,8 +61,9 @@ class State(read_write.ReadWrite, is_running.IsRunning):
     def scene(self):
         return self._scene_holder.scene
 
-    def set_scene(self, scene):
-        self._scene_holder.set_scene(scene)
+    @scene.setter
+    def scene(self, scene):
+        self._scene_holder.scene = scene
 
     def _start(self):
         if self.use_mouse:

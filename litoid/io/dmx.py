@@ -4,7 +4,7 @@ import datacls
 import pyenttec
 
 
-@datacls
+@datacls.mutable
 class DMX(ThreadQueue):
     port: str
 

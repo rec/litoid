@@ -13,7 +13,7 @@ class Event:
     action: Callable = datacls.field(compare=False)
 
 
-@datacls
+@datacls.mutable
 class TimedHeap(HasThread):
     _heap: list = datacls.field(list)
     _time: Callable = time.time

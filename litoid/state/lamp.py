@@ -4,7 +4,7 @@ from functools import cached_property
 import datacls
 
 
-@datacls
+@datacls.mutable
 class LampDesc:
     name: str
     instrument_name: str
@@ -23,12 +23,17 @@ class LampDesc:
         return Lamp(frame=frame, dmx=dmx, **self.asdict())
 
 
-@datacls
+@datacls.mutable
 class Lamp(LampDesc):
     frame: memoryview
     dmx: DMX
 
-    def set_levels(self, d: dict):
+    @property
+    def levels(self) -> dict:
+        return self.instrument.unmap_frame(self.frame)
+
+    @levels.setter
+    def levels(self, d: dict):
         d = self.instrument.remap_dict(d)
         it = range(len(self.frame))
         self.frame[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
@@ -55,11 +60,8 @@ class Lamp(LampDesc):
         self.frame[i] = v
         self.dmx.render()
 
-    def levels(self) -> dict:
-        return self.instrument.unmap_frame(self.frame)
-
     def blackout(self):
-        self.set_levels(self.instrument.blackout)
+        self.level = self.instrument.blackout
 
 
 def lamps(dmx: DMX, descs: dict[str, dict]):

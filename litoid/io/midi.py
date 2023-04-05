@@ -7,7 +7,7 @@ import mido
 Message = mido.Message
 
 
-@datacls
+@datacls.mutable
 class MidiInput(HasThread):
     callback: Callable = print
     name: str = ''

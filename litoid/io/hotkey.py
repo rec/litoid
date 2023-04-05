@@ -5,7 +5,7 @@ from typing import Callable
 import datacls
 
 
-@datacls
+@datacls.mutable
 class HotKeys(HasThread):
     keys: dict[str, str] = datacls.field(dict)
     callback: Callable = print

@@ -7,7 +7,7 @@ from typing import Callable
 import datacls
 
 
-@datacls
+@datacls.mutable
 class Desc(ReadWrite):
     endpoints: tuple[str] = ()
     ip: str = '127.0.0.1'
@@ -23,7 +23,7 @@ class Message(tuple):
     pass
 
 
-@datacls
+@datacls.mutable
 class Server(Desc, ThreadQueue):
     callback: Callable = print
 
