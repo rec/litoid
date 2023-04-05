@@ -9,7 +9,7 @@ ICON_PATH = Path(__file__).parents[2] / 'images/tom-swirly.ico'
 assert ICON_PATH.exists(), str(ICON_PATH)
 sg.theme('Material1')
 sg.set_options(icon=str(ICON_PATH))
-LITOID_CLOSE = 'litoid.run.close'
+LITOID_CLOSE = 'litoid.(none).close'
 
 CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT, LITOID_CLOSE
 HAS_FOCUS = 'has.(none).focus'
@@ -28,6 +28,10 @@ class UIDesc:
 
 @datacls
 class Message:
+    """
+    All message keys look like name.channel.action
+    OR (soon) name.action
+    """
     key: str
     values: list[str, ...] | None = None
 
@@ -36,19 +40,20 @@ class Message:
         return self.key in CLOSERS
 
     @cached_property
-    def iname(self):
-        iname, channel, component = self.key.split('.')
-        return iname
+    def name(self):
+        name, channel, action = self.key.split('.')
+        return name
 
     @cached_property
-    def channnel(self):
-        iname, channel, component = self.key.split('.')
+    def channel(self):
+        name, channel, action = self.key.split('.')
         return channel
 
     @cached_property
-    def component(self):
-        iname, channel, component = self.key.split('.')
-        return component
+    def action(self):
+        """Return the name of the action"""
+        name, channel, action = self.key.split('.')
+        return action
 
 
 @datacls.mutable
@@ -82,8 +87,8 @@ class UI(UIDesc, ThreadQueue):
             return r
 
         while self.running:
-            if msg := self.window.read():
-                self.put(msg := Message(*msg))
+            if raw_msg := self.window.read():
+                self.put(msg := Message(*raw_msg))
 
             if not msg or msg.is_close:
                 self.stop()
