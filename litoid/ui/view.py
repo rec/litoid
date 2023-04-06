@@ -17,7 +17,7 @@ class View(ui.UI):
 
         for key, command in self.commands.items():
             command = command.split()[0].rstrip('.').lower()
-            self.window.bind(f'<Command-{key}>', f'hotkey.(none).{command}')
+            self.window.bind(f'<Command-{key}>', command)
 
         try:
             super().start()
@@ -46,11 +46,15 @@ class View(ui.UI):
         _, value = instrument.remap(channel, value)
         vname = instrument.level_to_name(channel, value)
 
-        self.set_window((iname, channel, 'input'), value)
+        def set_window(action, value):
+            key = f'{action}.{iname}.{channel}'
+            self.window[key].update(value=value)
+
+        set_window('input', value)
         if vname:
-            self.set_window((iname, channel, 'combo'), vname)
+            set_window('combo', vname)
         else:
-            self.set_window((iname, channel, 'slider'), value)
+            set_window('slider', value)
 
     def set_channel_strips(self, iname, levels):
         for k, v in levels.items():

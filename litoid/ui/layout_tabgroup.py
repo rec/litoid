@@ -14,29 +14,29 @@ def tab(lamp):
 
     header = [
         T(iname, s=(8, 1)),
-        C(presets, k=f'{iname}.(none).preset', s=(16, 1)),
+        C(presets, k=f'preset.{iname}', s=(16, 1)),
         T(f'offset = {lamp.offset:03}'),
-        sg.ButtonMenu('Menu', ['Commands', CMDS], k=f'{iname}.(none).menu'),
-        sg.Button('Blackout', **BUTTON, k=f'{iname}.(none).blackout'),
+        sg.ButtonMenu('Menu', ['Commands', CMDS], k=f'menu.{iname}'),
+        sg.Button('Blackout', **BUTTON, k=f'blackout.{iname}'),
     ]
 
     def strip(ch):
-        k = f'{iname}.{ch}.'
+        k = f'.{iname}.{ch}'
         label = T(ch, s=label_size)
 
-        num = sg.Input('0', s=(3, 1), k=k + 'input', enable_events=True)
+        num = sg.Input('0', s=(3, 1), k='input' + k, enable_events=True)
         if names := instrument.value_names.get(ch):
-            value = C(list(names), s=SIZE, k=k + 'combo')
+            value = C(list(names), s=SIZE, k='combo' + k)
         else:
-            value = sg.Slider(**SLIDER, s=SIZE, k=k + 'slider')
+            value = sg.Slider(**SLIDER, s=SIZE, k='slider' + k)
         return label, num, value
 
     strips = (strip(ch) for ch in instrument.channels)
     layout = [header, *strips]
-    return sg.Tab(iname, layout, k=f'{iname}.(none).tab')
+    return sg.Tab(iname, layout, k=f'tab.{iname}')
 
 
 @xmod
 def layout_tabgroup(lamps):
     tabs = [tab(lamp) for lamp in lamps]
-    return sg.TabGroup([tabs], enable_events=True, k='(none).(none).tabgroup')
+    return sg.TabGroup([tabs], enable_events=True, k='tabgroup')

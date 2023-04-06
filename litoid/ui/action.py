@@ -18,25 +18,16 @@ class Action:
         if self.msg.key.startswith('+'):
             print(self.msg.key)
             return
-
-        el = self.msg.key.split('.')[-1]
-        if self.view.has_focus or el in ('combo', 'focus'):
-            getattr(self, el, self._unknown)()
-
-    @property
-    def _address(self):
-        return self.msg.key.rpartition('.')[0]
-
-    @property
-    def _channel(self):
-        return self._address.rpartition('.')[-1]
+        getattr(self, self.msg.action, self._unknown)()
 
     @property
     def _value(self):
         return self.msg.values.get(self.msg.key)
 
     def _set_channel_level(self, value):
-        self.controller.set_channel_level(*self._address.split('.'), value)
+        self.controller.set_channel_level(
+            self.msg.name, self.msg.channel, value
+        )
 
     def _unknown(self):
         print('unknown', self.msg.key)

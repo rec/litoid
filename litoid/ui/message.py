@@ -6,8 +6,10 @@ import datacls
 @datacls
 class Message:
     """
-    All message keys look like name.channel.action
-    OR (soon) name.action
+    message format:
+
+        action[.name[.channel]]
+
     """
     key: str
     values: list[str, ...] | None = None
@@ -20,17 +22,13 @@ class Message:
         return self.key in self.CLOSERS
 
     @cached_property
+    def action(self):
+        return self.key.split('.')[0]
+
+    @cached_property
     def name(self):
-        name, channel, action = self.key.split('.')
-        return name
+        return (self.key.split('.') + [''])[1]
 
     @cached_property
     def channel(self):
-        name, channel, action = self.key.split('.')
-        return channel
-
-    @cached_property
-    def action(self):
-        """Return the name of the action"""
-        name, channel, action = self.key.split('.')
-        return action
+        return (self.key.split('.') + ['', ''])[2]

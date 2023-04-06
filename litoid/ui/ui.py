@@ -11,8 +11,8 @@ assert ICON_PATH.exists(), str(ICON_PATH)
 sg.theme('Material1')
 sg.set_options(icon=str(ICON_PATH))
 
-HAS_FOCUS = 'has.(none).focus'
-NO_FOCUS = 'no.(none).focus'
+HAS_FOCUS = 'focus.has'
+NO_FOCUS = 'focus.lost'
 
 
 @datacls.mutable
