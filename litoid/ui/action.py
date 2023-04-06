@@ -46,9 +46,6 @@ class Action:
     def combo(self):
         self._set_channel_level(self._value)
 
-    def focus(self):
-        self.view.has_focus = (self.msg.name == 'has')
-
     def input(self):
         try:
             value = int(self._value)

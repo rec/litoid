@@ -11,9 +11,6 @@ assert ICON_PATH.exists(), str(ICON_PATH)
 sg.theme('Material1')
 sg.set_options(icon=str(ICON_PATH))
 
-HAS_FOCUS = 'focus.has'
-NO_FOCUS = 'focus.lost'
-
 
 @datacls.mutable
 class UIDesc:
@@ -27,8 +24,6 @@ class UIDesc:
 
 @datacls.mutable
 class UI(UIDesc, ThreadQueue):
-    has_focus = False
-
     def callback(self, msg):
         print('UI.callback', msg)
 
@@ -42,9 +37,6 @@ class UI(UIDesc, ThreadQueue):
             font=self.font,
         )
         sg.Window.hidden_master_root.createcommand('tk::mac::Quit', self.quit)
-        w.bind('<FocusIn>', HAS_FOCUS)
-        w.bind('<FocusOut>', NO_FOCUS)
-
         return w
 
     def quit(self):
