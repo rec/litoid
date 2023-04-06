@@ -1,5 +1,5 @@
 from . message import Message
-from ..util.thread_queue import ThreadQueue
+from ..util.is_running import IsRunning
 from functools import cached_property
 from pathlib import Path
 import PySimpleGUI as sg
@@ -23,7 +23,7 @@ class UIDesc:
 
 
 @datacls.mutable
-class UI(UIDesc, ThreadQueue):
+class UI(UIDesc, IsRunning):
     def callback(self, msg):
         print('UI.callback', msg)
 
@@ -47,8 +47,7 @@ class UI(UIDesc, ThreadQueue):
         super()._start()
         while self.running:
             if raw_msg := self.window.read():
-                self.put(msg := Message(*raw_msg))
+                self.callback(msg := Message(*raw_msg))
 
             if not msg or msg.is_close:
                 self.stop()
-                self.put(None)
