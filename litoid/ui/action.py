@@ -40,8 +40,15 @@ class Action:
         pyperclip.copy(json.dumps(self.controller.copy()))
 
     def cut(self):
-        self.copy()
-        play_error()  # TODO
+        if name := self.model.current_preset_name is None:
+            play_error('No preset')
+        else:
+            try:
+                del self.model.selected_preset[name]
+            except Exception as e:
+                play_error(e)
+            else:
+                self.copy()
 
     def combo(self):
         self._set_channel_level(self._value)
@@ -77,9 +84,6 @@ class Action:
         play_error()  # TODO
         # self.view.set_preset(self._value)
 
-    def redo(self):
-        play_error()  # TODO
-
     def revert(self):
         play_error()  # TODO
 
@@ -94,6 +98,9 @@ class Action:
         assert tab == 'tab'
         self.model.iname = iname
         self.view.window.refresh()
+
+    def redo(self):
+        play_error()  # TODO
 
     def undo(self):
         play_error()  # TODO
