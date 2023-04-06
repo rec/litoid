@@ -65,7 +65,7 @@ class Lamp(LampDesc):
         self.dmx.render()
 
     def blackout(self):
-        self.level = self.instrument.blackout
+        self.levels = self.instrument.blackout
 
 
 def lamps(dmx: DMX, descs: dict[str, dict]):
