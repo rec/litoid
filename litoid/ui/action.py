@@ -41,7 +41,7 @@ class Action:
 
     def cut(self):
         self.copy()
-        play_error()
+        play_error()  # TODO
 
     def combo(self):
         self._set_channel_level(self._value)
@@ -74,17 +74,17 @@ class Action:
                 play_error('Failed to set state')
 
     def preset(self):
-        # BROKEN
-        self.view.set_preset(self._value)
+        play_error()  # TODO
+        # self.view.set_preset(self._value)
 
     def redo(self):
-        play_error()
+        play_error()  # TODO
 
     def revert(self):
-        play_error()
+        play_error()  # TODO
 
     def save(self):
-        play_error()
+        play_error()  # TODO
 
     def slider(self):
         self._set_channel_level(int(self._value))
@@ -95,4 +95,4 @@ class Action:
         self.view.window.refresh()
 
     def undo(self):
-        play_error()
+        play_error()  # TODO

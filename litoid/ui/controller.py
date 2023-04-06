@@ -51,6 +51,7 @@ class Controller:
         self.view.start()
 
     def callback(self, msg):
+        print('Controller.callback', msg.key)
         return action.Action(self, msg)()
 
     def copy(self):
