@@ -13,7 +13,7 @@ class Model:
 
     @iname.setter
     def iname(self, iname):
-        assert iname in instruments(), iname
+        assert iname in self.all_presets, iname
         self._iname = iname
 
     @cached_property
@@ -21,5 +21,21 @@ class Model:
         return {k: copy.deepcopy(v.presets) for k, v in instruments().items()}
 
     @cached_property
-    def current_presets(self):
+    def selected_preset_names(self):
         return {k: None for k in self.all_presets}
+
+    @property
+    def selected_preset_name(self):
+        return self.selected_preset_names[self.iname]
+
+    @property
+    def presets(self):
+        return self.all_presets[self.iname]
+
+    @property
+    def selected_preset(self):
+        return self.presets[self.selected_preset_name]
+
+    def select_preset(self, name: str | None):
+        assert name is None or name in self.presets
+        self.selected_preset_names[self.iname] = name
