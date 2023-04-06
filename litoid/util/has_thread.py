@@ -19,7 +19,7 @@ class HasThread(IsRunning):
             try:
                 self._target()
             except Exception as e:
-                print('Exception in thread', self.name, e, file=sys.stderr)
+                print('Exception', self, self.name, e, file=sys.stderr)
                 traceback.print_stack()
                 self.stop()
                 raise
