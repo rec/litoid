@@ -1,24 +1,10 @@
 from . import action
-from . view import View
+from .model import Model
+from .view import View
 from ..io import midi
-from ..state import instruments, scene, state as _state
+from ..state import scene, state as _state
 from ..util.play import play_error
-from functools import cached_property
-import copy
 import datacls
-
-
-@datacls.mutable
-class Model:
-    current_instrument: str
-
-    @cached_property
-    def all_presets(self):
-        return {k: copy.deepcopy(v.presets) for k, v in instruments().items()}
-
-    @cached_property
-    def current_presets(self):
-        return {k: None for k in self.all_presets}
 
 
 @datacls
@@ -44,7 +30,7 @@ class Controller:
 
     @property
     def lamp(self):
-        return self.view.lamps[self.model.current_instrument]
+        return self.view.lamps[self.model.iname]
 
     def start(self):
         self.view.state.scene = MidiScene(self)
@@ -58,9 +44,10 @@ class Controller:
         return {self.iname: self.lamp.levels}
 
     def paste(self, levels):
-        if value := levels.get(self.iname):
+        iname = self.iname
+        if value := levels.get(iname):
             self.lamp.levels = value
-            self.set_channel_levels(self.iname, value)
+            self.set_channel_levels(iname, value)
             return True
         else:
             play_error(f'Wrong instrument {levels}')
@@ -73,9 +60,11 @@ class Controller:
         else:
             play_error(f'No preset named {name}')
 
-    def blackout(self):
-        self.lamp.blackout()
-        self.set_channel_levels(self.iname, self.lamp.levels)
+    def blackout(self, iname=None):
+        iname = iname or self.model.iname
+        lamp = self.view.lamps[iname]
+        lamp.blackout()
+        self.set_channel_levels(iname, lamp.levels)
 
     def set_channel_level(self, iname, ch, v):
         self.lamp[ch] = v

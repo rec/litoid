@@ -34,7 +34,7 @@ class Action:
         play_error()
 
     def blackout(self):
-        self.controller.blackout()
+        self.controller.blackout(self.msg.name)
 
     def copy(self):
         pyperclip.copy(json.dumps(self.controller.copy()))
@@ -90,8 +90,9 @@ class Action:
         self._set_channel_level(int(self._value))
 
     def tabgroup(self):
-        name = self._value.split('.')[0]
-        self.model.current_instrument = name
+        tab, iname = self._value.split('.')
+        assert tab == 'tab'
+        self.model.iname = iname
         self.view.window.refresh()
 
     def undo(self):
