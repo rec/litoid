@@ -51,13 +51,13 @@ class Controller:
         self.view.start()
 
     def callback(self, msg):
-        if 'focus' not in msg.key:
+        if False and 'focus' not in msg.key:
             value = (msg.values or {}).get(msg.key, '(none)')
             print('callback', msg.key, value)
         return action.Action(self, msg)()
 
     def copy(self):
-        return {self.iname: self.lamp.levels()}
+        return {self.iname: self.lamp.levels}
 
     def paste(self, levels):
         if value := levels.get(self.iname):
@@ -77,10 +77,9 @@ class Controller:
 
     def blackout(self):
         self.lamp.blackout()
-        self.set_channel_levels(self.iname, self.lamp.levels())
+        self.set_channel_levels(self.iname, self.lamp.levels)
 
     def set_channel_level(self, iname, ch, v):
-        print(self.lamp)
         self.lamp[ch] = v
         self.view.set_channel_strip(iname, ch, v)
 

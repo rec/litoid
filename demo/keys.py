@@ -20,7 +20,7 @@ if not False:
         if USE_TK:
             window.TKroot.bind(k, partial(print, k))
         else:
-            window.bind(k, k)
+            window.bind(k, 'tk ' + k)
 else:
     def key_cb(event):
         print(str(event))
@@ -34,7 +34,7 @@ button2.Widget.configure(underline=1, takefocus=0)
 
 while True:
     event, values = window.read()
-    print(event)
+    print(event, values)
     if event == sg.WINDOW_CLOSED:
         break
     elif event in ("button1", "ALT-o"):

@@ -1,5 +1,4 @@
 from . import defaults, layout_tabgroup, ui
-from ..io import hotkey
 from ..state import instruments, state as _state
 from functools import cached_property
 from typing import Callable
@@ -15,7 +14,10 @@ class View(ui.UI):
     def start(self):
         self.state.blackout()
         self.state.midi_input.start()
-        self.hotkeys.start()
+
+        for key, command in self.commands.items():
+            command = command.split()[0].rstrip('.').lower()
+            self.window.bind(f'<Command-{key}>', f'hotkey.(none).{command}')
 
         try:
             super().start()
@@ -28,15 +30,6 @@ class View(ui.UI):
         for la in self.state.lamps.values():
             lamps.setdefault(la.instrument.name, la)
         return dict(sorted(lamps.items()))
-
-    @cached_property
-    def hotkeys(self):
-        items = self.commands.items()
-        commands = {k: v.split()[0].strip('.').lower() for k, v in items}
-        return hotkey.HotKeys(commands, self.hotkey_callback)
-
-    def hotkey_callback(self, command: str):
-        self.window.write_event_value(f'hotkey.(none).{command}', None)
 
     def set_window(self, key, value):
         if not isinstance(key, str):
