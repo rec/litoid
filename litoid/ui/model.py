@@ -1,5 +1,5 @@
 from ..state import instruments
-from ..util.play import play_error
+from .. import log
 from functools import cached_property
 import copy
 
@@ -42,7 +42,7 @@ class Model:
         self.selected_preset_names[self.iname] = name
 
     def save(self):
-        play_error()  # TODO
+        log.error()  # TODO
 
     def revert(self):
-        play_error()  # TODO
+        log.error()  # TODO

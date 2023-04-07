@@ -1,4 +1,4 @@
-from ..util.play import play_error
+from .. import log
 import PySimpleGUI as sg
 import pyperclip
 import json
@@ -30,23 +30,22 @@ class Action:
         )
 
     def _unknown(self):
-        print('unknown', self.msg.key)
-        play_error()
+        log.error('Unknown key', self.msg.key))
 
     def blackout(self):
         self.controller.blackout(self.msg.name)
 
     def copy(self):
-        pyperclip.copy(json.dumps(self.controller.copy()))
+        pyperclip.copy(self.controller.copy())
 
     def cut(self):
         if name := self.model.current_preset_name is None:
-            play_error('No preset')
+            log.error('No preset')
         else:
             try:
                 del self.model.selected_preset[name]
             except Exception as e:
-                play_error(e)
+                log.error(e)
             else:
                 self.copy()
 
@@ -70,18 +69,10 @@ class Action:
         print(name)
 
     def paste(self):
-        text = pyperclip.paste()
-        try:
-            state = json.loads(text)
-        except Exception:
-            play_error('Bad JSON in cut buffer\n\n', text)
-            raise
-        else:
-            if not self.controller.paste(state):
-                play_error('Failed to set state')
+        self.controller.paste(pyperclip.paste())
 
     def preset(self):
-        play_error()  # TODO
+        log.error()  # TODO
         # self.view.set_preset(self._value)
 
     def revert(self):
@@ -100,7 +91,7 @@ class Action:
         self.view.window.refresh()
 
     def redo(self):
-        play_error()  # TODO
+        log.error()  # TODO
 
     def undo(self):
-        play_error()  # TODO
+        log.error()  # TODO

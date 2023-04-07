@@ -3,8 +3,9 @@ from .model import Model
 from .view import View
 from ..io import midi
 from ..state import scene, state as _state
-from ..util.play import play_error
+from .. import log
 import datacls
+import json
 
 
 @datacls
@@ -40,17 +41,22 @@ class Controller:
         print('Controller.callback', msg.key)
         return action.Action(self, msg)()
 
-    def copy(self):
-        return {self.iname: self.lamp.levels}
+    def copy(self) -> str:
+        return json.dumps({self.iname: self.lamp.levels})
 
-    def paste(self, levels):
-        iname = self.iname
-        if value := levels.get(iname):
+    def paste(self, levels: str):
+        try:
+            levels = json.loads(levels)
+        except Exception:
+            log.error('Bad JSON in cut buffer')
+            return
+
+        if value := levels.get(self.iname):
             self.lamp.levels = value
             self.set_channel_levels(iname, value)
-            return True
-        else:
-            play_error(f'Wrong instrument {levels}')
+            return
+
+        log.error('Bad instrument: found', iname, 'expected', *sorted(levels))
 
     def set_preset(self, name):
         # BROKEN
@@ -58,7 +64,7 @@ class Controller:
             for ch in self.instrument.channels:
                 self.set_address_value(ch, preset[ch])  # NO
         else:
-            play_error(f'No preset named {name}')
+            log.error(f'No preset named {name}')
 
     def blackout(self, iname=None):
         iname = iname or self.model.iname
