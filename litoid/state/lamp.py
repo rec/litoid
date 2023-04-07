@@ -43,12 +43,6 @@ class Lamp(LampDesc):
         self.frame[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
         self.dmx.render()
 
-    def send_preset(self, name: str):
-        preset = self.instrument.mapped_preset(name)
-        buffer = bytearray(preset.get(i, 0) for i in range(len(self)))
-        self.frame[:] = buffer
-        return self.instrument.presets[name]
-
     def __len__(self):
         return len(self.frame)
 

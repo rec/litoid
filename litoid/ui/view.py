@@ -31,11 +31,6 @@ class View(ui.UI):
             lamps.setdefault(la.instrument.name, la)
         return dict(sorted(lamps.items()))
 
-    def set_window(self, key, value):
-        if not isinstance(key, str):
-            key = '.'.join(str(k) for k in key)
-        self.window[key].update(value=value)
-
     def layout(self):
         return [[layout_tabgroup(self.lamps.values())]]
 
@@ -56,7 +51,3 @@ class View(ui.UI):
             set_window('combo', vname)
         else:
             set_window('slider', value)
-
-    def set_channel_strips(self, iname, levels, *skip):
-        for k, v in levels.items():
-            self.set_channel_strip(iname, k, v, *skip)

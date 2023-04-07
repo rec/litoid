@@ -1,4 +1,3 @@
-from ..util import file
 from functools import cached_property
 import datacls
 
@@ -47,16 +46,12 @@ class Instrument:
 
         return ChainMap(self.user_presets, self.builtin_presets)
 
-    def mapped_preset(self, name: str):
-        return self.remap_dict(self.presets[name])
-
     def remap(self, channel: Channel, value: int | str) -> tuple[int, int]:
         if isinstance(channel, str):
             channel = self._channels_inv[channel]
 
         if isinstance(v := value, str):
-            v = self._value_names.get(channel, {}).get(v)
-            if v is None:
+            if (v := self._value_names.get(channel, {}).get(v)) is None:
                 raise ValueError(f'Bad channel value {channel}, {value}')
 
         return channel, v
@@ -76,15 +71,7 @@ class Instrument:
 
     @cached_property
     def blackout(self):
-        return self.presets.get('blackout') or self.default
-
-    @cached_property
-    def default(self):
-        return self.presets.get('default') or {}
-
-    @classmethod
-    def read(cls, filename):
-        return cls(filename.stem, **file.load(filename))
+        return self.presets.get('blackout') or {}
 
 
 def combine(target, *dicts):
