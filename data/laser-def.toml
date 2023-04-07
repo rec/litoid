@@ -52,7 +52,7 @@ dotted_semicircle = 240
 random_dots = 248
 
 [builtin_presets.default]
-mode = "manual"
+mode = "blackout"
 pattern = "circle"
 zoom = 64
 xrot = 64
