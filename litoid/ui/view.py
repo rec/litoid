@@ -39,7 +39,7 @@ class View(ui.UI):
     def layout(self):
         return [[layout_tabgroup(self.lamps.values())]]
 
-    def set_channel_strip(self, iname, channel, value):
+    def set_channel_strip(self, iname, channel, value, *skip):
         instrument = instruments()[iname]
         if isinstance(channel, int):
             channel = instrument.channels[channel]
@@ -47,8 +47,9 @@ class View(ui.UI):
         vname = instrument.level_to_name(channel, value)
 
         def set_window(action, value):
-            key = f'{action}.{iname}.{channel}'
-            self.window[key].update(value=value)
+            if action not in skip:
+                key = f'{action}.{iname}.{channel}'
+                self.window[key].update(value=value)
 
         set_window('input', value)
         if vname:
@@ -56,6 +57,6 @@ class View(ui.UI):
         else:
             set_window('slider', value)
 
-    def set_channel_strips(self, iname, levels):
+    def set_channel_strips(self, iname, levels, *skip):
         for k, v in levels.items():
-            self.set_channel_strip(iname, k, v)
+            self.set_channel_strip(iname, k, v, *skip)

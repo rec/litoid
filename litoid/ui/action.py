@@ -1,7 +1,6 @@
 from .. import log
 import PySimpleGUI as sg
 import pyperclip
-import json
 
 
 class Action:
@@ -24,19 +23,19 @@ class Action:
     def _value(self):
         return self.msg.values.get(self.msg.key)
 
-    def _set_channel_level(self, value):
+    def _set_channel_level(self, value, *skip):
         self.controller.set_channel_level(
-            self.msg.name, self.msg.channel, value
+            self.msg.name, self.msg.channel, value, *skip
         )
 
     def _unknown(self):
-        log.error('Unknown key', self.msg.key))
+        log.error('Unknown key', self.msg.key)
 
     def blackout(self):
         self.controller.blackout(self.msg.name)
 
     def combo(self):
-        self._set_channel_level(self._value)
+        self._set_channel_level(self._value, 'combo')
 
     def copy(self):
         pyperclip.copy(self.controller.copy())
@@ -58,7 +57,7 @@ class Action:
             value = int(self._value)
         except Exception:
             value = 0
-        self._set_channel_level(value)
+        self._set_channel_level(value, 'input')
 
     def menu(self):
         name = self._value.split()[0].strip('.').lower()
@@ -83,7 +82,7 @@ class Action:
         self.model.save()
 
     def slider(self):
-        self._set_channel_level(int(self._value))
+        self._set_channel_level(int(self._value), 'slider')
 
     def tabgroup(self):
         tab, iname = self._value.split('.')
