@@ -27,5 +27,13 @@ def instruments():
     return instruments
 
 
+def save_user_presets(iname):
+    presets = instruments()[iname].presets
+    if (filename := DATA / f'{iname}-presets.toml').exists():
+        filename.rename(filename.with_suffix('.toml.bak'))
+
+    file.dump(presets, filename)
+
+
 LASER = instruments()['laser']
 GANTOM = instruments()['gantom']

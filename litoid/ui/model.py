@@ -1,5 +1,4 @@
 from ..state import instruments
-from .. import log
 from functools import cached_property
 import copy
 
@@ -16,6 +15,10 @@ class Model:
     def iname(self, iname):
         assert iname in self.all_presets, iname
         self._iname = iname
+
+    @property
+    def instrument(self):
+        return instruments()[self.iname]
 
     @cached_property
     def all_presets(self):
@@ -41,8 +44,15 @@ class Model:
         assert name is None or name in self.presets
         self.selected_preset_names[self.iname] = name
 
+    def is_dirty(self):
+        return self.instrument.presets != self.presets
+
     def save(self):
-        log.error()  # TODO
+        old, new = self.instrument.user_presets, self.presets.map[0]
+        old.clear()
+        old.update(copy.deepcopy(new))
+        instruments.save_user_presets(self.iname)
 
     def revert(self):
-        log.error()  # TODO
+        self.presets.clear()
+        self.presets.update(copy.deepcopy(self.instrument.presets))

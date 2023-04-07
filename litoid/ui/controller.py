@@ -38,7 +38,7 @@ class Controller:
         self.view.start()
 
     def callback(self, msg):
-        print('Controller.callback', msg.key)
+        log.debug(msg.key)
         return action.Action(self, msg)()
 
     def copy(self) -> str:
