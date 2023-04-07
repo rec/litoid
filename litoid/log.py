@@ -1,3 +1,4 @@
+from .util import play
 from pathlib import Path
 from functools import wraps
 import inspect
@@ -9,21 +10,31 @@ ROOT = Path(__file__).parent
 DEBUG = os.environ.get('DEBUG', '').strip().lower().startswith('t')
 
 
+def _log(label, *a, file=sys.stderr, **ka):
+    frame = inspect.stack()[2][0].f_code
+    fname = Path(frame.co_filename).relative_to(ROOT)
+    # print(dir(frame))
+    line_number = frame.co_firstlineno
+    file_position = f'{fname}:{line_number}'
+    print(f'{label + ":":6} {file_position:16}', *a, file=file, **ka)
+
+
 @xmod
-def log(*a, file=sys.stderr, label='LOG', **ka):
-    fname = Path(inspect.stack()[1][0].f_code.co_filename).relative_to(ROOT)
-    print(f'{label + ":":6} {str(fname):16}', *a, file=file, **ka)
+@wraps(_log)
+def log(*a, label='LOG', **ka):
+    _log(label, *a, **ka)
 
 
-@wraps(log)
+@wraps(_log)
 def error(*a, label='ERROR', **ka):
-    log(*a, label=label, **ka)
+    play()
+    _log(label, *a, **ka)
 
 
-@wraps(log)
+@wraps(_log)
 def debug(*a, label='DEBUG', **ka):
     if DEBUG:
-        log(*a, label=label, **ka)
+        _log(label, *a, **ka)
 
 
 if __name__ == '__main__':
