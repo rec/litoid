@@ -85,10 +85,10 @@ class Action:
         # self.view.set_preset(self._value)
 
     def revert(self):
-        play_error()  # TODO
+        self.model.revert()
 
     def save(self):
-        play_error()  # TODO
+        self.model.save()
 
     def slider(self):
         self._set_channel_level(int(self._value))

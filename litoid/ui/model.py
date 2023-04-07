@@ -1,4 +1,5 @@
 from ..state import instruments
+from ..util.play import play_error
 from functools import cached_property
 import copy
 
@@ -39,3 +40,9 @@ class Model:
     def select_preset(self, name: str | None):
         assert name is None or name in self.presets
         self.selected_preset_names[self.iname] = name
+
+    def save(self):
+        play_error()  # TODO
+
+    def revert(self):
+        play_error()  # TODO
