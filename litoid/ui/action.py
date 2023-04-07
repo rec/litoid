@@ -35,6 +35,9 @@ class Action:
     def blackout(self):
         self.controller.blackout(self.msg.name)
 
+    def combo(self):
+        self._set_channel_level(self._value)
+
     def copy(self):
         pyperclip.copy(self.controller.copy())
 
@@ -48,9 +51,7 @@ class Action:
                 log.error(e)
             else:
                 self.copy()
-
-    def combo(self):
-        self._set_channel_level(self._value)
+            # TODO: must update selector here!
 
     def input(self):
         try:
@@ -66,7 +67,7 @@ class Action:
 
     def new(self):
         name = sg.popup_get_text('Enter new patch name')
-        print(name)
+        print(name)  # TODO
 
     def paste(self):
         self.controller.paste(pyperclip.paste())
