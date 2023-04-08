@@ -61,7 +61,10 @@ class Controller:
     def set_preset(self, preset_name):
         self.model.selected_preset_name = preset_name
         self.view.update_presets(self.model.iname, value=preset_name)
-        self.view.update_instrument(self.model.iname, self.lamp.levels)
+        self.lamp.levels = self.model.selected_preset
+        self.view.update_instrument(
+            self.model.iname, self.model.selected_preset
+        )
 
     def blackout(self):
         self.lamp.blackout()
