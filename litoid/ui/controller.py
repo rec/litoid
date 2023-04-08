@@ -68,24 +68,21 @@ class Controller:
             log.error(f'No preset named {name}')
 
     def blackout(self, iname=None):
-        iname = iname or self.model.iname
-        lamp = self.view.lamps[iname]
-        lamp.blackout()
-        self.set_channel_levels(iname, lamp.levels)
+        self.lamp.blackout()
+        self.set_channel_levels(iname, self.lamp.levels)
 
     def set_channel_level(self, iname, ch, v, *skip):
         self.lamp[ch] = v
         self.view.set_channel_strip(iname, ch, v, *skip)
 
-    def set_channel_levels(self, iname, d, *skip):
+    def set_channel_levels(self, iname, d):
         for k, v in d.items():
-            self.set_channel_level(iname, k, v, *skip)
+            self.set_channel_level(iname, k, v)
 
-    def set_midi_level(self, ch, v, scale_name=False):
+    def set_midi_level(self, ch, v):
         if ch < len(self.lamp):
-            if scale_name:
-                if self.instrument.channels[ch] in self.instrument.value_names:
-                    v *= 2
+            if self.instrument.channels[ch] in self.instrument.value_names:
+                v *= 2
             self.set_channel_level(self.iname, ch, v)
 
 

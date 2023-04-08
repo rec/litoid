@@ -16,4 +16,4 @@ class MidiScene(scene.Scene):
             d = m.control >= 10
             channel = m.control - d * 10
             value = m.value + 128 * d
-            self.ie.set_midi_level(channel, value, scale_name=True)
+            self.ie.set_midi_level(channel, value)
