@@ -1,16 +1,18 @@
 from .. import log
 from ..state import instruments
-from functools import cached_property
 import copy
 
 
 class Model:
     def __init__(self, iname):
+        it = instruments().items()
+        self.all_presets = {k: copy.deepcopy(v.presets) for k, v in it}
+        self.iname_to_selected_preset = {k: None for k, v in it}
         self.iname = iname
 
     @property
     def iname(self):
-        return getattr(self, '_iname', '')
+        return self._iname
 
     @iname.setter
     def iname(self, iname):
@@ -21,21 +23,14 @@ class Model:
     def instrument(self):
         return instruments()[self.iname]
 
-    @cached_property
-    def all_presets(self):
-        return {k: copy.deepcopy(v.presets) for k, v in instruments().items()}
-
-    @cached_property
-    def selected_preset_names(self):
-        return {k: None for k in self.all_presets}
-
     @property
     def selected_preset_name(self):
-        return self.selected_preset_names[self.iname]
+        return self.iname_to_selected_preset[self.iname]
 
     @selected_preset_name.setter
     def selected_preset_name(self, name):
-        self.selected_preset_names[self.iname] = name
+        assert name is None or name in self.presets
+        self.iname_to_selected_preset[self.iname] = name
 
     @property
     def presets(self):
@@ -45,7 +40,7 @@ class Model:
     def selected_preset(self):
         return self.presets.get(self.selected_preset_name)
 
-    def cut_selected(self):
+    def delete_selected(self):
         name, self.selected_preset_name = self.selected_preset_name, None
         if not name:
             log.error('No preset')
@@ -53,10 +48,6 @@ class Model:
             log.error('Preset', name, 'strangely did not exist')
         else:
             return True
-
-    def select_preset(self, name: str | None):
-        assert name is None or name in self.presets
-        self.selected_preset_names[self.iname] = name
 
     @property
     def is_dirty(self):

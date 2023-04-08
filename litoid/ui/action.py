@@ -39,7 +39,7 @@ class Action:
         pyperclip.copy(self.controller.copy())
 
     def cut(self):
-        if self.model.cut_selected():
+        if self.model.delete_selected():
             self.copy()
             self.view.update_selector()
 
