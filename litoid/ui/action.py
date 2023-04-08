@@ -64,14 +64,10 @@ class Action:
 
     def request_close(self):
         if self.model.is_dirty:
-            popup = sg.Window(
+            choice = self.yes_no_cancel(
                 'Unsaved changes?',
-                [
-                    [sg.T('Do you want to save your unsaved changes?')],
-                    [sg.Yes(s=10), sg.No(s=10), sg.Cancel(s=15)]
-                ],
-                disable_close=True)
-            choice, _ = popup.read(close=True)
+                'Do you want to save your unsaved changes?',
+            )
             if choice == 'Cancel':
                 log.error('Cancelled')
                 return

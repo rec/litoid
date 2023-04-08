@@ -44,6 +44,17 @@ class UI(UIDesc, IsRunning):
     def quit(self):
         self.window.write_event_value(LITOID_CLOSE, None)
 
+    def yes_no_cancel(self, title, messages):
+        popup = sg.Window(
+            title,
+            [
+                *([sg.T(m)] for m in messages),
+                [sg.Yes(s=10), sg.No(s=10), sg.Cancel(s=15)]
+            ],
+            disable_close=True)
+        choice, _ = popup.read(close=True)
+        return choice
+
     def _start(self):
         """Must be run on the main thread, blocks until quit"""
         super()._start()

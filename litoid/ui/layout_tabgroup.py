@@ -26,7 +26,9 @@ def tab(lamp):
 
         num = sg.Input('0', s=(3, 1), k='input' + k, enable_events=True)
         if n := list(instrument.value_names.get(ch, [])):
-            value = sg.Combo(n, default_value=n[0], s=SIZE, k='combo' + k)
+            value = sg.Combo(
+                n, default_value=n[0], s=SIZE, k='combo' + k, **COMBO
+            )
         else:
             value = sg.Slider(**SLIDER, s=SIZE, k='slider' + k)
         return label, num, value
