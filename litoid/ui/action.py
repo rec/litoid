@@ -39,14 +39,7 @@ class Action:
         pyperclip.copy(self.controller.copy())
 
     def cut(self):
-        if name := self.model.current_preset_name is None:
-            log.error('No preset')
-            return
-        try:
-            del self.model.selected_preset[name]
-        except Exception as e:
-            log.error(e)
-        else:
+        if self.model.cut_selected():
             self.copy()
             self.view.update_selector()
 
@@ -75,9 +68,9 @@ class Action:
         self.controller.paste(pyperclip.paste())
 
     def preset(self):
-        self.model.set_preset(self._value)
+        self.controller.set_preset(self._value)
         self.view.update_presets(self.iname, value=self._value)
-        self.view.update_everything(self.model.iname)
+        self.view.update_instrument(self.model.iname)
 
     def revert(self):
         ch = sg.popup_ok_cancel(

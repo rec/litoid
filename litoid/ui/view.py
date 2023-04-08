@@ -27,8 +27,8 @@ class View(ui.UI):
     @cached_property
     def lamps(self):
         lamps = {}
-        for la in self.state.lamps.values():
-            lamps.setdefault(la.instrument.name, la)
+        for lamp in self.state.lamps.values():
+            lamps.setdefault(lamp.instrument.name, lamp)
         return dict(sorted(lamps.items()))
 
     def layout(self):
@@ -57,6 +57,6 @@ class View(ui.UI):
     def update_presets(self, iname, **kwargs):
         self.update(f'preset.{iname}', **kwargs)
 
-    def update_everything(self, iname, levels):
+    def update_instrument(self, iname, levels):
         for k, v in levels.items():
             self.set_channel_strip(iname, k, v)

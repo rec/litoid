@@ -1,3 +1,4 @@
+from .. import log
 from ..state import instruments
 from functools import cached_property
 import copy
@@ -32,13 +33,26 @@ class Model:
     def selected_preset_name(self):
         return self.selected_preset_names[self.iname]
 
+    @selected_preset_name.setter
+    def selected_preset_name(self, name):
+        self.selected_preset_names[self.iname] = name
+
     @property
     def presets(self):
         return self.all_presets[self.iname]
 
     @property
     def selected_preset(self):
-        return self.presets[self.selected_preset_name]
+        return self.presets.get(self.selected_preset_name)
+
+    def cut_selected(self):
+        name, self.selected_preset_name = self.selected_preset_name, None
+        if not name:
+            log.error('No preset')
+        elif self.selected_preset.pop(name, None) is None:
+            log.error('Preset', name, 'strangely did not exist')
+        else:
+            return True
 
     def select_preset(self, name: str | None):
         assert name is None or name in self.presets
