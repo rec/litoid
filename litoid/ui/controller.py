@@ -1,8 +1,6 @@
-from . import action
+from . import action, midi_scene
 from .model import Model
 from .view import View
-from ..io import midi
-from ..state import scene, state as _state
 from .. import log
 import datacls
 import json
@@ -34,7 +32,7 @@ class Controller:
         return self.view.lamps[self.model.iname]
 
     def start(self):
-        self.view.state.scene = MidiScene(self)
+        self.view.state.scene = midi_scene.MidiScene(self)
         self.view.start()
 
     def callback(self, msg):
@@ -89,23 +87,6 @@ class Controller:
                 if self.instrument.channels[ch] in self.instrument.value_names:
                     v *= 2
             self.set_channel_level(self.iname, ch, v)
-
-
-class MidiScene(scene.Scene):
-    def __init__(self, ie):
-        self.ie = ie
-
-    def callback(self, state: _state.State, m: object) -> bool:
-        if (
-            isinstance(m, midi.Message)
-            and m.type == 'control_change'
-            and m.channel == 0
-            and (m.control <= 18)  # or 50 <= m.control <= 68)
-        ):
-            d = m.control >= 10
-            channel = m.control - d * 10
-            value = m.value + 128 * d
-            self.ie.set_midi_level(channel, value, scale_name=True)
 
 
 def main():
