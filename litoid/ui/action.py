@@ -23,8 +23,10 @@ class Action:
     def _value(self):
         return self.msg.values.get(self.msg.key)
 
-    def _set_channel_level(self, *a):
-        self.controller.set_channel_level(self.msg.name, self.msg.channel, *a)
+    def _set_channel_level(self, v, *skip):
+        self.controller.set_channel_level(
+            self.msg.name, self.msg.channel, v, *skip
+        )
 
     def _unknown(self):
         log.error('Unknown key', self.msg.key)
@@ -69,7 +71,7 @@ class Action:
 
     def preset(self):
         self.controller.set_preset(self._value)
-        self.view.update_presets(self.iname, value=self._value)
+        self.view.update_presets(self.model.iname, value=self._value)
         self.view.update_instrument(self.model.iname)
 
     def revert(self):

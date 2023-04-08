@@ -61,6 +61,7 @@ class Controller:
         )
 
     def set_preset(self, name):
+        self.view.update_presets(self.model.iname, value=name)
         # BROKEN
         if preset := self.all_presets.get(self.iname, {}).get(name):
             for ch in self.instrument.channels:
