@@ -32,7 +32,7 @@ def save_user_presets(iname):
     if (filename := DATA / f'{iname}-presets.toml').exists():
         filename.rename(filename.with_suffix('.toml.bak'))
 
-    file.dump(presets, filename)
+    file.dump(filename, presets)
 
 
 LASER = instruments()['laser']

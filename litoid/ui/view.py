@@ -56,7 +56,6 @@ class View(ui.UI):
 
     def update_presets(self, iname, **kwargs):
         self.update(f'preset.{iname}', **kwargs)
-        self.update_instrument(iname)
 
     def update_instrument(self, iname, levels):
         for k, v in levels.items():

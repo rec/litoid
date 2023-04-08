@@ -1,4 +1,4 @@
-from . defaults import SIZE, C, T, BUTTON, SLIDER, COMMANDS
+from . defaults import SIZE, T, BUTTON, SLIDER, COMMANDS, COMBO
 import PySimpleGUI as sg
 import xmod
 
@@ -14,7 +14,7 @@ def tab(lamp):
 
     header = [
         T(iname, s=(8, 1)),
-        C(presets, k=f'preset.{iname}', s=(16, 1)),
+        sg.Combo(presets, k=f'preset.{iname}', s=(16, 1), **COMBO),
         T(f'offset = {lamp.offset:03}'),
         sg.ButtonMenu('Menu', ['Commands', CMDS], k=f'menu.{iname}'),
         sg.Button('Blackout', **BUTTON, k=f'blackout.{iname}'),
@@ -25,8 +25,8 @@ def tab(lamp):
         label = T(ch, s=label_size)
 
         num = sg.Input('0', s=(3, 1), k='input' + k, enable_events=True)
-        if names := instrument.value_names.get(ch):
-            value = C(list(names), s=SIZE, k='combo' + k)
+        if n := list(instrument.value_names.get(ch, [])):
+            value = sg.Combo(n, default_value=n[0], s=SIZE, k='combo' + k)
         else:
             value = sg.Slider(**SLIDER, s=SIZE, k='slider' + k)
         return label, num, value

@@ -30,7 +30,7 @@ class Action:
         log.error('Unknown key', self.msg.key)
 
     def blackout(self):
-        self.controller.blackout(self.msg.name)
+        self.controller.blackout()
 
     def combo(self):
         self._set_channel_level(self._value, 'combo')
@@ -56,13 +56,8 @@ class Action:
         method()
 
     def new(self):
-        name = sg.popup_get_text('Enter new preset name').strip()
-        if name in self.model.presets:
-            log.error('Preset', name, 'exists')
-        elif name:
-            self.model.presets[name] = self.controller.lamp.levels
-            values = sorted(self.model.presets)
-            self.view.update_presets(self.iname, values=values, value=name)
+        if name := sg.popup_get_text('Enter new preset name').strip():
+            self.controller.new(name)
 
     def paste(self):
         self.controller.paste(pyperclip.paste())
@@ -72,7 +67,7 @@ class Action:
 
     def revert(self):
         ch = sg.popup_ok_cancel(
-            f'Revert to saved for {self.iname}?',  title='Revert'
+            f'Revert to saved for {self.controller.iname}?',  title='Revert'
         )
         if ch == 'OK':
             self.model.revert()

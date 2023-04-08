@@ -1,4 +1,4 @@
-from . import lamp
+from . import lamp as _lamp
 from ..io import dmx, key_mouse, midi, osc
 from ..util import file, is_running, timed_heap
 from functools import cached_property, wraps
@@ -32,7 +32,7 @@ class State(is_running.IsRunning):
 
     @cached_property
     def lamps(self):
-        return lamp.lamps(self.dmx, self.lamp_descs)
+        return _lamp.lamps(self.dmx, self.lamp_descs)
 
     @cached_property
     def midi_input(self):
@@ -86,8 +86,8 @@ class State(is_running.IsRunning):
             self.blackout()
 
     def blackout(self):
-        for la in self.lamps.values():
-            la.blackout()
+        for lamp in self.lamps.values():
+            lamp.blackout()
 
     def callback(self, msg):
         return self.scene.callback(self, msg)

@@ -59,32 +59,43 @@ class Controller:
         )
 
     def set_preset(self, preset_name):
+        self.model.selected_preset_name = preset_name
         self.view.update_presets(self.model.iname, value=preset_name)
-        self.view.update_instrument(self.model.iname)
-        # needs work?
-        if preset := self.all_presets.get(self.iname, {}).get(preset_name):
-            for ch in self.instrument.channels:
-                self.set_address_value(ch, preset[ch])  # NO
-        else:
-            log.error(f'No preset named {preset_name}')
+        self.view.update_instrument(self.model.iname, self.lamp.levels)
 
     def blackout(self):
         self.lamp.blackout()
         self.set_channel_levels(self.lamp.levels)
 
     def set_channel_level(self, ch, v, *skip):
-        self.lamp[ch] = v
-        self.view.set_channel_strip(self.iname, ch, v, *skip)
+        self._set_channel_level(ch, v, *skip)
+        self.lamp.render()
 
     def set_channel_levels(self, d):
         for k, v in d.items():
             self.set_channel_level(k, v)
+        self.lamp.render()
 
     def set_midi_level(self, ch, v):
         if ch < len(self.lamp):
             if self.instrument.channels[ch] in self.instrument.value_names:
                 v *= 2
             self.set_channel_level(ch, v)
+
+    def _set_channel_level(self, ch, v, *skip):
+        self.lamp[ch] = v
+        self.view.set_channel_strip(self.iname, ch, v, *skip)
+        if sp := self.model.selected_preset:
+            sp[ch] = v
+
+    def new(self, name):
+        if name in self.model.presets:
+            log.error('Preset', name, 'exists')
+            return
+
+        self.model.presets[name] = self.lamp.levels
+        values = sorted(self.model.presets)
+        self.view.update_presets(self.iname, values=values, value=name)
 
 
 def main():

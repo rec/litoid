@@ -29,8 +29,10 @@ class Model:
 
     @selected_preset_name.setter
     def selected_preset_name(self, name):
-        assert name is None or name in self.presets
-        self.iname_to_selected_preset[self.iname] = name
+        if name is None or name in self.presets:
+            self.iname_to_selected_preset[self.iname] = name
+        else:
+            log.error('Cannot set selected_preset_name to', name)
 
     @property
     def presets(self):
@@ -54,7 +56,7 @@ class Model:
         return self.instrument.presets != self.presets
 
     def save(self):
-        old, new = self.instrument.user_presets, self.presets.map[0]
+        old, new = self.instrument.user_presets, self.presets.maps[0]
         old.clear()
         old.update(copy.deepcopy(new))
         instruments.save_user_presets(self.iname)

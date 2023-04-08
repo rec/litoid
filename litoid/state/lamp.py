@@ -40,8 +40,8 @@ class Lamp(LampDesc):
     def levels(self, d: dict):
         d = self.instrument.remap_dict(d)
         it = range(len(self.frame))
-        self.frame[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
-        self.dmx.render()
+        self[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
+        self.render()
 
     def __len__(self):
         return len(self.frame)
@@ -56,10 +56,12 @@ class Lamp(LampDesc):
             i, v = self.instrument.remap(i, v)
             v = max(0, min(255, v))
         self.frame[i] = v
-        self.dmx.render()
 
     def blackout(self):
         self.levels = self.instrument.blackout
+
+    def render(self):
+        self.dmx.render()
 
 
 def lamps(dmx: DMX, descs: dict[str, dict]):

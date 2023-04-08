@@ -14,7 +14,6 @@ DEBUG = os.environ.get('DEBUG', '').strip().lower().startswith('t')
 def _log(label, *a, file=sys.stderr, **ka):
     frame = inspect.stack()[2][0].f_code
     fname = Path(frame.co_filename).relative_to(ROOT)
-    # print(dir(frame))
     line_number = frame.co_firstlineno
     file_position = f'{fname}:{line_number}'
     print(f'{label + ":":6} {file_position:16}', *a, file=file, **ka)

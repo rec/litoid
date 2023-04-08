@@ -36,9 +36,3 @@ COMMANDS = {
     # 'y': 'Redo',
     # 'z': 'Undo',
 }
-
-
-def C(items, *a, **ka):
-    if items:
-        ka.setdefault('default_value', items[0])
-    return sg.Combo(items, *a, **ka, **COMBO)
