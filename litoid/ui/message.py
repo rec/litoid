@@ -14,8 +14,7 @@ class Message:
     key: str
     values: list[str, ...] | None = None
 
-    LITOID_CLOSE = 'litoid.(none).close'
-    CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT, LITOID_CLOSE
+    CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT
 
     @property
     def is_close(self):

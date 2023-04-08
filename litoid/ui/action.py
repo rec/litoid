@@ -12,12 +12,9 @@ class Action:
 
     def __call__(self):
         if self.msg.is_close:
-            return
-
-        if self.msg.key.startswith('+'):
-            print(self.msg.key)
-            return
-        getattr(self, self.msg.action, self._unknown)()
+            self.view.stop()
+        else:
+            getattr(self, self.msg.action, self._unknown)()
 
     @property
     def _value(self):
@@ -65,6 +62,23 @@ class Action:
     def preset(self):
         self.controller.set_preset(self._value)
 
+    def request_close(self):
+        if self.model.is_dirty:
+            popup = sg.Window(
+                'Unsaved changes?',
+                [
+                    [sg.T('Do you want to save your unsaved changes?')],
+                    [sg.Yes(s=10), sg.No(s=10), sg.Cancel(s=15)]
+                ],
+                disable_close=True)
+            choice, _ = popup.read(close=True)
+            if choice == 'Cancel':
+                log.error('Cancelled')
+                return
+            if choice == 'Yes':
+                self.model.save_all()
+        self.view.stop()
+
     def revert(self):
         ch = sg.popup_ok_cancel(
             f'Revert to saved for {self.controller.iname}?',  title='Revert'
@@ -75,7 +89,7 @@ class Action:
             log.error(f'Got "{ch}", not OK or Cancel')
 
     def save(self):
-        if self.model.is_dirty:
+        if self.model.is_instrument_dirty:
             self.model.save()
         else:
             log.error('Nothing to save')

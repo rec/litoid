@@ -7,6 +7,8 @@ import datacls
 
 SUFFIX = '.ico'
 ICON_PATH = Path(__file__).parents[2] / 'images/tom-swirly.ico'
+LITOID_CLOSE = 'request_close'
+
 assert ICON_PATH.exists(), str(ICON_PATH)
 sg.theme('Material1')
 sg.set_options(icon=str(ICON_PATH))
@@ -40,14 +42,13 @@ class UI(UIDesc, IsRunning):
         return w
 
     def quit(self):
-        self.window.write_event_value(Message.LITOID_CLOSE, None)
+        self.window.write_event_value(LITOID_CLOSE, None)
 
     def _start(self):
         """Must be run on the main thread, blocks until quit"""
         super()._start()
         while self.running:
             if raw_msg := self.window.read():
-                self.callback(msg := Message(*raw_msg))
-
-            if not msg or msg.is_close:
+                self.callback(Message(*raw_msg))
+            else:
                 self.stop()

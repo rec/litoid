@@ -5,10 +5,12 @@ import copy
 
 class Model:
     def __init__(self, iname):
-        it = instruments().items()
-        self.all_presets = {k: copy.deepcopy(v.presets) for k, v in it}
-        self.iname_to_selected_preset = {k: None for k, v in it}
+        self.all_presets = self._all_presets()
+        self.iname_to_selected_preset = {k: None for k in self.all_presets}
         self.iname = iname
+
+    def _all_presets(self):
+        return {k: copy.deepcopy(v.presets) for k, v in instruments().items()}
 
     @property
     def iname(self):
@@ -52,14 +54,28 @@ class Model:
             return True
 
     @property
-    def is_dirty(self):
+    def is_instrument_dirty(self):
         return self.instrument.presets != self.presets
 
+    @property
+    def is_dirty(self):
+        return self.all_presets != self._all_presets()
+
     def save(self):
-        old, new = self.instrument.user_presets, self.presets.maps[0]
-        old.clear()
-        old.update(copy.deepcopy(new))
-        instruments.save_user_presets(self.iname)
+        self._save(self.iname)
+
+    def _save(self, iname):
+        instrument = instruments()[iname]
+        presets = self.all_presets[iname]
+        old, new = instrument.user_presets, presets.maps[0]
+        if old != new:
+            old.clear()
+            old.update(copy.deepcopy(new))
+            instruments.save_user_presets(iname)
+
+    def save_all(self):
+        for iname in self.all_presets:
+            self._save(iname)
 
     def revert(self):
         self.presets.clear()
