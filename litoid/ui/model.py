@@ -44,6 +44,7 @@ class Model:
         assert name is None or name in self.presets
         self.selected_preset_names[self.iname] = name
 
+    @property
     def is_dirty(self):
         return self.instrument.presets != self.presets
 

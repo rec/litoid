@@ -1,6 +1,7 @@
 from .util import play
 from pathlib import Path
 from functools import wraps
+import PySimpleGUI as sg
 import inspect
 import os
 import sys
@@ -29,6 +30,7 @@ def log(*a, label='LOG', **ka):
 def error(*a, label='ERROR', **ka):
     play()
     _log(label, *a, **ka)
+    sg.popup_auto_close(*a)
 
 
 @wraps(_log)

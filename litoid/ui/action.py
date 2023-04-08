@@ -23,10 +23,8 @@ class Action:
     def _value(self):
         return self.msg.values.get(self.msg.key)
 
-    def _set_channel_level(self, value, *skip):
-        self.controller.set_channel_level(
-            self.msg.name, self.msg.channel, value, *skip
-        )
+    def _set_channel_level(self, *a):
+        self.controller.set_channel_level(self.msg.name, self.msg.channel, *a)
 
     def _unknown(self):
         log.error('Unknown key', self.msg.key)
@@ -43,14 +41,14 @@ class Action:
     def cut(self):
         if name := self.model.current_preset_name is None:
             log.error('No preset')
+            return
+        try:
+            del self.model.selected_preset[name]
+        except Exception as e:
+            log.error(e)
         else:
-            try:
-                del self.model.selected_preset[name]
-            except Exception as e:
-                log.error(e)
-            else:
-                self.copy()
-            # TODO: must update selector here!
+            self.copy()
+            self.view.update_selector()
 
     def input(self):
         try:
@@ -65,21 +63,36 @@ class Action:
         method()
 
     def new(self):
-        name = sg.popup_get_text('Enter new patch name')
-        print(name)  # TODO
+        name = sg.popup_get_text('Enter new preset name').strip()
+        if name in self.model.presets:
+            log.error('Preset', name, 'exists')
+        elif name:
+            self.model.presets[name] = self.controller.lamp.levels
+            values = sorted(self.model.presets)
+            self.view.update_presets(self.iname, values=values, value=name)
 
     def paste(self):
         self.controller.paste(pyperclip.paste())
 
     def preset(self):
-        log.error()  # TODO
-        # self.view.set_preset(self._value)
+        self.model.set_preset(self._value)
+        self.view.update_presets(self.iname, value=self._value)
+        self.view.update_everything(self.model.iname)
 
     def revert(self):
-        self.model.revert()
+        ch = sg.popup_ok_cancel(
+            f'Revert to saved for {self.iname}?',  title='Revert'
+        )
+        if ch == 'OK':
+            self.model.revert()
+        elif ch != 'Cancel':
+            log.error(f'Got "{ch}", not OK or Cancel')
 
     def save(self):
-        self.model.save()
+        if self.model.is_dirty:
+            self.model.save()
+        else:
+            log.error('Nothing to save')
 
     def slider(self):
         self._set_channel_level(int(self._value), 'slider')
@@ -88,10 +101,3 @@ class Action:
         tab, iname = self._value.split('.')
         assert tab == 'tab'
         self.model.iname = iname
-        self.view.window.refresh()
-
-    def redo(self):
-        log.error()  # TODO
-
-    def undo(self):
-        log.error()  # TODO

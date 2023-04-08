@@ -43,11 +43,20 @@ class View(ui.UI):
 
         def set_window(action, value):
             if action not in skip:
-                key = f'{action}.{iname}.{channel}'
-                self.window[key].update(value=value)
+                self.update(f'{action}.{iname}.{channel}', value=value)
 
         set_window('input', value)
         if vname:
             set_window('combo', vname)
         else:
             set_window('slider', value)
+
+    def update(self, key, **kwargs):
+        self.window[key].update(**kwargs)
+
+    def update_presets(self, iname, **kwargs):
+        self.update(f'preset.{iname}', **kwargs)
+
+    def update_everything(self, iname, levels):
+        for k, v in levels.items():
+            self.set_channel_strip(iname, k, v)
