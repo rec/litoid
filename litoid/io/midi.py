@@ -38,6 +38,7 @@ class MidiInput(HasThread):
                     time.sleep(SPIN_TIME)
 
                 mbytes, deltatime = msg
+                print([hex(i) for i in mbytes], deltatime)
                 if self.last_event_time:
                     self.last_event_time += deltatime
                 else:
