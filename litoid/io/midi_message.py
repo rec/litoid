@@ -26,11 +26,11 @@ class MidiMessage:
 
     def __new__(cls, data, time=0):
         try:
-            cls = STATUS_TO_CLASS[data[0]]
+            cls = MESSAGE_CLASSES[data[0] - 128]
         except IndexError:
             cls = None
         if cls is None:
-            raise ValueError('Data is not a MIDI packet')
+            raise ValueError(f'{data=} is not a MIDI packet')
         if len(data) != len(cls.fields):
             raise ValueError('Midi packet has wrong data length')
         self = super().__new__(cls)
@@ -61,7 +61,7 @@ def _class(status_start, name, *fields):
         return property(fn)
 
     fields = 'status', *fields
-    props = {name: prop(i, field) for i, field in enumerate(fields)}
+    props = {field: prop(i, field) for i, field in enumerate(fields)}
     class_vars = {'fields': fields, 'status_start': status_start}
 
     parent = MidiChannelMessage if status_start < 0xF0 else MidiMessage
@@ -95,14 +95,14 @@ _SYSTEM = (
 
     # System real time messages.
     _class(0xf8, 'Clock'),
-    None, # 0xf9 is undefined
+    None,  # 0xf9 is undefined
     _class(0xfa, 'Start'),
     _class(0xfb, 'Continue'),
 
     _class(0xfc, 'Stop'),
-    None, # 0xfd is undefined
+    None,  # 0xfd is undefined
     _class(0xfe, 'ActiveSensing'),
     _class(0xff, 'Reset'),
 )
 
-MESSAGES = tuple(c for c in _CHANNEL for i in range(16)) + _SYSTEM
+MESSAGE_CLASSES = tuple(c for c in _CHANNEL for i in range(16)) + _SYSTEM

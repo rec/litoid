@@ -1,5 +1,6 @@
-from ..io import midi
-from ..state import scene, state as _state
+from litoid.io.midi_message import ControlChange
+from litoid.state import scene, state as _state
+import mido
 
 
 class MidiScene(scene.Scene):
@@ -7,12 +8,12 @@ class MidiScene(scene.Scene):
         self.ie = ie
 
     def callback(self, state: _state.State, m: object) -> bool:
-        if (
-            isinstance(m, midi.Message)
-            and m.type == 'control_change'
-            and m.channel == 0
-            and (m.control <= 18)  # or 50 <= m.control <= 68)
-        ):
+        is_control = (
+            (isinstance(m, mido.Message) and m.type == 'control_change')
+            or isinstance(m, ControlChange)
+        )
+
+        if is_control and m.channel == 0 and (m.control <= 18):
             d = m.control >= 10
             channel = m.control - d * 10
             value = m.value + 128 * d
