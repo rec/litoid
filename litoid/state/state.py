@@ -37,7 +37,10 @@ class State(is_running.IsRunning):
     @cached_property
     def midi_input(self):
         if self.midi_input_name:
-            return midi.MidiInput(self.callback, self.midi_input_name)
+            return midi.MidiInput(
+                callback=self.callback,
+                name=self.midi_input_name
+            )
 
     @cached_property
     def mouse(self):
