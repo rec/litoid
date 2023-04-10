@@ -1,10 +1,7 @@
+from litoid.util import classproperty
 import xmod
 
-SYSEX_STATUS = 0xF0
-
-
-def has_channel(status):
-    return status < SYSEX_STATUS
+_SYSEX_STATUS = 0xF0
 
 
 @xmod
@@ -14,9 +11,9 @@ class MidiMessage:
 
     __slots__ = 'data', 'time'
 
-    def __init__(self, data=None, time=0, *, data_maker=tuple, **kwargs):
+    def __init__(self, data=None, time=0, **kwargs):
         if data is None:
-            data = data_maker(kwargs.pop(f, 0) for f in self.fields)
+            data = [kwargs.pop(f, 0) for f in self.fields]
             if kwargs:
                 s = 's' * (len(kwargs) != 1)
                 raise ValueError(f'Unknown parameter{s}: {sorted(kwargs)}')
@@ -30,18 +27,20 @@ class MidiMessage:
     def __getitem__(self, i):
         return self.data[i]
 
+    @classproperty
+    def has_channel(cls) -> bool:
+        return _has_channel(cls.status_start)
+
+    @classproperty
+    def size(cls) -> int:
+        return len(cls.fields) + (not cls.has_channel)
+
     @property
     def status(self):
         return self.data[0]
 
     def asdict(self):
         return {k: getattr(self, k) for k in self.fields}
-
-    @classmethod
-    def fromdict(cls, *, data_maker=list, **kwargs):
-        assert len(kwargs) == len(cls.fields)
-        fields = data_maker(kwargs[f] for f in cls.fields)
-        return cls(fields)
 
     def __new__(cls, data=None, time=0, **kwargs):
         if data is not None and kwargs:
@@ -55,12 +54,9 @@ class MidiMessage:
         if cls is None:
             raise ValueError(f'{data=} is not a MIDI packet')
 
-        if cls.status_start != SYSEX_STATUS:
-            if len(data) != 1 + len(cls.fields):
-                raise ValueError(
-                    'Midi packet has wrong data length'
-                    f'{len(data)=} != 1 + {len(cls.fields)=} '
-                )
+        if cls.status_start != _SYSEX_STATUS and len(data) != cls.size:
+            msg = f'Wrong MIDI packet length: {len(data)} != {cls.size}'
+            raise ValueError(msg)
 
         self = super().__new__(cls)
         cls.__init__(self, data, time, **kwargs)
@@ -83,20 +79,28 @@ class MidiChannelMessage(MidiMessage):
     def asdict(self):
         return super().asdict() | {'channel': self.channel}
 
-    @classmethod
-    def fromdict(cls, name, channel, **kwargs):
-        status = cls.status_start + channel
-        return super().fromdict(name, status=status, **kwargs)
+
+def _has_channel(status: int) -> bool:
+    return status < _SYSEX_STATUS
 
 
-def _class(status_start, name, *fields):
-    parent, init = _parent_init(status_start, fields)
+def _class(status_start, name, *props):
+    if _has_channel(status_start):
+        parent = MidiChannelMessage
+        fields = 'channel', *props
+    else:
+        parent = MidiMessage
+        fields = props
 
-    props = {field: _prop(i + 1, field) for i, field in enumerate(fields)}
-    class_vars = {'fields': fields, 'status_start': status_start}
+    members = {
+        '__init__': _init(parent, fields),
+        '__repr__': _repr(fields),
+        'fields': fields,
+        'status_start': status_start,
+    }
 
-    members = {'__init__': init, **props, **class_vars}
-    cls = type(name, (parent,), members)
+    props = {prop: _prop(i + 1, prop) for i, prop in enumerate(props)}
+    cls = type(name, (parent,), members | props)
     globals()[name] = cls
     return cls
 
@@ -112,28 +116,28 @@ def _prop(i, field):
     return property(getter, setter)
 
 
-def _parent_init(status_start, fields):
-    if has_channel(status_start):
-        parent = MidiChannelMessage
-        params = 'channel', *fields
-    else:
-        parent = MidiMessage
-        params = fields
-
+def _init(parent, fields):
     # Construct the constructor!
-    if params_in := ', '.join(f'{p}=0' for p in params):
+    if params_in := ', '.join(f'{f}=0' for f in fields):
         params_in = f', *, {params_in}'
 
-    if params_out := ', '.join(f'{p}={p}' for p in params):
+    if params_out := ', '.join(f'{f}={f}' for f in fields):
         params_out = f', {params_out}'
 
     definition = f'lambda self, data=None, time=0{params_in}:'
     result = f'{parent.__name__}.__init__(self, data, time{params_out})'
-    definition = f'{definition} {result}'
+    init = eval(f'{definition} {result}')
+    init.__name__ = '__init__'
+    return init
 
-    init_f = eval(definition)
-    init_f.__name__ = '__init__'
-    return parent, init_f
+
+def _repr(fields):
+    # See dataclasses.py around line 595
+    params = ', '.join(f'{f}={{self.{f}!r}}' for f in fields)
+    classname = '{self.__class__.__qualname__}'
+    rep = eval(f'lambda self: f"{classname}({params})"')
+    rep.__name__ = '__repr__'
+    return rep
 
 
 _CHANNEL = (
