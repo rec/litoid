@@ -1,17 +1,12 @@
-from .midi_message import MidiMessage
 from ..util.has_thread import HasThread
+from .midi_message import MidiMessage
 from functools import cached_property
+from rtmidi import midiutil, MidiIn
 from typing import Callable
 import datacls
 import mido
 import time
-from rtmidi import midiutil, MidiIn
 SPIN_TIME = 0.003
-
-if not True:
-    make_message = mido.Message.from_bytes
-else:
-    make_message = MidiMessage
 
 
 @datacls
@@ -49,7 +44,7 @@ class MidiInput(HasThread):
                     self.last_event_time = time.time()
 
                 if self.make_message:
-                    msg = make_message(mbytes, time=self.last_event_time)
+                    msg = MidiMessage(mbytes, time=self.last_event_time)
                 self.callback(msg)
         finally:
             midiin.close_port()
