@@ -172,6 +172,7 @@ def _pitch(status_start):
 
 def _repr(fields):
     # See dataclasses.py around line 595
+    fields = *fields, 'time'
     params = ', '.join(f'{f}={{self.{f}!r}}' for f in fields)
     classname = '{self.__class__.__qualname__}'
     rep = eval(f'lambda self: f"{classname}({params})"')
