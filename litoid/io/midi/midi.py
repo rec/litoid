@@ -1,6 +1,6 @@
-from ..util.has_thread import HasThread
 from .midi_message import MidiMessage
 from functools import cached_property
+from litoid.util.has_thread import HasThread
 from rtmidi import midiutil, MidiIn
 from typing import Callable
 import datacls

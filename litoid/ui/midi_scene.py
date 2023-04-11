@@ -1,4 +1,4 @@
-from litoid.io.midi_message import ControlChange
+from litoid.io.midi.midi_message import ControlChange
 from litoid.state import scene, state as _state
 
 
