@@ -1,4 +1,4 @@
-from litoid.util import classproperty
+import clsprop
 import xmod
 
 _SYSEX_STATUS = 0xF0
@@ -27,11 +27,11 @@ class MidiMessage:
     def __getitem__(self, i):
         return self.data[i]
 
-    @classproperty
+    @clsprop
     def has_channel(cls) -> bool:
         return _has_channel(cls.status_start)
 
-    @classproperty
+    @clsprop
     def size(cls) -> int:
         return len(cls.fields) + (not cls.has_channel)
 
