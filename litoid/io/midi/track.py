@@ -19,6 +19,19 @@ class MidiTrack:
     def first_time(self) -> float | None:
         return self.times[0] if len(self.times) else None
 
+    def __len__(self):
+        return self.count
+
+    def __getitem__(self, i):
+        b = i * self.byte_width
+        return self.times[i], self.data[b:b + self.byte_width]
+
+    def __setitem__(self, i, v):
+        time, data = v
+        self.times[i] = time
+        b = i * self.byte_width
+        self.data[b:b + self.byte_width] = data
+
     @cached_property
     def data(self):
         return np.empty(INITIAL_SIZE * self.byte_width, dtype='uint8')
