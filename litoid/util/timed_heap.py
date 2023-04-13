@@ -7,42 +7,41 @@ from . thread_queue import HasThread
 MAX_WAIT = 0.01
 
 
-@datacls(slots=True)
-class Event:
-    timestamp: float
-    action: Callable = datacls.field(compare=False)
-
-
 @datacls.mutable
 class TimedHeap(HasThread):
-    _heap: list = datacls.field(list)
+    heap: list = datacls.field(list)
     _time: Callable = time.time
     _sleep: Callable = time.sleep
+    looping = True
 
     def clear(self):
         with self.lock:
-            self._heap.clear()
+            self.heap.clear()
 
-    def push(self, timestamp, action):
+    def __post_init__(self):
+        heapq.heapify(self.heap)
+
+    def push(self, action):
         with self._lock:
-            heapq.heappush(self._head, Event(timestamp, action))
+            heapq.heappush(self._head, action)
 
     def pop(self, timestamp=None):
         with self._lock:
             def top():
-                return self._heap[0].timestamp if self._heap else None
+                return self.heap[0].timestamp if self.heap else None
 
             timestamp = timestamp or self._time()
             results = []
             while (ts := top()) and ts <= timestamp:
-                results.append(heapq.heappop(self._heap))
+                results.append(heapq.heappop(self.heap))
 
             return results, ts
 
     def _target(self):
-        while True:
-            actions, ts = self.pop()
-            [a.action() for a in actions]
+        actions, ts = self.pop()
+        for a in actions:
+            a()
 
-            if t := not actions and (ts - self._time() if ts else MAX_WAIT):
+        if not actions:
+            if t := ts - self._time() if ts else MAX_WAIT:
                 self._sleep(min(t, MAX_WAIT))
