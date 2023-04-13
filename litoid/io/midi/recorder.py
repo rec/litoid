@@ -1,4 +1,4 @@
-from . import midi_message
+from . import message
 from . track import MidiTrack
 import datacls
 import numpy as np
@@ -12,8 +12,8 @@ class MidiRecorder:
     tracks: dict = datacls.field(dict)
     start_time: float = datacls.field(time.time)
 
-    def record(self, msg: midi_message.MidiMessage):
-        keysize = 2 if isinstance(msg, midi_message.ControlChange) else 1
+    def record(self, msg: message.MidiMessage):
+        keysize = 2 if isinstance(msg, message.ControlChange) else 1
         key, data = msg.data[:keysize], msg.data[keysize:]
         if not (track := self.tracks.get(key)):
             track = MidiTrack(len(data))
