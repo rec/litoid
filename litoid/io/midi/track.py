@@ -48,10 +48,10 @@ class MidiTrack:
     @classmethod
     def fromdict(cls, data, times):
         byte_width = len(data) // len(times)
-        assert byte_width * len(data) == len(times)
+        assert byte_width * len(times) == len(data)
 
         self = cls(byte_width)
-        self.__data__.update(data=data, times=times)
+        self.__dict__.update(data=data, times=times)
         return self
 
 

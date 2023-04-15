@@ -24,26 +24,31 @@ class MidiRecorder:
         track.append(msg.data, msg.time)
         self.update_time = msg.time
 
+    def report(self):
+        return {
+            'event_count': sum(t.count for t in self.tracks.values()),
+            'track_count': len(self.tracks),
+        }
+
     def asdict(self):
-        data = {}
-        times = np.array((self.start_time, self.update_time))
+        data = {'times': np.array((self.start_time, self.update_time))}
 
         for key, track in sorted(self.tracks.items()):
-            for k, v in track.asdict().items():
-                subkey = SEP.join((key, k))
-                data[subkey] = v
+            for name, array in track.asdict().items():
+                joined_key = SEP.join((key, name))
+                data[joined_key] = array
 
-        return {'data': data, 'times': times}
+        return data
 
     @classmethod
     def fromdict(cls, d):
-        result = {}
-        for subkey, v in d.items():
-            if subkey != 'start_time':
-                *key, k = subkey.split(SEP)
-                key = tuple(int(i) for i in key)
-                result.setdefault(key, {})[k] = v
+        parts = {}
+        for joined_key, array in d.items():
+            if joined_key == 'times':
+                start_time, update_time = array
+            else:
+                key, _, name = joined_key.rpartition(SEP)
+                parts.setdefault(key, {})[name] = array
 
-        tracks = {k: MidiTrack.fromdict(**v) for k, v in result.items()}
-
-        return cls(tracks, d.get('start_time'))
+        tracks = {k: MidiTrack.fromdict(**v) for k, v in parts.items()}
+        return cls(tracks, start_time, update_time)

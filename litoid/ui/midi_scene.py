@@ -3,13 +3,19 @@ from litoid.io.midi.recorder import MidiRecorder
 from litoid.state import scene
 from litoid.state.state import State
 import numpy as np
+import os
 
 
 class MidiScene(scene.Scene):
     def __init__(self, controller, path=None):
         self.controller = controller
         self.path = path
-        self.recorder = MidiRecorder()
+
+    def load(self, state: State):
+        if self.path and os.path.exists(self.path):
+            self.recorder = MidiRecorder.fromdict(np.load(self.path))
+        else:
+            self.recorder = MidiRecorder()
 
     def callback(self, state: State, m: object) -> bool:
         if not isinstance(m, MidiMessage):
@@ -24,5 +30,6 @@ class MidiScene(scene.Scene):
         self.recorder.record(m)
 
     def unload(self, state: State):
+        print('recorder:', self.recorder.report())
         if self.path:
-            np.savez(self.path, self.recorder.asdict())
+            np.savez(self.path, **self.recorder.asdict())
