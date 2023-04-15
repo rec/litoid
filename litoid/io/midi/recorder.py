@@ -18,7 +18,7 @@ class MidiRecorder:
         key = SEP.join(str(i) for i in msg.data[:keysize])
 
         if not (track := self.tracks.get(key)):
-            track = MidiTrack(len(self.data))
+            track = MidiTrack(len(msg.data))
             self.tracks[key] = track
 
         track.append(msg.data, msg.time)

@@ -1,5 +1,6 @@
 from . import defaults, layout_tabgroup, ui
-from ..state import instruments, state as _state
+from ..state import instruments
+from ..state.state import State, make_state
 from functools import cached_property
 from typing import Callable
 import datacls
@@ -7,13 +8,14 @@ import datacls
 
 @datacls.mutable
 class View(ui.UI):
-    state: _state.State = datacls.field(_state)
+    state: State = datacls.field(make_state)
     commands: dict[str, str] = datacls.field(lambda: dict(defaults.COMMANDS))
     callback: Callable = print
 
-    def start(self):
+    def start(self, scene=None):
         self.state.blackout()
         self.state.midi_input.start()
+        self.state.scene = scene
 
         for key, command in self.commands.items():
             command = command.split()[0].rstrip('.').lower()
@@ -22,6 +24,7 @@ class View(ui.UI):
         try:
             super().start()
         finally:
+            self.state.scene = None
             self.state.blackout()
 
     @cached_property

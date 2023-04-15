@@ -2,22 +2,15 @@ from . import action, midi_scene
 from .model import Model
 from .view import View
 from .. import log
-import datacls
 import json
+import time
 
 
-@datacls
 class Controller:
-    model: Model
-    view: View
-
-    @classmethod
-    def make(cls):
-        view = View()
-        model = Model(list(view.lamps)[0])
-        cont = cls(model, view)
-        view.callback = cont.callback
-        return cont
+    def __init__(self):
+        self.view = View(callback=self.callback)
+        iname = list(self.view.lamps)[0]
+        self.model = Model(iname)
 
     @property
     def iname(self):
@@ -32,8 +25,8 @@ class Controller:
         return self.view.lamps[self.model.iname]
 
     def start(self):
-        self.view.state.scene = midi_scene.MidiScene(self)
-        self.view.start()
+        scene = midi_scene.MidiScene(self, 'midi.npz')
+        self.view.start(scene)
 
     def callback(self, msg):
         log.debug(msg.key)
@@ -103,11 +96,9 @@ class Controller:
 
 def main():
     try:
-        app = Controller.make()
-        app.start()
+        Controller().start()
     finally:
-        import time
-        time.sleep(0.1)
+        time.sleep(0.1)  # Allow daemon threads to print tracebacks
 
 
 if __name__ == "__main__":

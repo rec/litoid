@@ -19,6 +19,8 @@ class State(is_running.IsRunning):
     osc_desc: dict
     midi_input_name: str | None = None
 
+    _scene = None
+
     # Can't use both mouse and keyboard: https://github.com/rec/litoid/issues/5
     use_mouse = False
 
@@ -54,19 +56,17 @@ class State(is_running.IsRunning):
     def timed_heap(self):
         return timed_heap.TimedHeap()
 
-    @cached_property
-    def _scene_holder(self):
-        from .scene import SceneHolder
-
-        return SceneHolder(self)
-
     @property
     def scene(self):
-        return self._scene_holder.scene
+        return self._scene
 
     @scene.setter
     def scene(self, scene):
-        self._scene_holder.scene = scene
+        if self._scene is not None:
+            self._scene.unload(self)
+        self._scene = scene
+        if self._scene is not None:
+            self._scene.load(self)
 
     def _start(self):
         if self.use_mouse:
@@ -98,9 +98,5 @@ class State(is_running.IsRunning):
 
 @xmod
 @wraps(State)
-def state(path: Path | None = None, **kwargs):
+def make_state(path: Path | None = None, **kwargs):
     return State(**file.load(path or STATE_FILE), **kwargs)
-
-
-if __name__ == '__main__':
-    State().run()
