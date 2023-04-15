@@ -131,3 +131,4 @@ dmypy.json
 .direnv/
 .envrc
 data/gantom-presets.toml.bak
+midi.npz
