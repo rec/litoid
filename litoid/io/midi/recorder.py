@@ -9,29 +9,31 @@ SEP = '-'
 
 @datacls.mutable
 class MidiRecorder:
-    tracks: dict = datacls.field(dict)
+    tracks: dict = datacls.field(dict[tuple, MidiTrack])
     start_time: float = datacls.field(time.time)
+    update_time: float = datacls.field(time.time)
 
     def record(self, msg: message.MidiMessage):
         keysize = 2 if isinstance(msg, message.ControlChange) else 1
-        key, data = msg.data[:keysize], msg.data[keysize:]
+        key = SEP.join(str(i) for i in msg.data[:keysize])
+
         if not (track := self.tracks.get(key)):
-            track = MidiTrack(len(data))
+            track = MidiTrack(len(self.data))
             self.tracks[key] = track
-        track.append(msg.time, *data)
+
+        track.append(msg.data, msg.time)
+        self.update_time = msg.time
 
     def asdict(self):
-        d = {}
+        data = {}
+        times = np.array((self.start_time, self.update_time))
 
         for key, track in sorted(self.tracks.items()):
-            key = SEP.join(str(i) for i in key)
             for k, v in track.asdict().items():
                 subkey = SEP.join((key, k))
-                d[subkey] = v
+                data[subkey] = v
 
-        if self.start_time is not None:
-            d['start_time'] = np.array([self.start_time])
-        return d
+        return {'data': data, 'times': times}
 
     @classmethod
     def fromdict(cls, d):

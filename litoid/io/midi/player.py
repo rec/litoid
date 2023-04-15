@@ -1,3 +1,4 @@
+from .message import MidiMessage
 from .recorder import MidiRecorder
 from .track import MidiTrack
 from functools import cached_property, total_ordering
@@ -18,27 +19,21 @@ class MidiPlayer:
 
     @cached_property
     def timed_heap(self) -> TimedHeap:
-        return TimedHeap(self.players)
-
-    @cached_property
-    def players(self):
         kt = ((k, t) for k, t in self.record.tracks.items() if t)
-        return [TrackPlayer(self. k, t) for k, t in kt]
+        players = (TrackPlayer(self, k, t) for k, t in kt)
+        return TimedHeap([tp for tp in players if tp])
 
     def start(self):
         self.start_time = time.time()
         self.timed_heap.start()
 
     @cached_property
-    def net_offset_time(self) -> float:
+    def net_offset(self) -> float:
         return self.offset_time + self.start_time - self.recorder.start_time
-
-    def track_callback(self, track: 'TrackPlayer'):
-        pass
 
 
 @total_ordering
-@datacls(frozen=False, order=False)
+@datacls.mutable(order=False)
 class TrackPlayer:
     player: MidiPlayer
     key: tuple[int, ...]
@@ -50,11 +45,22 @@ class TrackPlayer:
 
     @property
     def timestamp(self) -> float:
-        return self.track.times[self.position] if self else INFINITE
+        if not self:
+            return INFINITE
+        return self._timestamp() + self.player.net_offset
 
     def __lt__(self, x) -> bool:
-        return self.timestamp < x.timestamp
+        return self._timestamp() < x._timestamp()
+
+    def _timestamp(self):
+        return self.track.times[self.position]
 
     def __call__(self):
-        self.track_callback(self)
+        msg_data = self.track.get_message(self.position)
         self.position += 1
+
+        msg = MidiMessage([*self.key, *msg_data])
+        self.player.callback(msg)
+
+        if self:
+            self.player.timed_heap.push(self)
