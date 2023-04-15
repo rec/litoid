@@ -1,4 +1,3 @@
-from typing import Callable
 import datacls
 import heapq
 import time
@@ -10,8 +9,6 @@ MAX_WAIT = 0.01
 @datacls.mutable
 class TimedHeap(HasThread):
     heap: list = datacls.field(list)
-    _time: Callable = time.time
-    _sleep: Callable = time.sleep
     looping = True
 
     def clear(self):
@@ -21,27 +18,28 @@ class TimedHeap(HasThread):
     def __post_init__(self):
         heapq.heapify(self.heap)
 
-    def push(self, action):
+    def push(self, event):
         with self._lock:
-            heapq.heappush(self._head, action)
+            heapq.heappush(self._head, event)
 
     def pop(self, timestamp=None):
         with self._lock:
             def top():
                 return self.heap[0].timestamp if self.heap else None
 
-            timestamp = timestamp or self._time()
+            timestamp = timestamp or time.time()
             results = []
-            while (ts := top()) and ts <= timestamp:
+            while (next_ts := top()) and next_ts <= timestamp:
                 results.append(heapq.heappop(self.heap))
 
-            return results, ts
+            return results, next_ts
 
     def _target(self):
-        actions, ts = self.pop()
-        for a in actions:
-            a()
+        events, next_ts = self.pop()
+        for e in events:
+            e()
 
-        if not actions:
-            if t := ts - self._time() if ts else MAX_WAIT:
-                self._sleep(min(t, MAX_WAIT))
+        if not next_ts:
+            time.sleep(MAX_WAIT)
+        elif (ts := (next_ts - time.time())) > 0:
+            time.sleep(min(ts, MAX_WAIT))
