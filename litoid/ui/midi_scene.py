@@ -1,6 +1,6 @@
 from litoid import log
 from litoid.io.midi.message import ControlChange, MidiMessage
-from litoid.io.midi.recorder import MidiRecorder
+from litoid.io.recorder import Recorder
 from litoid.state import scene
 from litoid.state.state import State
 import numpy as np
@@ -14,9 +14,9 @@ class MidiScene(scene.Scene):
 
     def load(self, state: State):
         if self.path and os.path.exists(self.path):
-            self.recorder = MidiRecorder.fromdict(np.load(self.path))
+            self.recorder = Recorder.fromdict(np.load(self.path))
         else:
-            self.recorder = MidiRecorder()
+            self.recorder = Recorder()
         log.debug('recorder load:', self.recorder.report())
 
     def callback(self, state: State, m: object) -> bool:
@@ -29,7 +29,8 @@ class MidiScene(scene.Scene):
             value = m.value + 128 * d
             self.controller.set_midi_level(channel, value)
 
-        self.recorder.record(m)
+        keysize = 2 if isinstance(m, ControlChange) else 1
+        self.recorder.record(m.data, m.time, keysize)
 
     def unload(self, state: State):
         log.debug('recorder unload:', self.recorder.report())
