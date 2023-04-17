@@ -9,9 +9,6 @@ class Model:
         self.iname_to_selected_preset = {k: None for k in self.all_presets}
         self.iname = iname
 
-    def _all_presets(self):
-        return {k: copy.deepcopy(v.presets) for k, v in instruments().items()}
-
     @property
     def iname(self):
         return self._iname
@@ -64,6 +61,17 @@ class Model:
     def save(self):
         self._save(self.iname)
 
+    def save_all(self):
+        for iname in self.all_presets:
+            self._save(iname)
+
+    def revert(self):
+        self.presets.clear()
+        self.presets.update(copy.deepcopy(self.instrument.presets))
+
+    def _all_presets(self):
+        return {k: copy.deepcopy(v.presets) for k, v in instruments().items()}
+
     def _save(self, iname):
         instrument = instruments()[iname]
         presets = self.all_presets[iname]
@@ -72,11 +80,3 @@ class Model:
             old.clear()
             old.update(copy.deepcopy(new))
             instruments.save_user_presets(iname)
-
-    def save_all(self):
-        for iname in self.all_presets:
-            self._save(iname)
-
-    def revert(self):
-        self.presets.clear()
-        self.presets.update(copy.deepcopy(self.instrument.presets))
