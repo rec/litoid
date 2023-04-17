@@ -29,12 +29,13 @@ class MidiTrack:
 
     def append(self, data: np.ndarray, time: float):
         assert self.byte_width == len(data)
+        begin = self.count * self.byte_width
+        end = begin + self.byte_width
 
-        if self.count >= len(self.times):
+        if end > len(self.data) or self.count >= len(self.times):
             _resize(self.data, self.times)
 
-        b = self.count * self.byte_width
-        self.data[b:b + self.byte_width] = data
+        self.data[begin:end] = data
         self.times[self.count] = time
 
         self.count += 1
