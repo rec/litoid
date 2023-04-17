@@ -79,8 +79,8 @@ class Controller:
     def _set_level(self, ch, v, *skip):
         self.lamp[ch] = v
         self.view.set_level(self.iname, ch, v, *skip)
-        if sp := self.model.selected_preset:
-            sp[ch] = v
+        if preset := self.model.selected_preset:
+            preset[ch] = v
 
     def new(self, name):
         if name in self.model.presets:
