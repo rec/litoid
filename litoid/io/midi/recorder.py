@@ -30,7 +30,8 @@ class MidiRecorder:
 
     def report(self):
         return {
-            'event_count': sum(t.count for t in self.tracks.values()),
+            'event_count': {k: t.count for k, t in self.tracks.items()},
+            'total_event_count': sum(t.count for t in self.tracks.values()),
             'track_count': len(self.tracks),
         }
 
