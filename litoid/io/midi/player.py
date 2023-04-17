@@ -1,6 +1,6 @@
+from ..recorder import Recorder
 from ..track import Track
 from .message import MidiMessage
-from .recorder import MidiRecorder
 from functools import cached_property, total_ordering
 from litoid.util.timed_heap import TimedHeap
 from typing import Callable
@@ -12,7 +12,7 @@ INFINITE = float('inf')
 
 @datacls.mutable
 class MidiPlayer:
-    recorder: MidiRecorder
+    recorder: Recorder
     callback: Callable = print
     offset_time: float = 0
     start_time: float = 0
