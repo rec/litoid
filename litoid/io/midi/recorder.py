@@ -1,5 +1,5 @@
 from . import message
-from . track import MidiTrack
+from ..track import Track
 import datacls
 from litoid import log
 import numpy as np
@@ -10,7 +10,7 @@ SEP = '-'
 
 @datacls.mutable
 class MidiRecorder:
-    tracks: dict = datacls.field(dict[tuple, MidiTrack])
+    tracks: dict = datacls.field(dict[tuple, Track])
     start_time: float = datacls.field(time.time)
     update_time: float = datacls.field(time.time)
 
@@ -19,7 +19,7 @@ class MidiRecorder:
         key = SEP.join(str(i) for i in msg.data[:keysize])
 
         if (track := self.tracks.get(key)) is None:
-            track = MidiTrack(len(msg.data) - keysize)
+            track = Track(len(msg.data) - keysize)
             self.tracks[key] = track
 
         track.append(msg.data[keysize:], msg.time)
@@ -58,5 +58,5 @@ class MidiRecorder:
                 key, _, name = joined_key.rpartition(SEP)
                 parts.setdefault(key, {})[name] = array
 
-        tracks = {k: MidiTrack.fromdict(**v) for k, v in parts.items()}
+        tracks = {k: Track.fromdict(**v) for k, v in parts.items()}
         return cls(tracks, start_time, update_time)

@@ -1,6 +1,6 @@
+from ..track import Track
 from .message import MidiMessage
 from .recorder import MidiRecorder
-from .track import MidiTrack
 from functools import cached_property, total_ordering
 from litoid.util.timed_heap import TimedHeap
 from typing import Callable
@@ -37,7 +37,7 @@ class MidiPlayer:
 class TrackPlayer:
     player: MidiPlayer
     key: tuple[int, ...]
-    track: MidiTrack
+    track: Track
     position: int = 0
 
     def __len__(self):
