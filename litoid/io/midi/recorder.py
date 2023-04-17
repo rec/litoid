@@ -22,7 +22,7 @@ class MidiRecorder:
             track = MidiTrack(len(msg.data))
             self.tracks[key] = track
 
-        track.append(msg.data, msg.time)
+        track.append(msg.data[keysize:], msg.time)
         self.update_time = msg.time
 
         if empty := sorted(k for k, v in self.tracks.items() if not v.empty):
