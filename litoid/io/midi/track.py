@@ -57,6 +57,7 @@ class MidiTrack:
         assert byte_width * len(times) == len(data)
 
         self = cls(byte_width)
+        self.count = len(times)
         self.__dict__.update(data=data, times=times)
         return self
 
