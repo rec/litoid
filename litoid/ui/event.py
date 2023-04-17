@@ -4,7 +4,7 @@ import datacls
 
 
 @datacls
-class Message:
+class Event:
     """
     message format:
 
