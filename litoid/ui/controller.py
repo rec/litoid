@@ -45,11 +45,9 @@ class Controller:
         if value := levels.get(self.iname):
             self.lamp.levels = value
             self.set_channel_levels(self.iname, value)
-            return
-
-        log.error(
-            'Bad instrument: found', self.iname, 'expected', *sorted(levels)
-        )
+        else:
+            names = sorted(levels)
+            log.error(f'Bad instrument: found {self.iname}, expected {names}')
 
     def set_preset(self, preset_name):
         self.model.selected_preset_name = preset_name
