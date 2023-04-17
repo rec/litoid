@@ -57,4 +57,4 @@ class MidiTrack:
 
 def _resize(*arrays):
     for a in arrays:
-        a.resize(round(len(a) * RESIZE_RATIO + 0.5))
+        a.resize(round(len(a) * RESIZE_RATIO + 0.5), refcheck=False)
