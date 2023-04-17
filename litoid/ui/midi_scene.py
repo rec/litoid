@@ -1,3 +1,4 @@
+from litoid import log
 from litoid.io.midi.message import ControlChange, MidiMessage
 from litoid.io.midi.recorder import MidiRecorder
 from litoid.state import scene
@@ -16,6 +17,7 @@ class MidiScene(scene.Scene):
             self.recorder = MidiRecorder.fromdict(np.load(self.path))
         else:
             self.recorder = MidiRecorder()
+        log.debug('recorder load:', self.recorder.report())
 
     def callback(self, state: State, m: object) -> bool:
         if not isinstance(m, MidiMessage):
@@ -30,6 +32,6 @@ class MidiScene(scene.Scene):
         self.recorder.record(m)
 
     def unload(self, state: State):
-        print('recorder:', self.recorder.report())
+        log.debug('recorder unload:', self.recorder.report())
         if self.path:
             np.savez(self.path, **self.recorder.asdict())
