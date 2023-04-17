@@ -30,7 +30,7 @@ class MidiScene(scene.Scene):
             self.controller.set_midi_level(channel, value)
 
         keysize = 2 if isinstance(m, ControlChange) else 1
-        self.recorder.record(m.data, m.time, keysize)
+        self.recorder.record(m.data, keysize, m.time)
 
     def unload(self, state: State):
         log.debug('recorder unload:', self.recorder.report())

@@ -2,7 +2,7 @@ from .track import Track
 import datacls
 from litoid import log
 import numpy as np
-import time
+import time as _time
 
 SEP = '-'
 
@@ -10,10 +10,11 @@ SEP = '-'
 @datacls.mutable
 class Recorder:
     tracks: dict = datacls.field(dict[tuple, Track])
-    start_time: float = datacls.field(time.time)
-    update_time: float = datacls.field(time.time)
+    start_time: float = datacls.field(_time.time)
+    update_time: float = datacls.field(_time.time)
 
-    def record(self, data: list, time: float, keysize: int):
+    def record(self, data: list, keysize: int, time: float = 0):
+        time = time or _time.time()
         key = SEP.join(str(i) for i in data[:keysize])
 
         if (track := self.tracks.get(key)) is None:
