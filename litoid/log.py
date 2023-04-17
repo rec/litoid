@@ -13,9 +13,16 @@ POPUP_ERRORS = False
 
 
 def _log(label, *a, file=sys.stderr, **ka):
-    frame = inspect.stack()[2][0].f_code
-    fname = Path(frame.co_filename).relative_to(ROOT)
-    line_number = frame.co_firstlineno
+    for depth in (2, 3):
+        frame = inspect.stack()[depth][0].f_code
+        fname = Path(frame.co_filename)
+        if ROOT in fname.parents:
+            fname = fname.relative_to(ROOT)
+            line_number = frame.co_firstlineno
+            break
+    else:
+        fname = line_number = '?'
+
     file_position = f'{fname}:{line_number}'
     print(f'{label + ":":6} {file_position:16}', *a, file=file, **ka)
 
