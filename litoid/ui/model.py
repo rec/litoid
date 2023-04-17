@@ -1,13 +1,22 @@
-from .. import log
-from ..state import instruments
+from litoid import log
+from litoid.io.midi.message import ControlChange, MidiMessage
+from litoid.io.recorder import Recorder
+from litoid.state import instruments
 import copy
+import numpy as np
+import os
 
 
 class Model:
-    def __init__(self, iname):
+    def __init__(self, iname, path):
         self.all_presets = self._all_presets()
         self.iname_to_selected_preset = {k: None for k in self.all_presets}
         self.iname = iname
+        self.path = path
+        if self.path and os.path.exists(self.path):
+            self.recorder = Recorder.fromdict(np.load(self.path))
+        else:
+            self.recorder = Recorder()
 
     @property
     def iname(self):
@@ -50,6 +59,11 @@ class Model:
         else:
             return True
 
+    def callback(self, m):
+        if isinstance(m, MidiMessage):
+            keysize = 2 if isinstance(m, ControlChange) else 1
+            self.recorder.record(m.data, keysize, m.time)
+
     @property
     def is_instrument_dirty(self):
         return self.instrument.presets != self.presets
@@ -64,6 +78,11 @@ class Model:
     def save_all(self):
         for iname in self.all_presets:
             self._save(iname)
+
+    def save_recorder(self):
+        log.debug(self.recorder.report())
+        if self.path:
+            np.savez(self.path, **self.recorder.asdict())
 
     def revert(self):
         self.presets.clear()
