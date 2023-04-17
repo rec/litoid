@@ -9,6 +9,7 @@ import xmod
 
 ROOT = Path(__file__).parent
 DEBUG = os.environ.get('DEBUG', '').strip().lower().startswith('t')
+POPUP_ERRORS = False
 
 
 def _log(label, *a, file=sys.stderr, **ka):
@@ -29,7 +30,8 @@ def log(*a, label='LOG', **ka):
 def error(*a, label='ERROR', **ka):
     play()
     _log(label, *a, **ka)
-    sg.popup_auto_close(*a)
+    if POPUP_ERRORS:
+        sg.popup_auto_close(*a)
 
 
 @wraps(_log)
