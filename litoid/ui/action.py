@@ -63,8 +63,10 @@ class Action:
         self.controller.set_preset(self._value)
 
     def request_close(self):
+        self.model.save_recorder()
+
         if self.model.is_dirty:
-            choice = self.yes_no_cancel(
+            choice = self.view.yes_no_cancel(
                 'Unsaved changes?',
                 'Do you want to save your unsaved changes?',
             )
