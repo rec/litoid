@@ -44,7 +44,7 @@ class Controller:
 
         if value := levels.get(self.iname):
             self.lamp.levels = value
-            self.set_channel_levels(self.iname, value)
+            self.set_levels(self.iname, value)
         else:
             names = sorted(levels)
             log.error(f'Bad instrument: found {self.iname}, expected {names}')
@@ -59,26 +59,26 @@ class Controller:
 
     def blackout(self):
         self.lamp.blackout()
-        self.set_channel_levels(self.lamp.levels)
+        self.set_levels(self.lamp.levels)
 
-    def set_channel_level(self, ch, v, *skip):
-        self._set_channel_level(ch, v, *skip)
+    def set_level(self, ch, v, *skip):
+        self._set_level(ch, v, *skip)
         self.lamp.render()
 
-    def set_channel_levels(self, d):
+    def set_levels(self, d):
         for k, v in d.items():
-            self.set_channel_level(k, v)
+            self._set_level(k, v)
         self.lamp.render()
 
     def set_midi_level(self, ch, v):
         if ch < len(self.lamp):
             if self.instrument.channels[ch] in self.instrument.value_names:
                 v *= 2
-            self.set_channel_level(ch, v)
+            self.set_level(ch, v)
 
-    def _set_channel_level(self, ch, v, *skip):
+    def _set_level(self, ch, v, *skip):
         self.lamp[ch] = v
-        self.view.set_channel_strip(self.iname, ch, v, *skip)
+        self.view.set_level(self.iname, ch, v, *skip)
         if sp := self.model.selected_preset:
             sp[ch] = v
 

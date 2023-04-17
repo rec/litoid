@@ -37,7 +37,7 @@ class View(ui.UI):
     def layout(self):
         return [[layout_tabgroup(self.lamps.values())]]
 
-    def set_channel_strip(self, iname, channel, value, *skip):
+    def set_level(self, iname, channel, value, *skip):
         instrument = instruments()[iname]
         if isinstance(channel, int):
             channel = instrument.channels[channel]
@@ -62,4 +62,4 @@ class View(ui.UI):
 
     def update_instrument(self, iname, levels):
         for k, v in levels.items():
-            self.set_channel_strip(iname, k, v)
+            self.set_level(iname, k, v)
