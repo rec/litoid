@@ -18,7 +18,7 @@ class MidiRecorder:
         keysize = 2 if isinstance(msg, message.ControlChange) else 1
         key = SEP.join(str(i) for i in msg.data[:keysize])
 
-        if not (track := self.tracks.get(key)):
+        if (track := self.tracks.get(key)) is None:
             track = MidiTrack(len(msg.data))
             self.tracks[key] = track
 
