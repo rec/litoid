@@ -7,7 +7,7 @@ RESIZE_RATIO = 1.5
 
 
 @datacls.mutable
-class MidiTrack:
+class Track:
     byte_width: int
     count: int = 0
 
