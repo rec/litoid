@@ -1,5 +1,4 @@
-from . import message
-from ..track import Track
+from .track import Track
 import datacls
 from litoid import log
 import numpy as np
@@ -9,21 +8,20 @@ SEP = '-'
 
 
 @datacls.mutable
-class MidiRecorder:
+class Recorder:
     tracks: dict = datacls.field(dict[tuple, Track])
     start_time: float = datacls.field(time.time)
     update_time: float = datacls.field(time.time)
 
-    def record(self, msg: message.MidiMessage):
-        keysize = 2 if isinstance(msg, message.ControlChange) else 1
-        key = SEP.join(str(i) for i in msg.data[:keysize])
+    def record(self, data: list, time: float, keysize: int):
+        key = SEP.join(str(i) for i in data[:keysize])
 
         if (track := self.tracks.get(key)) is None:
-            track = Track(len(msg.data) - keysize)
+            track = Track(len(data) - keysize)
             self.tracks[key] = track
 
-        track.append(msg.data[keysize:], msg.time)
-        self.update_time = msg.time
+        track.append(data[keysize:], time)
+        self.update_time = time
 
         if empty := sorted(k for k, v in self.tracks.items() if not v.empty):
             log.error('Empty tracks', *empty)
