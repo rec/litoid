@@ -1,4 +1,4 @@
-from . message import Message
+from .event import Event
 from ..util.is_running import IsRunning
 from functools import cached_property
 from pathlib import Path
@@ -60,6 +60,6 @@ class UI(UIDesc, IsRunning):
         super()._start()
         while self.running:
             if raw_msg := self.window.read():
-                self.callback(Message(*raw_msg))
+                self.callback(Event(*raw_msg))
             else:
                 self.stop()

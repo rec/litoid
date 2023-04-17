@@ -34,7 +34,7 @@ class Player:
 @total_ordering
 @datacls.mutable(order=False)
 class TrackPlayer:
-    player: MidiPlayer
+    player: Player
     key: tuple[int, ...]
     track: Track
     position: int = 0
@@ -58,7 +58,7 @@ class TrackPlayer:
         msg_data = self.track.get_message(self.position)
         self.position += 1
 
-        self.player.callback(key, msg_data)
+        self.player.callback(self.key, msg_data)
 
         if self:
             self.player.timed_heap.push(self)
