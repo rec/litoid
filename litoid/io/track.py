@@ -20,10 +20,6 @@ class Track:
         return np.empty(INITIAL_SIZE * self.byte_width, dtype='uint8')
 
     @property
-    def first_time(self) -> float | None:
-        return self.times[0] if len(self.times) else None
-
-    @property
     def empty(self) -> bool:
         assert bool(len(self.times)) == bool(len(self.data))
         return bool(len(self.times))
