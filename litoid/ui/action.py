@@ -20,8 +20,8 @@ class Action:
     def _value(self):
         return self.msg.values.get(self.msg.key)
 
-    def _set_channel_level(self, v, *skip):
-        self.controller.set_channel_level(self.msg.channel, v, *skip)
+    def _set_level(self, v, *skip):
+        self.controller.set_level(self.msg.channel, v, *skip)
 
     def _unknown(self):
         log.error('Unknown key', self.msg.key)
@@ -30,7 +30,7 @@ class Action:
         self.controller.blackout()
 
     def combo(self):
-        self._set_channel_level(self._value, 'combo')
+        self._set_level(self._value, 'combo')
 
     def copy(self):
         pyperclip.copy(self.controller.copy())
@@ -45,7 +45,7 @@ class Action:
             value = int(self._value)
         except Exception:
             value = 0
-        self._set_channel_level(value, 'input')
+        self._set_level(value, 'input')
 
     def menu(self):
         name = self._value.split()[0].strip('.').lower()
@@ -91,7 +91,7 @@ class Action:
             log.error('Nothing to save')
 
     def slider(self):
-        self._set_channel_level(int(self._value), 'slider')
+        self._set_level(int(self._value), 'slider')
 
     def tabgroup(self):
         tab, iname = self._value.split('.')
