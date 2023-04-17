@@ -13,10 +13,15 @@ import time
 
 
 class Controller:
-    def __init__(self):
+    def __init__(self, path='midi.npz'):
+        self.path = path
         self.view = View(callback=self.callback)
         iname = list(self.view.lamps)[0]
         self.model = Model(iname)
+        if self.path and os.path.exists(self.path):
+            self.recorder = Recorder.fromdict(np.load(self.path))
+        else:
+            self.recorder = Recorder()
 
     @property
     def iname(self):
@@ -31,7 +36,7 @@ class Controller:
         return self.view.lamps[self.model.iname]
 
     def start(self):
-        scene = MidiScene(self, 'midi.npz')
+        scene = Scene(self._message_callback)
         self.view.start(scene)
 
     def callback(self, msg):
@@ -82,6 +87,25 @@ class Controller:
                 v *= 2
             self.set_level(ch, v)
 
+    def _message_callback(self, m):
+        if m is None:
+            log.debug('recorder unload:', self.recorder.report())
+            if self.path:
+                np.savez(self.path, **self.recorder.asdict())
+            return
+
+        if not isinstance(m, MidiMessage):
+            return
+
+        if isinstance(m, ControlChange) and m.channel == 0 and m.control < 19:
+            d = m.control >= 10
+            channel = m.control - d * 10
+            value = m.value + 128 * d
+            self.set_midi_level(channel, value)
+
+        keysize = 2 if isinstance(m, ControlChange) else 1
+        self.recorder.record(m.data, keysize, m.time)
+
     def _set_level(self, ch, v, *skip):
         self.lamp[ch] = v
         self.view.set_level(self.iname, ch, v, *skip)
@@ -98,35 +122,15 @@ class Controller:
         self.view.update_presets(self.iname, values=values, value=name)
 
 
-class MidiScene(scene.Scene):
-    def __init__(self, controller, path=None):
-        self.controller = controller
-        self.path = path
+class Scene(scene.Scene):
+    def __init__(self, callback):
+        self._callback = callback
 
-    def load(self, state: State):
-        if self.path and os.path.exists(self.path):
-            self.recorder = Recorder.fromdict(np.load(self.path))
-        else:
-            self.recorder = Recorder()
-        log.debug('recorder load:', self.recorder.report())
-
-    def callback(self, state: State, m: object) -> bool:
-        if not isinstance(m, MidiMessage):
-            return
-
-        if isinstance(m, ControlChange) and m.channel == 0 and m.control < 19:
-            d = m.control >= 10
-            channel = m.control - d * 10
-            value = m.value + 128 * d
-            self.controller.set_midi_level(channel, value)
-
-        keysize = 2 if isinstance(m, ControlChange) else 1
-        self.recorder.record(m.data, keysize, m.time)
+    def callback(self, state: State, msg: object) -> bool:
+        self._callback(msg)
 
     def unload(self, state: State):
-        log.debug('recorder unload:', self.recorder.report())
-        if self.path:
-            np.savez(self.path, **self.recorder.asdict())
+        self._callback(None)
 
 
 def main():
