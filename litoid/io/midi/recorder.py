@@ -25,6 +25,9 @@ class MidiRecorder:
         track.append(msg.data, msg.time)
         self.update_time = msg.time
 
+        if empty := sorted(k for k, v in self.tracks.items() if not v.empty):
+            log.error('Empty tracks', *empty)
+
     def report(self):
         return {
             'event_count': sum(t.count for t in self.tracks.values()),

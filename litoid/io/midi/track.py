@@ -23,6 +23,11 @@ class MidiTrack:
     def first_time(self) -> float | None:
         return self.times[0] if len(self.times) else None
 
+    @property
+    def empty(self) -> bool:
+        assert bool(len(self.times)) == bool(len(self.data))
+        return bool(len(self.times))
+
     def get_message(self, i) -> tuple[np.ndarray, float]:
         b = i * self.byte_width
         return self.data[b:b + self.byte_width]
