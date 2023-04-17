@@ -1,6 +1,5 @@
-from ..recorder import Recorder
-from ..track import Track
-from .message import MidiMessage
+from .recorder import Recorder
+from .track import Track
 from functools import cached_property, total_ordering
 from litoid.util.timed_heap import TimedHeap
 from typing import Callable
@@ -11,7 +10,7 @@ INFINITE = float('inf')
 
 
 @datacls.mutable
-class MidiPlayer:
+class Player:
     recorder: Recorder
     callback: Callable = print
     offset_time: float = 0
@@ -59,8 +58,7 @@ class TrackPlayer:
         msg_data = self.track.get_message(self.position)
         self.position += 1
 
-        msg = MidiMessage([*self.key, *msg_data])
-        self.player.callback(msg)
+        self.player.callback(key, msg_data)
 
         if self:
             self.player.timed_heap.push(self)
