@@ -59,7 +59,7 @@ class TrackPlayer:
         msg_data = self.track.get_message(self.position)
         self.position += 1
 
-        msg = MidiMessage(list(msg_data))
+        msg = MidiMessage([*self.key, *msg_data])
         self.player.callback(msg)
 
         if self:
