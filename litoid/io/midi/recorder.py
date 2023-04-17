@@ -36,8 +36,11 @@ class MidiRecorder:
 
         for key, track in sorted(self.tracks.items()):
             for name, array in track.asdict().items():
-                joined_key = SEP.join((key, name))
-                data[joined_key] = array
+                if len(array):
+                    joined_key = SEP.join((key, name))
+                    data[joined_key] = array
+                else:
+                    log.error(f'Empty track: {key=} {name=}')
 
         return data
 
@@ -45,9 +48,7 @@ class MidiRecorder:
     def fromdict(cls, d):
         parts = {}
         for joined_key, array in d.items():
-            if not len(array):
-                log.error('Empty', joined_key)
-            elif joined_key == 'times':
+            if joined_key == 'times':
                 start_time, update_time = array
             else:
                 key, _, name = joined_key.rpartition(SEP)
