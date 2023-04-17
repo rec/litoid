@@ -1,11 +1,10 @@
-from ..util.thread_queue import ThreadQueue
 from functools import cached_property
 import datacls
 import pyenttec
 
 
 @datacls.mutable
-class DMX(ThreadQueue):
+class DMX:
     port: str
 
     @cached_property
@@ -16,13 +15,5 @@ class DMX(ThreadQueue):
     def frame(self):
         return memoryview(self.connection.dmx_frame)
 
-    def put(self, function, *args):
-        assert callable(function)
-        super().put(function, *args)
-
     def render(self):
         self.connection.render()
-
-    def callback(self, f, *args):
-        f(self.frame, *args)
-        self.render()
