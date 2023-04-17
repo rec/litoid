@@ -1,6 +1,7 @@
 from . import message
 from . track import MidiTrack
 import datacls
+from litoid import log
 import numpy as np
 import time
 
@@ -44,7 +45,9 @@ class MidiRecorder:
     def fromdict(cls, d):
         parts = {}
         for joined_key, array in d.items():
-            if joined_key == 'times':
+            if not len(array):
+                log.error('Empty', joined_key)
+            elif joined_key == 'times':
                 start_time, update_time = array
             else:
                 key, _, name = joined_key.rpartition(SEP)
