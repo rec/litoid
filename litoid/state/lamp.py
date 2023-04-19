@@ -41,7 +41,7 @@ class Lamp(LampDesc):
         d = self.instrument.remap_dict(d)
         it = range(len(self.frame))
         self[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
-        self.render()
+        self.send_packet()
 
     def __len__(self):
         return len(self.frame)
@@ -60,8 +60,8 @@ class Lamp(LampDesc):
     def blackout(self):
         self.levels = self.instrument.blackout
 
-    def render(self):
-        self.dmx.render()
+    def send_packet(self):
+        self.dmx.send_packet()
 
 
 def lamps(dmx: DMX, descs: dict[str, dict]):

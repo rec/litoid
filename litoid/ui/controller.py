@@ -67,12 +67,12 @@ class Controller:
 
     def set_level(self, ch, v, *skip):
         self._set_level(ch, v, *skip)
-        self.lamp.render()
+        self.lamp.send_packet()
 
     def set_levels(self, d):
         for k, v in d.items():
             self._set_level(k, v)
-        self.lamp.render()
+        self.lamp.send_packet()
 
     def set_midi_level(self, ch, v):
         if ch < len(self.lamp):

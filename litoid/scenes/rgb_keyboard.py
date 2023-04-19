@@ -17,7 +17,7 @@ class RGBKeyboard(Scene):
 
         lamp = state.lamps['gantom']
         lamp[li] = lamp[li] + inc
-        state.dmx.render()
+        state.dmx.send_packet()
 
 
 if __name__ == '__main__':

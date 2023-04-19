@@ -15,5 +15,5 @@ class DMX:
     def frame(self):
         return memoryview(self.connection.dmx_frame)
 
-    def render(self):
+    def send_packet(self):
         self.connection.render()
