@@ -3,8 +3,6 @@ from litoid.io.midi.message import ControlChange, MidiMessage
 from litoid.io.recorder import Recorder
 from litoid.state import instruments
 import copy
-import numpy as np
-import os
 
 
 class Model:
@@ -12,11 +10,8 @@ class Model:
         self.all_presets = self._all_presets()
         self.iname_to_selected_preset = {k: None for k in self.all_presets}
         self.iname = iname
-        self.path = path
-        if self.path and os.path.exists(self.path):
-            self.recorder = Recorder.fromdict(np.load(self.path))
-        else:
-            self.recorder = Recorder()
+        self.dmx_recorder = Recorder(path and path / 'dmx.npz')
+        self.midi_recorder = Recorder(path and path / 'midi.npz')
 
     @property
     def iname(self):
@@ -62,7 +57,7 @@ class Model:
     def callback(self, m):
         if isinstance(m, MidiMessage):
             key_size = 2 if isinstance(m, ControlChange) else 1
-            self.recorder.record(m.data, key_size, m.time)
+            self.midi_recorder.record(m.data, key_size, m.time)
 
     @property
     def is_instrument_dirty(self):
@@ -79,10 +74,9 @@ class Model:
         for iname in self.all_presets:
             self._save(iname)
 
-    def save_recorder(self):
-        log.debug(self.recorder.report())
-        if self.path:
-            np.savez(self.path, **self.recorder.asdict())
+    def save_recorders(self):
+        self.dmx_recorder.save()
+        self.midi_recorder.save()
 
     def revert(self):
         self.presets.clear()

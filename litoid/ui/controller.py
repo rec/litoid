@@ -5,12 +5,13 @@ from litoid import log
 from litoid.state import scene
 from litoid.state.state import State
 from litoid.io.midi.message import ControlChange
+from pathlib import Path
 import json
 import time
 
 
 class Controller:
-    def __init__(self, path='midi.npz'):
+    def __init__(self, path=Path('.')):
         self.view = View(callback=self.callback)
         iname = list(self.view.lamps)[0]
         self.model = Model(iname, path)
@@ -99,6 +100,7 @@ class Controller:
 
     def _set_level(self, ch, v, *skip):
         self.lamp[ch] = v
+        self.model.dmx_recorder.record((ch, v), key_size=1)
         self.view.set_level(self.iname, ch, v, *skip)
         if preset := self.model.selected_preset:
             preset[ch] = v

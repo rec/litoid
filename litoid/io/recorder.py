@@ -1,6 +1,7 @@
 from .track import Track
-import datacls
 from litoid import log
+from pathlib import Path
+import datacls
 import numpy as np
 import time as _time
 
@@ -14,14 +15,21 @@ class Recorder:
     like MIDI or DMX.
 
     The first one or more bytes are used as a key into a dict of Tracks,
-    and the remaining bytes are stored in a numpy array, as are the timestamps.
+    and the remaining bytes are stored in a `uint8` array, and the timestamps
+    in a parallel `float64` array
 
-    This only works for protocols where you can deduce the length of the
-    packet from the initial bytes.
+    This only works for protocols where you can deduce the length of the packet
+    from the initial bytes only.
     """
+    path: Path | None = None
     tracks: dict = datacls.field(dict[tuple, Track])
     start_time: float = datacls.field(_time.time)
     update_time: float = datacls.field(_time.time)
+
+    def __post_init__(self):
+        if self.path and self.path.exists():
+            self._fill_from_dict(np.load(self.path))
+            log.debug('Loaded', self.report())
 
     def record(self, data: list, key_size: int, time: float = 0):
         time = time or _time.time()
@@ -39,6 +47,11 @@ class Recorder:
 
         if empty := sorted(k for k, v in self.tracks.items() if not v.empty):
             log.error('Empty tracks', *empty)
+
+    def save(self):
+        if self.path:
+            np.savez(self.path, **self.asdict())
+            log.debug('Saved', self.report())
 
     def report(self):
         return {
@@ -60,13 +73,17 @@ class Recorder:
 
     @classmethod
     def fromdict(cls, d):
+        c = cls()
+        c._fill_from_dict(d)
+        return c
+
+    def _fill_from_dict(self, d):
         parts = {}
         for joined_key, array in d.items():
             if joined_key == 'times':
-                start_time, update_time = array
+                self.start_time, self.update_time = array
             else:
                 key, _, name = joined_key.rpartition(SEP)
                 parts.setdefault(key, {})[name] = array
 
-        tracks = {k: Track.fromdict(**v) for k, v in parts.items()}
-        return cls(tracks, start_time, update_time)
+        self.tracks = {k: Track.fromdict(**v) for k, v in parts.items()}

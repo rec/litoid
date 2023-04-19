@@ -63,7 +63,7 @@ class Action:
         self.controller.set_preset(self._value)
 
     def request_close(self):
-        self.model.save_recorder()
+        self.model.save_recorders()
 
         if self.model.is_dirty:
             choice = self.view.yes_no_cancel(

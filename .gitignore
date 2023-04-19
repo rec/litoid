@@ -132,3 +132,4 @@ dmypy.json
 .envrc
 data/gantom-presets.toml.bak
 midi.npz
+dmx.npz
