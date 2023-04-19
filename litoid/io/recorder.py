@@ -21,6 +21,7 @@ class Recorder:
     This only works for protocols where you can deduce the length of the packet
     from the initial bytes only.
     """
+    name: str
     path: Path | None = None
     tracks: dict = datacls.field(dict[tuple, Track])
     start_time: float = datacls.field(_time.time)
@@ -29,7 +30,7 @@ class Recorder:
     def __post_init__(self):
         if self.path and self.path.exists():
             self._fill_from_dict(np.load(self.path))
-            log.debug('Loaded', self.report())
+            log.debug(f'Loaded {self.name}', self.report())
 
     def record(self, data: list, key_size: int, time: float = 0):
         time = time or _time.time()
@@ -51,7 +52,7 @@ class Recorder:
     def save(self):
         if self.path:
             np.savez(self.path, **self.asdict())
-            log.debug('Saved', self.report())
+            log.debug(f'Saved {self.name}', self.report())
 
     def report(self):
         return {

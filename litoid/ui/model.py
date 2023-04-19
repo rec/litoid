@@ -10,8 +10,8 @@ class Model:
         self.all_presets = self._all_presets()
         self.iname_to_selected_preset = {k: None for k in self.all_presets}
         self.iname = iname
-        self.dmx_recorder = Recorder(path and path / 'dmx.npz')
-        self.midi_recorder = Recorder(path and path / 'midi.npz')
+        self.dmx_recorder = Recorder('DMX', path and path / 'dmx.npz')
+        self.midi_recorder = Recorder('MIDI', path and path / 'midi.npz')
 
     @property
     def iname(self):
