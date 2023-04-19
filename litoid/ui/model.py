@@ -61,8 +61,8 @@ class Model:
 
     def callback(self, m):
         if isinstance(m, MidiMessage):
-            keysize = 2 if isinstance(m, ControlChange) else 1
-            self.recorder.record(m.data, keysize, m.time)
+            key_size = 2 if isinstance(m, ControlChange) else 1
+            self.recorder.record(m.data, key_size, m.time)
 
     @property
     def is_instrument_dirty(self):

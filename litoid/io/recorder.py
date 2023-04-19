@@ -9,19 +9,32 @@ SEP = '-'
 
 @datacls.mutable
 class Recorder:
+    """
+    A Recorder record and timestamps messages which are sequences of bytes,
+    like MIDI or DMX.
+
+    The first one or more bytes are used as a key into a dict of Tracks,
+    and the remaining bytes are stored in a numpy array, as are the timestamps.
+
+    This only works for protocols where you can deduce the length of the
+    packet from the initial bytes.
+    """
     tracks: dict = datacls.field(dict[tuple, Track])
     start_time: float = datacls.field(_time.time)
     update_time: float = datacls.field(_time.time)
 
-    def record(self, data: list, keysize: int, time: float = 0):
+    def record(self, data: list, key_size: int, time: float = 0):
         time = time or _time.time()
-        key = SEP.join(str(i) for i in data[:keysize])
+        key = SEP.join(str(i) for i in data[:key_size])
 
+        byte_width = len(data) - key_size
         if (track := self.tracks.get(key)) is None:
-            track = Track(len(data) - keysize)
+            track = Track(byte_width)
             self.tracks[key] = track
+        else:
+            assert track.byte_width == byte_width
 
-        track.append(data[keysize:], time)
+        track.append(data[key_size:], time)
         self.update_time = time
 
         if empty := sorted(k for k, v in self.tracks.items() if not v.empty):
@@ -42,8 +55,6 @@ class Recorder:
                 if len(array):
                     joined_key = SEP.join((key, name))
                     data[joined_key] = array
-                else:
-                    log.error(f'Empty track: {key=} {name=}')
 
         return data
 
