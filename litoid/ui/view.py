@@ -37,11 +37,9 @@ class View(ui.UI):
     def layout(self):
         return [[layout_tabgroup(self.lamps.values())]]
 
-    def set_level(self, iname, channel, value, *skip):
+    def set_level(self, iname: str, channel: int, value: int, *skip):
         instrument = instruments()[iname]
-        if isinstance(channel, int):
-            channel = instrument.channels[channel]
-        _, value = instrument.remap(channel, value)
+        channel = instrument.channels[channel]
         vname = instrument.level_to_name(channel, value)
 
         def set_window(action, value):

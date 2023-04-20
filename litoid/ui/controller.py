@@ -99,6 +99,7 @@ class Controller:
             self.set_midi_level(channel, value)
 
     def _set_level(self, ch, v, *skip):
+        ch, v = self.instrument.remap(ch, v)
         self.lamp[ch] = v
         self.model.dmx_recorder.record((ch, v), key_size=1)
         self.view.set_level(self.iname, ch, v, *skip)
