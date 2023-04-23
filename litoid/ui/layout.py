@@ -39,6 +39,6 @@ def tab(lamp):
 
 
 @xmod
-def layout_tabgroup(lamps):
+def layout(lamps):
     tabs = [tab(lamp) for lamp in lamps]
     return sg.TabGroup([tabs], enable_events=True, k='tabgroup')

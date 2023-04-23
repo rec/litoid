@@ -1,4 +1,4 @@
-from . import defaults, layout_tabgroup, ui
+from . import defaults, layout, ui
 from ..state import instruments
 from ..state.state import State, make_state
 from functools import cached_property
@@ -35,7 +35,7 @@ class View(ui.UI):
         return dict(sorted(lamps.items()))
 
     def layout(self):
-        return [[layout_tabgroup(self.lamps.values())]]
+        return [[layout(self.lamps.values())]]
 
     def set_level(self, iname: str, channel: int, value: int, *skip):
         instrument = instruments()[iname]
