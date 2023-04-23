@@ -1,7 +1,31 @@
-from . defaults import SIZE, T, BUTTON, SLIDER, COMMANDS, COMBO
+from . defaults import COMMANDS
+from functools import partial
 import PySimpleGUI as sg
 import xmod
 
+SLIDER = {
+    'range': (0, 255),
+    'orientation': 'h',
+    'expand_x': True,
+    'enable_events': True,
+    'disable_number_display': True,
+}
+COMBO = {
+    'enable_events': True,
+    'readonly': True,
+}
+BUTTON = {
+   'border_width': 1,
+   'expand_x': not True,
+}
+TEXT = {
+   'relief': 'raised',
+   'border_width': 1,
+   'expand_x': not True,
+   'justification': 'center',
+}
+Text = partial(sg.Text, **TEXT)
+SIZE = 32, 30
 _LEN = max(len(c) for c in COMMANDS.values())
 CMDS = tuple(f'{v:{_LEN}} (⌘{k.upper()})' for k, v in COMMANDS.items())
 
@@ -13,16 +37,16 @@ def tab(lamp):
     presets = sorted(instrument.presets)
 
     header = [
-        T(iname, s=(8, 1)),
+        Text(iname, s=(8, 1)),
         sg.Combo(presets, k=f'preset.{iname}', s=(16, 1), **COMBO),
-        T(f'offset = {lamp.offset:03}'),
+        Text(f'offset = {lamp.offset:03}'),
         sg.ButtonMenu('Menu', ['Commands', CMDS], k=f'menu.{iname}'),
         sg.Button('Blackout', **BUTTON, k=f'blackout.{iname}'),
     ]
 
     def strip(ch):
         k = f'.{iname}.{ch}'
-        label = T(ch, s=label_size)
+        label = Text(ch, s=label_size)
 
         num = sg.Input('0', s=(3, 1), k='input' + k, enable_events=True)
         if n := list(instrument.value_names.get(ch, [])):
