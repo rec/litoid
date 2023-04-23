@@ -58,8 +58,8 @@ def tab(lamp):
         return label, num, value
 
     strips = (strip(ch) for ch in instrument.channels)
-    canvas = [sg.Canvas(key='test.canvas')]
-    layout = [header, *strips, canvas]
+    # canvas = [sg.Canvas(key='test.canvas')]
+    layout = [header, *strips]  # , canvas]
 
     return sg.Tab(iname, layout, k=f'tab.{iname}')
 

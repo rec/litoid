@@ -16,7 +16,7 @@ class View(ui.UI):
         self.state.blackout()
         self.state.midi_input.start()
         self.state.scene = scene
-        canvas_window.make_figure(self.window)
+        canvas_window.make_window(self)
 
         for key, command in self.commands.items():
             command = command.split()[0].rstrip('.').lower()

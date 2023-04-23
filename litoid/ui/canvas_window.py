@@ -1,3 +1,4 @@
+import PySimpleGUI as sg
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -19,3 +20,9 @@ def make_figure(window):
     figure = plt.figure()
     plt.plot(xData, yData, '.k')
     draw_figure(window, figure)
+
+
+def make_window(ui):
+    layout = [[sg.Canvas(key='test.canvas')]]
+    window = ui.make_window('Matplotlib', layout)
+    make_figure(window)
