@@ -2,6 +2,9 @@ from . defaults import COMMANDS
 from functools import partial
 import PySimpleGUI as sg
 import xmod
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 SLIDER = {
     'range': (0, 255),
@@ -28,6 +31,24 @@ Text = partial(sg.Text, **TEXT)
 SIZE = 32, 30
 _LEN = max(len(c) for c in COMMANDS.values())
 CMDS = tuple(f'{v:{_LEN}} (⌘{k.upper()})' for k, v in COMMANDS.items())
+
+
+def draw_figure(window, figure):
+    canvas = window['test.canvas'].TKCanvas
+    figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
+    figure_canvas_agg.draw()
+    figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+    return figure_canvas_agg
+
+
+def make_figure(window):
+    dataSize = 1000
+    xData = np.random.randint(100, size=dataSize)
+    yData = np.linspace(0, dataSize, num=dataSize, dtype=int)
+    # make fig and plot
+    figure = plt.figure()
+    plt.plot(xData, yData, '.k')
+    draw_figure(window, figure)
 
 
 def tab(lamp):
@@ -58,7 +79,9 @@ def tab(lamp):
         return label, num, value
 
     strips = (strip(ch) for ch in instrument.channels)
-    layout = [header, *strips]
+    canvas = [sg.Canvas(key='test.canvas')]
+    layout = [header, *strips, canvas]
+
     return sg.Tab(iname, layout, k=f'tab.{iname}')
 
 

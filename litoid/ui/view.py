@@ -16,6 +16,7 @@ class View(ui.UI):
         self.state.blackout()
         self.state.midi_input.start()
         self.state.scene = scene
+        layout.make_figure(self.window)
 
         for key, command in self.commands.items():
             command = command.split()[0].rstrip('.').lower()
