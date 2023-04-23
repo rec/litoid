@@ -20,26 +20,30 @@ class UIDesc:
     title: str = '💡 Litoid 💡'
     icon: Path = ICON_PATH
 
-    def layout(self):
-        raise NotImplementedError
-
 
 @datacls.mutable
 class UI(UIDesc, IsRunning):
+    windows: dict = datacls.field(dict)
+
     def callback(self, msg):
         print('UI.callback', msg)
 
+    def make_window(self, title=None, layout=None, font=None, quit=None):
+        assert title not in self.windows
+        self.windows[title] = sg.Window(
+            title or self.title,
+            layout or self.layout(),
+            enable_close_attempted_event=bool(quit),
+            finalize=True,
+            font=font or self.font,
+        )
+        if quit:
+            sg.Window.hidden_master_root.createcommand('tk::mac::Quit', quit)
+        return self.windows[title]
+
     @cached_property
     def window(self):
-        w = sg.Window(
-            self.title,
-            self.layout(),
-            enable_close_attempted_event=True,
-            finalize=True,
-            font=self.font,
-        )
-        sg.Window.hidden_master_root.createcommand('tk::mac::Quit', self.quit)
-        return w
+        return self.make_window(quit=self.quit)
 
     def quit(self):
         self.window.write_event_value(LITOID_CLOSE, None)
@@ -59,7 +63,8 @@ class UI(UIDesc, IsRunning):
         """Must be run on the main thread, blocks until quit"""
         super()._start()
         while self.running:
-            if raw_msg := self.window.read():
-                self.callback(Event(*raw_msg))
+            if raw_msg := sg.read_all_windows():
+                window, key, values = raw_msg
+                self.callback(Event(key, values))
             else:
                 self.stop()
