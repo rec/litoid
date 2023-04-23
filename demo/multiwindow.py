@@ -1,28 +1,59 @@
 import PySimpleGUI as sg
-def open_window():
-    layout = [[sg.Text("New Window", key="new")]]
-    window = sg.Window("Second Window", layout, modal=not True)
-    choice = None
-    while True:
-        event, values = window.read()
-        if event == "Exit" or event == sg.WIN_CLOSED:
-            break
+"""
+    Demo - 2 simultaneous windows using read_all_window
 
-    window.close()
+    Both windows are immediately visible.  Each window updates the other.
+
+    Copyright 2020 PySimpleGUI.org
+"""
+
+def make_win1():
+    layout = [[sg.Text('Window 1')],
+              [sg.Text('Enter something to output to Window 2')],
+              [sg.Input(key='-IN-', enable_events=True)],
+              [sg.Text(size=(25,1), key='-OUTPUT-')],
+              [sg.Button('Reopen')],
+              [sg.Button('Exit')]]
+    return sg.Window('Window Title', layout, finalize=True)
+
+
+def make_win2():
+    layout = [[sg.Text('Window 2')],
+              [sg.Text('Enter something to output to Window 1')],
+              [sg.Input(key='-IN-', enable_events=True)],
+              [sg.Text(size=(25,1), key='-OUTPUT-')],
+              [sg.Button('Exit')]]
+    return sg.Window('Window Title', layout, finalize=True)
 
 
 def main():
-    layout = [[sg.Button("Open Window", key="open")]]
-    window = sg.Window("Main Window", layout)
-    while True:
-        event, values = window.read()
-        if event == "Exit" or event == sg.WIN_CLOSED:
+    window1, window2 = make_win1(), make_win2()
+
+    window2.move(window1.current_location()[0], window1.current_location()[1]+220)
+
+    while True:             # Event Loop
+        window, event, values = sg.read_all_windows()
+        print(sg.WIN_CLOSED, window, event, values)
+
+        if window == sg.WIN_CLOSED:     # if all windows were closed
             break
-        if event == "open":
-            open_window()
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            window.close()
+            if window == window2:       # if closing win 2, mark as closed
+                window2 = None
+            elif window == window1:     # if closing win 1, mark as closed
+                window1 = None
+        elif event == 'Reopen':
+            if not window2:
+                window2 = make_win2()
+                window2.move(window1.current_location()[0], window1.current_location()[1] + 220)
+        elif event == '-IN-':
+            output_window = window2 if window == window1 else window1
+            if output_window:           # if a valid window, then output to it
+                output_window['-OUTPUT-'].update(values['-IN-'])
+            else:
+                window['-OUTPUT-'].update('Other window is closed')
 
-    window.close()
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
