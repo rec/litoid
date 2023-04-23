@@ -1,4 +1,4 @@
-from . import defaults, layout, ui
+from . import canvas_window, defaults, layout, ui
 from ..state import instruments
 from ..state.state import State, make_state
 from functools import cached_property
@@ -16,7 +16,7 @@ class View(ui.UI):
         self.state.blackout()
         self.state.midi_input.start()
         self.state.scene = scene
-        layout.make_figure(self.window)
+        canvas_window.make_figure(self.window)
 
         for key, command in self.commands.items():
             command = command.split()[0].rstrip('.').lower()
