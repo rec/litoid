@@ -65,7 +65,7 @@ class Controller:
         self.lamp.blackout()
         self.set_levels(self.lamp.levels)
 
-    def set_level(self, ch, v, *skip):
+    def set_level(self, ch: int | str, v: int | str, *skip):
         self._set_level(ch, v, *skip)
         self.lamp.send_packet()
 
@@ -74,7 +74,7 @@ class Controller:
             self._set_level(k, v)
         self.lamp.send_packet()
 
-    def set_midi_level(self, ch, v):
+    def set_midi_level(self, ch: int, v: int):
         if ch < len(self.lamp):
             if self.instrument.channels[ch] in self.instrument.value_names:
                 v *= 2

@@ -1,6 +1,7 @@
-from .event import Event
 from ..util.is_running import IsRunning
+from .event import Event
 from functools import cached_property
+from litoid import log
 from pathlib import Path
 import PySimpleGUI as sg
 import datacls
@@ -46,6 +47,7 @@ class UI(UIDesc, IsRunning):
         return self.make_window(quit=self.quit)
 
     def quit(self):
+        log.debug('quit')
         self.window.write_event_value(LITOID_CLOSE, None)
 
     def yes_no_cancel(self, title, messages):
@@ -64,7 +66,6 @@ class UI(UIDesc, IsRunning):
         super()._start()
         while self.running:
             if raw_msg := sg.read_all_windows():
-                window, key, values = raw_msg
-                self.callback(Event(key, values))
+                self.callback(Event(*raw_msg))
             else:
                 self.stop()

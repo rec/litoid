@@ -1,5 +1,14 @@
 from functools import cached_property
+from typing import NamedTuple
 import datacls
+
+
+class FullLevel(NamedTuple):
+    channel: int
+    channel_name: str
+    value: int
+    value_name: int | None
+
 
 Channel = int | str
 
@@ -45,6 +54,24 @@ class Instrument:
         from collections import ChainMap
 
         return ChainMap(self.user_presets, self.builtin_presets)
+
+    def map(self, ch: int | str, val: int | str) -> FullLevel:
+        # Should replace all other *map functions
+        if isinstance(ch, int):
+            channel = ch
+            channel_name = self.channels[channel]
+        else:
+            channel_name = ch
+            channel = self._channels_inv[channel_name]
+        if isinstance(val, int):
+            value = val
+            value_name = self.level_to_name(channel, val)
+        else:
+            value_name = val
+            if (value := self._value_names.get(channel, {}).get(val)) is None:
+                raise ValueError(f'Bad channel value {ch}, {val}')
+
+        return FullLevel(channel, channel_name, value, value_name)
 
     def remap(self, channel: Channel, value: int | str) -> tuple[int, int]:
         if isinstance(channel, str):

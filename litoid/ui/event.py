@@ -11,8 +11,9 @@ class Event:
         action[.name[.channel]]
 
     """
+    window: str
     key: str
-    values: list[str, ...] | None = None
+    values: dict | None = None
 
     CLOSERS = sg.WIN_CLOSED, sg.WINDOW_CLOSE_ATTEMPTED_EVENT
 

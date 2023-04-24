@@ -40,16 +40,16 @@ class View(ui.UI):
 
     def set_level(self, iname: str, channel: int, value: int, *skip):
         instrument = instruments()[iname]
-        channel = instrument.channels[channel]
-        vname = instrument.level_to_name(channel, value)
+        level = instrument.map(channel, value)
 
         def set_window(action, value):
             if action not in skip:
-                self.update(f'{action}.{iname}.{channel}', value=value)
+                key = f'{action}.{iname}.{level.channel_name}'
+                self.update(key, value=value)
 
         set_window('input', value)
-        if vname:
-            set_window('combo', vname)
+        if level.value_name:
+            set_window('combo', level.value_name)
         else:
             set_window('slider', value)
 

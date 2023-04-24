@@ -63,6 +63,7 @@ class Action:
         self.controller.set_preset(self._value)
 
     def request_close(self):
+        log.debug('request_close')
         self.model.save_recorders()
 
         if self.model.is_dirty:
@@ -76,6 +77,7 @@ class Action:
             if choice == 'Yes':
                 self.model.save_all()
         self.view.stop()
+        log.debug('closed')
 
     def revert(self):
         ch = sg.popup_ok_cancel(
