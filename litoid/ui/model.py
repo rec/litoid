@@ -12,6 +12,7 @@ class Model:
         self.iname = iname
         self.dmx_recorder = Recorder('DMX', path and path / 'dmx.npz')
         self.midi_recorder = Recorder('MIDI', path and path / 'midi.npz')
+        self.empty_preset = {}
 
     @property
     def iname(self):
@@ -43,7 +44,7 @@ class Model:
 
     @property
     def selected_preset(self):
-        return self.presets.get(self.selected_preset_name)
+        return self.presets.get(self.selected_preset_name, self.empty_preset)
 
     def delete_selected(self):
         name, self.selected_preset_name = self.selected_preset_name, None

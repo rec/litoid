@@ -104,8 +104,7 @@ class Controller:
         self.lamp[ch] = v
         self.model.dmx_recorder.record((ch, v), key_size=1)
         self.view.set_level(self.iname, level, *skip)
-        if preset := self.model.selected_preset:
-            preset[level.channel_name] = level.value_name or level.value
+        self.model.selected_preset[level.channel_name] = level.canonical_value
 
 
 class Scene(scene.Scene):
