@@ -231,6 +231,27 @@ files = [
 xmod = ">=1.3.2,<2.0.0"
 
 [[package]]
+name = "distinctipy"
+version = "1.2.2"
+description = "A lightweight package for generating visually distinct colours."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "distinctipy-1.2.2-py3-none-any.whl", hash = "sha256:deab7bbabf488c7be5051559c428c1cb4a5e78681cbb8e5156c513465a8d85bf"},
+    {file = "distinctipy-1.2.2.tar.gz", hash = "sha256:8145a422766a7e653549d8bec2978c0b8225f91a6d08bece46228c44a5ec962b"},
+]
+
+[package.dependencies]
+numpy = "*"
+
+[package.extras]
+all = ["black", "codecov", "coverage", "flake8", "isort", "matplotlib", "nbsphinx", "numpy", "pandas", "pytest", "pytest-cov", "sphinx-rtd-theme"]
+docs = ["nbsphinx", "sphinx-rtd-theme"]
+optional = ["matplotlib", "pandas"]
+tests = ["black", "codecov", "coverage", "flake8", "isort", "pytest", "pytest-cov"]
+
+[[package]]
 name = "dtyper"
 version = "2.1.0"
 description = "🗝 Make `typer` commands callable, or dataclasses 🗝"
@@ -1239,4 +1260,4 @@ dek = ">=1.0.2,<2.0.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "5e9edf0c47614e6dcaf61e21bb9f689ddb3587e93a7fe6b7603a2d07438765c6"
+content-hash = "5afcef63188a143dd39c2717d645dcecb543bca95cc057c1b8ebd7079d4c3c88"
