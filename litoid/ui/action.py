@@ -69,7 +69,7 @@ class Action:
         if self.model.is_dirty:
             choice = self.view.yes_no_cancel(
                 'Unsaved changes?',
-                'Do you want to save your unsaved changes?',
+                ['Do you want to save your unsaved changes?'],
             )
             if choice == 'Cancel':
                 log.error('Cancelled')

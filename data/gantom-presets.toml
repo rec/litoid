@@ -1,7 +1,7 @@
 [tom]
 red = 65
 green = 59
-blue = 80
+blue = 42
 color_macro = 0
 speed = 0
 function = "strobe"
