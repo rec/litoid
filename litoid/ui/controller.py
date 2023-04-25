@@ -75,7 +75,7 @@ class Controller:
         self.lamp.send_packet()
 
     def set_midi_level(self, ch: int, v: int):
-        if ch < len(self.lamp):
+        if ch < len(self.instrument.channels):
             if self.instrument.channels[ch] in self.instrument.value_names:
                 v *= 2
             self.set_level(ch, v)
@@ -101,7 +101,7 @@ class Controller:
     def _set_level(self, ch, v, *skip):
         level = self.instrument.map(ch, v)
         ch, v = level.channel, level.value
-        self.lamp[ch] = v
+        self.lamp.set_level(ch, v)
         self.model.dmx_recorder.record((ch, v), key_size=1)
         self.view.set_level(self.iname, level, *skip)
         self.model.selected_preset[level.channel_name] = level.canonical_value

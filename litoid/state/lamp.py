@@ -35,20 +35,13 @@ class Lamp(LampDesc):
     def set_levels(self, d: dict):
         d = self.instrument.remap_dict(d)
         it = range(len(self.frame))
-        self[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
+        self.frame[:] = (bytes(max(0, min(255, d.get(i, 0))) for i in it))
         self.send_packet()
 
-    def __len__(self):
-        return len(self.frame)
-
-    def __getitem__(self, i):
-        return self.frame[i]
-
-    def __setitem__(self, i, v):
+    def set_level(self, i: int | slice, v):
         if isinstance(i, slice):
             v = bytes(max(0, min(255, i)) for i in v)
         else:
-            i, v = self.instrument.remap(i, v)
             v = max(0, min(255, v))
         self.frame[i] = v
 

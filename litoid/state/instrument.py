@@ -57,23 +57,23 @@ class Instrument:
             value_name = self._level_to_name(channel, val)
         else:
             value_name = val
-            if (value := self._value_names.get(channel, {}).get(val)) is None:
-                raise ValueError(f'Bad channel value {ch}, {val}')
+            value = self._remap_value(channel_name, val)
 
         return Level(channel, channel_name, value, value_name)
 
-    def remap(self, channel: Channel, value: int | str) -> tuple[int, int]:
-        if isinstance(channel, str):
-            channel = self._channels_inv[channel]
+    def remap_dict(self, levels: dict[str, int | str]):
+        return dict(self._remap(c, v) for c, v in levels.items())
 
-        if isinstance(v := value, str):
-            if (v := self._value_names.get(channel, {}).get(v)) is None:
-                raise ValueError(f'Bad channel value {channel}, {value}')
+    def _remap_value(self, channel: str, value: int | str):
+        if not isinstance(value, str):
+            return value
 
-        return channel, v
+        if (v := self._value_names.get(channel, {}).get(value)) is None:
+            raise ValueError(f'Bad channel value {channel}, {value}')
+        return v
 
-    def remap_dict(self, levels: dict):
-        return dict(self.remap(c, v) for c, v in levels.items())
+    def _remap(self, channel: str, value: int | str) -> tuple[int, int]:
+        return self._channels_inv[channel], self._remap_value(channel, value)
 
     @cached_property
     def blackout(self):

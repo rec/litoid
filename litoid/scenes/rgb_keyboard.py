@@ -16,7 +16,7 @@ class RGBKeyboard(Scene):
         inc = 1 - (2 * inc)
 
         lamp = state.lamps['gantom']
-        lamp[li] = lamp[li] + inc
+        lamp.set_level[li] = lamp.frame[li] + inc
         state.dmx.send_packet()
 
 
