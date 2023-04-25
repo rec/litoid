@@ -32,12 +32,7 @@ class Lamp(LampDesc):
     def iname(self) -> str:
         return self.instrument.name
 
-    @property
-    def levels(self) -> dict:
-        return self.instrument.unmap_frame(self.frame)
-
-    @levels.setter
-    def levels(self, d: dict):
+    def set_levels(self, d: dict):
         d = self.instrument.remap_dict(d)
         it = range(len(self.frame))
         self[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
@@ -58,7 +53,7 @@ class Lamp(LampDesc):
         self.frame[i] = v
 
     def blackout(self):
-        self.levels = self.instrument.blackout
+        self.set_levels(self.instrument.blackout)
 
     def send_packet(self):
         self.dmx.send_packet()

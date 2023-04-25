@@ -75,16 +75,6 @@ class Instrument:
     def remap_dict(self, levels: dict):
         return dict(self.remap(c, v) for c, v in levels.items())
 
-    def unmap_frame(self, frame):
-        def unmap(i, v):
-            channel = self.channels[i]
-            if names := self._value_names.get(channel):
-                v = names.inv[v]
-
-            return channel, v
-
-        return dict(unmap(i, v) for i, v in enumerate(frame))
-
     @cached_property
     def blackout(self):
         return self.presets.get('blackout') or {}

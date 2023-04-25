@@ -47,7 +47,7 @@ class Controller:
             return
 
         if value := levels.get(self.iname):
-            self.lamp.levels = value
+            self.lamp.set_levels(value)
             self.set_levels(self.iname, value)
         else:
             names = sorted(levels)
@@ -56,7 +56,7 @@ class Controller:
     def set_preset(self, preset_name):
         self.model.selected_preset_name = preset_name
         self.view.update_presets(self.model.iname, value=preset_name)
-        self.lamp.levels = self.model.selected_preset
+        self.lamp.set_levels(self.model.selected_preset)
         self.view.update_instrument(
             self.instrument, self.model.selected_preset,
         )
@@ -85,7 +85,7 @@ class Controller:
             log.error('Preset', name, 'exists')
             return
 
-        self.model.presets[name] = self.lamp.levels
+        self.model.presets[name] = dict(self.model.selected_preset)
         values = sorted(self.model.presets)
         self.view.update_presets(self.iname, values=values, value=name)
 
