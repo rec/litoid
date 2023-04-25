@@ -28,7 +28,8 @@ def instruments():
 
 
 def save_user_presets(iname):
-    presets = instruments()[iname].presets
+    presets = instruments()[iname].user_presets
+
     if (filename := DATA / f'{iname}-presets.toml').exists():
         filename.rename(filename.with_suffix('.toml.bak'))
 

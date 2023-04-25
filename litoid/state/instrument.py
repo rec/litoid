@@ -1,13 +1,7 @@
+from .level import Level
+from collections import ChainMap
 from functools import cached_property
-from typing import NamedTuple
 import datacls
-
-
-class FullLevel(NamedTuple):
-    channel: int
-    channel_name: str
-    value: int
-    value_name: int | None
 
 
 Channel = int | str
@@ -43,20 +37,15 @@ class Instrument:
     def _add_inv(self, d):
         return d | {self._channels_inv[k]: v for k, v in d.items()}
 
-    def level_to_name(self, channel: Channel, level: int) -> str | None:
-        try:
-            return self._value_names[channel].inv[level]
-        except KeyError:
-            return
+    def _level_to_name(self, channel: Channel, level: int) -> str | None:
+        if names := self._value_names.get(channel):
+            return names.inv[level]
 
     @cached_property
     def presets(self) -> dict[str, dict]:
-        from collections import ChainMap
-
         return ChainMap(self.user_presets, self.builtin_presets)
 
-    def map(self, ch: int | str, val: int | str) -> FullLevel:
-        # Should replace all other *map functions
+    def map(self, ch: int | str, val: int | str) -> Level:
         if isinstance(ch, int):
             channel = ch
             channel_name = self.channels[channel]
@@ -65,13 +54,13 @@ class Instrument:
             channel = self._channels_inv[channel_name]
         if isinstance(val, int):
             value = val
-            value_name = self.level_to_name(channel, val)
+            value_name = self._level_to_name(channel, val)
         else:
             value_name = val
             if (value := self._value_names.get(channel, {}).get(val)) is None:
                 raise ValueError(f'Bad channel value {ch}, {val}')
 
-        return FullLevel(channel, channel_name, value, value_name)
+        return Level(channel, channel_name, value, value_name)
 
     def remap(self, channel: Channel, value: int | str) -> tuple[int, int]:
         if isinstance(channel, str):
@@ -86,15 +75,15 @@ class Instrument:
     def remap_dict(self, levels: dict):
         return dict(self.remap(c, v) for c, v in levels.items())
 
-    def unmap(self, channel: Channel, value: int | str):
-        if isinstance(channel, int):
-            channel = self.channels[channel]
-        if not isinstance(v := value, str):
-            v = self.level_to_name(channel, v) or v
-        return channel, v
-
     def unmap_frame(self, frame):
-        return dict(self.unmap(i, v) for i, v in enumerate(frame))
+        def unmap(i, v):
+            channel = self.channels[i]
+            if names := self._value_names.get(channel):
+                v = names.inv[v]
+
+            return channel, v
+
+        return dict(unmap(i, v) for i, v in enumerate(frame))
 
     @cached_property
     def blackout(self):

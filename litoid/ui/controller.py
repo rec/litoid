@@ -58,7 +58,7 @@ class Controller:
         self.view.update_presets(self.model.iname, value=preset_name)
         self.lamp.levels = self.model.selected_preset
         self.view.update_instrument(
-            self.model.iname, self.model.selected_preset
+            self.instrument, self.model.selected_preset,
         )
 
     def blackout(self):
@@ -99,12 +99,13 @@ class Controller:
             self.set_midi_level(channel, value)
 
     def _set_level(self, ch, v, *skip):
-        ch, v = self.instrument.remap(ch, v)
+        level = self.instrument.map(ch, v)
+        ch, v = level.channel, level.value
         self.lamp[ch] = v
         self.model.dmx_recorder.record((ch, v), key_size=1)
-        self.view.set_level(self.iname, ch, v, *skip)
+        self.view.set_level(self.iname, level, *skip)
         if preset := self.model.selected_preset:
-            preset[ch] = v
+            preset[level.channel_name] = level.value_name or level.value
 
 
 class Scene(scene.Scene):

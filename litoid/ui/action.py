@@ -20,7 +20,7 @@ class Action:
     def _value(self):
         return self.msg.values.get(self.msg.key)
 
-    def _set_level(self, v, *skip):
+    def _set_level(self, v: int | str, *skip):
         self.controller.set_level(self.msg.channel, v, *skip)
 
     def _unknown(self):
