@@ -25,7 +25,9 @@ TEXT = {
    'justification': 'center',
 }
 Text = partial(sg.Text, **TEXT)
-SIZE = 32, 30
+SLIDER_SIZE = 32, 30
+CANVAS_SIZE = 400, 200
+
 _LEN = max(len(c) for c in COMMANDS.values())
 CMDS = tuple(f'{v:{_LEN}} (⌘{k.upper()})' for k, v in COMMANDS.items())
 
@@ -51,15 +53,15 @@ def tab(lamp):
         num = sg.Input('0', s=(3, 1), k='input' + k, enable_events=True)
         if n := list(instrument.value_names.get(ch, [])):
             value = sg.Combo(
-                n, default_value=n[0], s=SIZE, k='combo' + k, **COMBO
+                n, default_value=n[0], s=SLIDER_SIZE, k='combo' + k, **COMBO
             )
         else:
-            value = sg.Slider(**SLIDER, s=SIZE, k='slider' + k)
+            value = sg.Slider(**SLIDER, s=SLIDER_SIZE, k='slider' + k)
         return label, num, value
 
     strips = (strip(ch) for ch in instrument.channels)
-    # canvas = [sg.Canvas(key='test.canvas')]
-    layout = [header, *strips]  # , canvas]
+    canvas = [[sg.Canvas(key='canvas.{iname}', s=CANVAS_SIZE)]] * 1
+    layout = [header, *strips, *canvas]
 
     return sg.Tab(iname, layout, k=f'tab.{iname}')
 

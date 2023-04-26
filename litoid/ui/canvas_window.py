@@ -1,5 +1,4 @@
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import PySimpleGUI as sg
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -11,7 +10,8 @@ def add_data(window, *plottables):
         dataSize = 1000
         xData = np.random.randint(100, size=dataSize)
         yData = np.linspace(0, dataSize, num=dataSize, dtype=int)
-        plottables = xData, yData
+        xData.sort(), yData.sort()
+        plottables = xData, yData, '.k'
 
     figure = plt.figure()
     plt.plot(*plottables)
@@ -20,13 +20,3 @@ def add_data(window, *plottables):
     agg = FigureCanvasTkAgg(figure, canvas)
     agg.draw()
     agg.get_tk_widget().pack(side='top', fill='both', expand=1)
-
-
-def layout():
-    return [[sg.Canvas(key=CANVAS_KEY)]]
-
-
-def make_window(ui, title='Matplotlib', *plottables):
-    window = ui.make_window(title, layout())
-    add_data(window)
-    return window
