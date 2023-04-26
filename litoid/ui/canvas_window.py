@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
-def draw_figure(window, figure, canvas):
+def draw_figure(figure, canvas):
     figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
     figure_canvas_agg.draw()
     figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
@@ -20,7 +20,7 @@ def make_figure(window, canvas_key):
 
     plt.plot(xData, yData, '.k')
     canvas = window[canvas_key].TKCanvas
-    draw_figure(window, figure, canvas)
+    draw_figure(figure, canvas)
 
 
 def make_window(ui, title='Matplotlib', canvas_key='test.canvas'):
