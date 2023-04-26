@@ -7,7 +7,6 @@ from litoid.state.state import State
 from litoid.io.midi.message import ControlChange
 from pathlib import Path
 import json
-import time
 
 
 class Controller:
@@ -120,14 +119,3 @@ class Scene(scene.Scene):
 
     def unload(self, state: State):
         self._callback(None)
-
-
-def main():
-    try:
-        Controller().start()
-    finally:
-        time.sleep(0.1)  # Allow daemon threads to print tracebacks
-
-
-if __name__ == "__main__":
-    main()
