@@ -1,4 +1,4 @@
-from .state import State, make_state
+from .state import State
 
 
 class Scene:
@@ -11,13 +11,8 @@ class Scene:
     def unload(self, state: State) -> bool:
         pass
 
-    def run(self, state: State | None = None) -> None:
-        state = state or make_state()
-        state.scene = self
-        state.run()
 
-
-class PrintScene:
+class PrintScene(Scene):
     def load(self, state: State) -> bool:
         print('load', self)
 
@@ -26,3 +21,14 @@ class PrintScene:
 
     def unload(self, state: State) -> bool:
         print('unload', self)
+
+
+class CallbackScene(Scene):
+    def __init__(self, callback):
+        self._callback = callback
+
+    def callback(self, state: State, msg: object) -> bool:
+        self._callback(msg)
+
+    def unload(self, state: State):
+        self._callback(None)

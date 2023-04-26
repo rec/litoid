@@ -2,8 +2,7 @@ from . import action
 from .model import Model
 from .view import View
 from litoid import log
-from litoid.state import scene
-from litoid.state.state import State
+from litoid.state.scene import CallbackScene
 from litoid.io.midi.message import ControlChange
 from pathlib import Path
 import json
@@ -32,7 +31,7 @@ class Controller:
         return self.view.lamps[self.model.iname]
 
     def start(self):
-        scene = Scene(self._scene_callback)
+        scene = CallbackScene(self._scene_callback)
         self.view.start(scene)
 
     def callback(self, msg):
@@ -108,14 +107,3 @@ class Controller:
         self.model.dmx_recorder.record((ch, v), key_size=1)
         self.view.set_level(self.iname, level, *skip)
         self.model.selected_preset[level.channel_name] = level.canonical_value
-
-
-class Scene(scene.Scene):
-    def __init__(self, callback):
-        self._callback = callback
-
-    def callback(self, state: State, msg: object) -> bool:
-        self._callback(msg)
-
-    def unload(self, state: State):
-        self._callback(None)
