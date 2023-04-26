@@ -17,6 +17,10 @@ class Controller:
         self.model = Model(iname, path)
 
     @property
+    def canvas(self):
+        return self.view.canvases[self.iname]
+
+    @property
     def iname(self):
         return self.instrument.name
 
