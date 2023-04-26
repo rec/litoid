@@ -61,6 +61,9 @@ class Recorder:
             'track_count': len(self.tracks),
         }
 
+    def plottable(self):
+        return [i for t in self.tracks.values() for i in t.astuple()]
+
     def asdict(self):
         data = {'times': np.array((self.start_time, self.update_time))}
 

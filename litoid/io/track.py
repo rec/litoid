@@ -42,10 +42,13 @@ class Track:
         self.count += 1
 
     def asdict(self):
-        return {
-            'data': self.data[0:self.byte_width * self.count],
-            'times': self.times[0:self.count],
-        }
+        return dict(zip(('times', 'data'), self.astuple()))
+
+    def astuple(self):
+        return (
+            self.times[0:self.count],
+            self.data[0:self.byte_width * self.count],
+        )
 
     @classmethod
     def fromdict(cls, data, times):
