@@ -8,9 +8,9 @@ class Level(NamedTuple):
     value_name: int | None
 
     @property
-    def canonical_value(self):
+    def canonical_value(self) -> int | str:
         return self.value_name or self.value
 
     @property
-    def cv(self):
+    def cv(self) -> tuple[int, int]:
         return self.channel, self.value
