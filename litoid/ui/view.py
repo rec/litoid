@@ -30,7 +30,8 @@ class View(ui.UI):
 
     @cached_property
     def canvases(self) -> dict[str, DrawingCanvas]:
-        return {iname: DrawingCanvas(self, iname) for iname in self.lamps}
+        cv = (DrawingCanvas(self.window, i) for i in self.lamps.values())
+        return {c.iname: c for c in cv}
 
     @cached_property
     def lamps(self):

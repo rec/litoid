@@ -7,7 +7,11 @@ import datacls
 @datacls
 class DrawingCanvas:
     window: object
-    iname: str
+    lamp: object
+
+    @cached_property
+    def iname(self) -> str:
+        return self.lamp.instrument.name
 
     @cached_property
     def key(self) -> str:
@@ -31,3 +35,10 @@ class DrawingCanvas:
 
         self.tk_agg.draw()
         self.tk_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+
+    def draw_recorder(self, recorder):
+        channels = (str(c) for c in self.lamp.channel_range)
+        tracks = (t for c in channels if (t := recorder.tracks.get(c)))
+        data = (i for t in tracks for i in t.astuple())
+
+        self.draw(*data)

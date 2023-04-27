@@ -13,6 +13,8 @@ class Controller:
         self.view = View(callback=self.callback)
         iname = list(self.view.lamps)[0]
         self.model = Model(iname, path)
+        for c in self.view.canvases.values():
+            c.draw_recorder(self.model.dmx_recorder)
 
     @property
     def canvas(self):

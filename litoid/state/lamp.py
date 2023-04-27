@@ -7,12 +7,12 @@ import datacls
 @datacls.mutable
 class LampDesc:
     name: str
-    instrument_name: str
+    iname: str
     offset: int
 
     @cached_property
     def instrument(self):
-        return instruments()[self.instrument_name]
+        return instruments()[self.iname]
 
     @cached_property
     def size(self):
@@ -22,15 +22,15 @@ class LampDesc:
         frame = dmx.frame[self.offset:self.offset + self.size]
         return Lamp(frame=frame, dmx=dmx, **self.asdict())
 
+    @cached_property
+    def channel_range(self):
+        return range(self.offset, self.offset + self.size)
+
 
 @datacls.mutable
 class Lamp(LampDesc):
     frame: memoryview
     dmx: DMX
-
-    @property
-    def iname(self) -> str:
-        return self.instrument.name
 
     def set_levels(self, d: dict):
         d = self.instrument.remap_dict(d)
