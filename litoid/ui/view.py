@@ -1,4 +1,5 @@
-from . import canvas, defaults, layout, ui
+from . import defaults, layout, ui
+from .drawing_canvas import DrawingCanvas
 from ..state.level import Level
 from ..state.state import State, make_state
 from functools import cached_property
@@ -28,8 +29,8 @@ class View(ui.UI):
             self.state.blackout()
 
     @cached_property
-    def canvases(self) -> dict[str, canvas.Canvas]:
-        return {iname: canvas.Canvas(self, iname) for iname in self.lamps}
+    def canvases(self) -> dict[str, DrawingCanvas]:
+        return {iname: DrawingCanvas(self, iname) for iname in self.lamps}
 
     @cached_property
     def lamps(self):

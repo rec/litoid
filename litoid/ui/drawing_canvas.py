@@ -5,7 +5,7 @@ import datacls
 
 
 @datacls
-class Canvas:
+class DrawingCanvas:
     window: object
     iname: str
 
