@@ -23,7 +23,7 @@ class Recorder:
     """
     name: str
     path: Path | None = None
-    tracks: dict = datacls.field(dict[tuple, Track])
+    tracks: dict = datacls.field(dict[str, Track])
     start_time: float = datacls.field(_time.time)
     update_time: float = datacls.field(_time.time)
 
