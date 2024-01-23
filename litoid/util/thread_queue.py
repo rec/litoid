@@ -8,6 +8,7 @@ class ThreadQueue(HasThread):
     thread_count = 1
     callback = print
     thread = None
+    name = 'thread_queue'
 
     def _start(self):
         [t.start() for t in self.threads]
