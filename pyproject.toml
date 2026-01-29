@@ -1,42 +1,55 @@
-[tool.poetry]
+[project]
 name = "litoid"
 version = "0.1.0"
 description = "💡Sequence DMX lighting 💡"
-authors = ["Tom Ritchford <tom@swirly.com>"]
-license = "MIT"
+authors = [{ name = "Tom Ritchford", email = "tom@swirly.com" }]
+requires-python = ">=3.11"
 readme = "README.md"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "python-osc>=1.8.1",
+    "datacls>=4.6.0",
+    "mido>=1.2.10",
+    "tomlkit>=0.11.6",
+    "numpy>=1.24.2",
+    "pynput>=1.7.6",
+    "python-rtmidi>=1.5.4",
+    "xmod>=1.4.0",
+    "pyenttec>=1.4",
+    "typer>=0.7.0",
+    "dtyper>=2.1.0",
+    "pysimplegui",
+    "psgdemos>=1.12.1",
+    "pyperclip>=1.8.2",
+    "simpleaudio>=1.0.4",
+    "ipython>=8.12.0",
+    "clsprop>=1.1.0",
+    "matplotlib>=3.7.1",
+    "distinctipy>=1.2.2",
+    "coverage>=7.3.2,<8",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.11"
-python-osc = ">=1.8.1"
-datacls = ">=4.6.0"
-mido = ">=1.2.10"
-tomlkit = ">=0.11.6"
-numpy = ">=1.24.2"
-pynput = ">=1.7.6"
-python-rtmidi = ">=1.5.4"
-xmod = ">=1.4.0"
-pyenttec = ">=1.4"
-typer = ">=0.7.0"
-dtyper = ">=2.1.0"
-pysimplegui = ">=4.60.4"
-psgdemos = ">=1.12.1"
-pyperclip = ">=1.8.2"
-simpleaudio = ">=1.0.4"
-ipython = ">=8.12.0"
-clsprop = ">=1.1.0"
-matplotlib = ">=3.7.1"
-distinctipy = ">=1.2.2"
-coverage = "^7.3.2"
+[dependency-groups]
+dev = [
+    "flake8",
+    "pytest",
+    "impall",
+]
 
-[tool.poetry.group.dev.dependencies]
-flake8 = "*"
-pytest = "*"
-impall = "*"
+[tool.uv.build-backend]
+module-root = ""
+
+[build-system]
+requires = ["uv_build>=0.9.0,<0.10.0"]
+build-backend = "uv_build"
 
 
 [tool.mypy]
 strict = true
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
