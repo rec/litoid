@@ -55,9 +55,10 @@ class UI(UIDesc, IsRunning):
             title,
             [
                 *([sg.T(m)] for m in messages),
-                [sg.Yes(s=10), sg.No(s=10), sg.Cancel(s=15)]
+                [sg.Yes(s=10), sg.No(s=10), sg.Cancel(s=15)],
             ],
-            disable_close=True)
+            disable_close=True,
+        )
         choice, _ = popup.read(close=True)
         return choice
 

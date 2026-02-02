@@ -19,7 +19,7 @@ class LampDesc:
         return len(self.instrument.channels)
 
     def make(self, dmx: DMX):
-        frame = dmx.frame[self.offset:self.offset + self.size]
+        frame = dmx.frame[self.offset : self.offset + self.size]
         return Lamp(frame=frame, dmx=dmx, **self.asdict())
 
     @cached_property
@@ -35,7 +35,7 @@ class Lamp(LampDesc):
     def set_levels(self, d: dict):
         d = self.instrument.remap_dict(d)
         it = range(len(self.frame))
-        self.frame[:] = (bytes(max(0, min(255, d.get(i, 0))) for i in it))
+        self.frame[:] = bytes(max(0, min(255, d.get(i, 0))) for i in it)
         self.send_packet()
 
     def set_level(self, i: int | slice, v):

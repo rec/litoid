@@ -25,7 +25,7 @@ class TimeDisplay(Static):
         """Called when the time attribute changes."""
         minutes, seconds = divmod(time, 60)
         hours, minutes = divmod(minutes, 60)
-        self.update(f"{hours:02,.0f}:{minutes:02.0f}:{seconds:05.2f}")
+        self.update(f'{hours:02,.0f}:{minutes:02.0f}:{seconds:05.2f}')
 
     def start(self) -> None:
         """Method to start (or resume) time updating."""
@@ -51,49 +51,49 @@ class Stopwatch(Static):
         """Event handler called when a button is pressed."""
         button_id = event.button.id
         time_display = self.query_one(TimeDisplay)
-        if button_id == "start":
+        if button_id == 'start':
             time_display.start()
-            self.add_class("started")
-        elif button_id == "stop":
+            self.add_class('started')
+        elif button_id == 'stop':
             time_display.stop()
-            self.remove_class("started")
-        elif button_id == "reset":
+            self.remove_class('started')
+        elif button_id == 'reset':
             time_display.reset()
 
     def compose(self) -> ComposeResult:
         """Create child widgets of a stopwatch."""
-        yield Button("Start", id="start", variant="success")
-        yield Button("Stop", id="stop", variant="error")
-        yield Button("Reset", id="reset")
+        yield Button('Start', id='start', variant='success')
+        yield Button('Stop', id='stop', variant='error')
+        yield Button('Reset', id='reset')
         yield TimeDisplay()
 
 
 class StopwatchApp(App):
     """A Textual app to manage stopwatches."""
 
-    CSS_PATH = "stopwatch.css"
+    CSS_PATH = 'stopwatch.css'
 
     BINDINGS = [
-        ("d", "toggle_dark", "Toggle dark mode"),
-        ("a", "add_stopwatch", "Add"),
-        ("r", "remove_stopwatch", "Remove"),
+        ('d', 'toggle_dark', 'Toggle dark mode'),
+        ('a', 'add_stopwatch', 'Add'),
+        ('r', 'remove_stopwatch', 'Remove'),
     ]
 
     def compose(self) -> ComposeResult:
         """Called to add widgets to the app."""
         yield Header()
         yield Footer()
-        yield Container(Stopwatch(), Stopwatch(), Stopwatch(), id="timers")
+        yield Container(Stopwatch(), Stopwatch(), Stopwatch(), id='timers')
 
     def action_add_stopwatch(self) -> None:
         """An action to add a timer."""
         new_stopwatch = Stopwatch()
-        self.query_one("#timers").mount(new_stopwatch)
+        self.query_one('#timers').mount(new_stopwatch)
         new_stopwatch.scroll_visible()
 
     def action_remove_stopwatch(self) -> None:
         """Called to remove a timer."""
-        timers = self.query("Stopwatch")
+        timers = self.query('Stopwatch')
         if timers:
             timers.last().remove()
 
@@ -102,6 +102,6 @@ class StopwatchApp(App):
         self.dark = not self.dark
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = StopwatchApp()
     app.run()

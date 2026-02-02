@@ -1,9 +1,7 @@
 import PySimpleGUI as sg
 
-sg.theme('DarkAmber')   # Add a touch of color
+sg.theme('DarkAmber')  # Add a touch of color
 sg.set_options(font=('Helvetica', 18))
-
-
 
 
 # All the stuff inside your window.
@@ -13,10 +11,7 @@ page1 = [
 tab1 = sg.Tab('tab1', page1, k='tab-1')
 
 # All the stuff inside your window.
-page2 = [
-    [sg.Text('Page TWO')],
-    [sg.Button('Ok'), sg.Button('Cancel')]
-]
+page2 = [[sg.Text('Page TWO')], [sg.Button('Ok'), sg.Button('Cancel')]]
 
 tab2 = sg.Tab('tab', page2, k='tab-2')
 
@@ -32,7 +27,7 @@ window.bind('<FocusOut>', '<FocusOut>')
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
     event, values = window.read()
-    if event == sg.WIN_CLOSED or event == 'Cancel': # ifr clicks cancel
+    if event == sg.WIN_CLOSED or event == 'Cancel':  # ifr clicks cancel
         break
     print('You entered ', event, values)
 

@@ -21,6 +21,7 @@ class Recorder:
     This only works for protocols where you can deduce the length of the packet
     from the initial bytes only.
     """
+
     name: str
     path: Path | None = None
     tracks: dict = datacls.field(dict[str, Track])

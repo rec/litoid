@@ -81,7 +81,7 @@ class Action:
 
     def revert(self):
         ch = sg.popup_ok_cancel(
-            f'Revert to saved for {self.controller.iname}?',  title='Revert'
+            f'Revert to saved for {self.controller.iname}?', title='Revert'
         )
         if ch == 'OK':
             self.model.revert()

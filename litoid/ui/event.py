@@ -11,6 +11,7 @@ class Event:
         action[.name[.channel]]
 
     """
+
     window: str
     key: str
     values: dict | None = None

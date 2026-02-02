@@ -1,7 +1,7 @@
 import clsprop
 import xmod
 
-_PITCH = 0xe0
+_PITCH = 0xE0
 _SYSEX = 0xF0
 
 
@@ -18,10 +18,9 @@ class MidiMessage:
         if data is not None:
             self.data = data
         else:
-            self.data = (
-                [self.status_start]
-                + [kwargs.pop(f, 0) or 0 for f in self.fields]
-            )
+            self.data = [self.status_start] + [
+                kwargs.pop(f, 0) or 0 for f in self.fields
+            ]
 
         if bad := [k for k, v in kwargs.items() if v is not None]:
             assert (data is None) or not kwargs, f'{data=} {kwargs=}'
@@ -40,11 +39,7 @@ class MidiMessage:
 
     @clsprop
     def size(cls) -> int:
-        return (
-            len(cls.fields)
-            + (not cls.has_channel)
-            + (cls.status_start == _PITCH)
-        )
+        return len(cls.fields) + (not cls.has_channel) + (cls.status_start == _PITCH)
 
     @property
     def status(self):
@@ -106,7 +101,7 @@ def _class(status_start, name, *props):
     if _has_channel(status_start):
         parent = MidiChannelMessage
         if status_start == _PITCH:
-            fields = 'pitch',
+            fields = ('pitch',)
 
         fields = 'channel', *props
     else:
@@ -184,35 +179,32 @@ _CHANNEL = (
     # Channel messages
     _class(0x80, 'NoteOff', 'note', 'velocity'),
     _class(0x90, 'NoteOn', 'note', 'velocity'),
-    _class(0xa0, 'Polytouch', 'note', 'value'),
-    _class(0xb0, 'ControlChange', 'control', 'value'),
-    _class(0xc0, 'ProgramChange', 'program'),
-    _class(0xd0, 'Aftertouch', 'value'),
+    _class(0xA0, 'Polytouch', 'note', 'value'),
+    _class(0xB0, 'ControlChange', 'control', 'value'),
+    _class(0xC0, 'ProgramChange', 'program'),
+    _class(0xD0, 'Aftertouch', 'value'),
     _class(_PITCH, 'Pitch', 'pitch_lsb', 'pitch_hsb'),
 )
 
 _SYSTEM = (
     # System common messages.
     _class(_SYSEX, 'Sysex'),
-    _class(0xf1, 'QuarterFrame', 'frame_type', 'frame_value'),
-    _class(0xf2, 'Songpos', 'pos'),
-    _class(0xf3, 'SongSelect', 'song'),
-
+    _class(0xF1, 'QuarterFrame', 'frame_type', 'frame_value'),
+    _class(0xF2, 'Songpos', 'pos'),
+    _class(0xF3, 'SongSelect', 'song'),
     None,  # 0xf4
     None,  # 0xf5
-    _class(0xf6, 'TuneRequest'),
+    _class(0xF6, 'TuneRequest'),
     None,  # 0xf7 is sysex end
-
     # System real time messages.
-    _class(0xf8, 'Clock'),
+    _class(0xF8, 'Clock'),
     None,  # 0xf9
-    _class(0xfa, 'Start'),
-    _class(0xfb, 'Continue'),
-
-    _class(0xfc, 'Stop'),
+    _class(0xFA, 'Start'),
+    _class(0xFB, 'Continue'),
+    _class(0xFC, 'Stop'),
     None,  # 0xfd
-    _class(0xfe, 'ActiveSensing'),
-    _class(0xff, 'Reset'),
+    _class(0xFE, 'ActiveSensing'),
+    _class(0xFF, 'Reset'),
 )
 
 MESSAGE_CLASSES = tuple(c for c in _CHANNEL for i in range(16)) + _SYSTEM

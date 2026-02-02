@@ -62,7 +62,8 @@ class Controller:
         self.view.update_presets(self.model.iname, value=preset_name)
         self.lamp.set_levels(self.model.selected_preset)
         self.view.update_instrument(
-            self.instrument, self.model.selected_preset,
+            self.instrument,
+            self.model.selected_preset,
         )
 
     def blackout(self):

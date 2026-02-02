@@ -24,7 +24,7 @@ class MidiInputHandler(object):
     def __call__(self, event, data=None):
         message, deltatime = event
         self._wallclock += deltatime
-        print("[%s] @%0.6f %r" % (self.port, self._wallclock, message))
+        print('[%s] @%0.6f %r' % (self.port, self._wallclock, message))
 
 
 # Prompts user for MIDI input port, unless a valid port number or name
@@ -37,10 +37,10 @@ try:
 except (EOFError, KeyboardInterrupt):
     sys.exit()
 
-print("Attaching MIDI input callback handler.")
+print('Attaching MIDI input callback handler.')
 midiin.set_callback(MidiInputHandler(port_name))
 
-print("Entering main loop. Press Control-C to exit.")
+print('Entering main loop. Press Control-C to exit.')
 try:
     # Just wait for keyboard interrupt,
     # everything else is handled via the input callback.
@@ -49,6 +49,6 @@ try:
 except KeyboardInterrupt:
     print('')
 finally:
-    print("Exit.")
+    print('Exit.')
     midiin.close_port()
     del midiin

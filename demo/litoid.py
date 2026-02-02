@@ -16,7 +16,7 @@ dmx = OpenDMXController()
 # Add a new Dimmer fixture to our controller
 #  and save it to a variable so we can access it.
 # We give it a name so it's easier to identify in the debug control options.
-fixture = dmx.add_fixture(Dimmer, name="My_First_Dimmer")
+fixture = dmx.add_fixture(Dimmer, name='My_First_Dimmer')
 fixture.set_channels(start=1, end=4)
 
 # Next, dim the intensity of the fixture from it's initial value of zero

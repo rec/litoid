@@ -14,6 +14,7 @@ def litoid(
     state_path: Path = app.Argument(None, help='Path to the state file'),
 ):
     import IPython
+
     litoid = Litoid(**locals())
 
     scope_vars = {'li': litoid, 'litoid': litoid}

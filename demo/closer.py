@@ -5,7 +5,7 @@ window = sg.Window('Title', layout, enable_close_attempted_event=True)
 
 # https://stackoverflow.com/a/70913395
 window.finalize()
-window.TKroot.bind_all("<Command-q>", print)
+window.TKroot.bind_all('<Command-q>', print)
 
 try:
     while True:

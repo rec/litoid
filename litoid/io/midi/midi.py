@@ -6,6 +6,7 @@ from typing import Callable
 import datacls
 import mido
 import time
+
 SPIN_TIME = 0.003
 
 

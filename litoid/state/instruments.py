@@ -4,7 +4,7 @@ from functools import cache
 from pathlib import Path
 import xmod
 
-__all__ = 'instruments',
+__all__ = ('instruments',)
 
 ROOT = Path(__file__).parents[2]
 DATA = ROOT / 'data'

@@ -26,7 +26,7 @@ class Track:
 
     def get_message(self, i) -> tuple[np.ndarray, float]:
         b = i * self.byte_width
-        return self.data[b:b + self.byte_width]
+        return self.data[b : b + self.byte_width]
 
     def append(self, data: np.ndarray, time: float):
         assert self.byte_width == len(data)
@@ -46,8 +46,8 @@ class Track:
 
     def astuple(self):
         return (
-            self.times[0:self.count],
-            self.data[0:self.byte_width * self.count],
+            self.times[0 : self.count],
+            self.data[0 : self.byte_width * self.count],
         )
 
     @classmethod

@@ -1,3 +1,3 @@
-__all__ = 'MidiInput',
+__all__ = ('MidiInput',)
 
-from . midi import MidiInput
+from .midi import MidiInput

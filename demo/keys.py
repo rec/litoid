@@ -2,8 +2,10 @@ import PySimpleGUI as sg
 from functools import partial
 
 layout = [
-    [sg.Button("ok", size=(10, 2), key='button1'),
-     sg.Button("exit", size=(10, 2), key='button2')],
+    [
+        sg.Button('ok', size=(10, 2), key='button1'),
+        sg.Button('exit', size=(10, 2), key='button2'),
+    ],
 ]
 window = sg.Window('Hotkeys', layout, use_default_focus=False, finalize=True)
 button1, button2 = window['button1'], window['button2']
@@ -22,10 +24,10 @@ if not False:
         else:
             window.bind(k, 'tk ' + k)
 else:
+
     def key_cb(event):
         print(str(event))
         print(event.char, event.state, type(event.state))
-
 
     window.TKroot.bind('<Key>', key_cb)
 
@@ -37,9 +39,9 @@ while True:
     print(event, values)
     if event == sg.WINDOW_CLOSED:
         break
-    elif event in ("button1", "ALT-o"):
+    elif event in ('button1', 'ALT-o'):
         print('OK')
-    elif event in ("button2", "ALT-x"):
+    elif event in ('button2', 'ALT-x'):
         break
 
 window.close()

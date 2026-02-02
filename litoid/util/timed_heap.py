@@ -1,7 +1,7 @@
 import datacls
 import heapq
 import time
-from . thread_queue import HasThread
+from .thread_queue import HasThread
 
 MAX_WAIT = 0.01
 
@@ -24,6 +24,7 @@ class TimedHeap(HasThread):
 
     def pop(self, timestamp=None):
         with self._lock:
+
             def top():
                 return self.heap[0].timestamp if self.heap else None
 

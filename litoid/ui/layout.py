@@ -1,4 +1,4 @@
-from . defaults import COMMANDS
+from .defaults import COMMANDS
 from functools import partial
 import PySimpleGUI as sg
 import xmod
@@ -15,14 +15,14 @@ COMBO = {
     'readonly': True,
 }
 BUTTON = {
-   'border_width': 1,
-   'expand_x': not True,
+    'border_width': 1,
+    'expand_x': not True,
 }
 TEXT = {
-   'relief': 'raised',
-   'border_width': 1,
-   'expand_x': not True,
-   'justification': 'center',
+    'relief': 'raised',
+    'border_width': 1,
+    'expand_x': not True,
+    'justification': 'center',
 }
 Text = partial(sg.Text, **TEXT)
 SLIDER_SIZE = 32, 30
