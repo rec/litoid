@@ -1,4 +1,5 @@
 from pynput.keyboard import Events
+
 from ..state.scene import Scene
 
 

@@ -1,11 +1,13 @@
-from . import lamp as _lamp
-from ..io import dmx, key_mouse, midi, osc
-from ..util import file, is_running, timed_heap
+import time
 from functools import cached_property, wraps
 from pathlib import Path
+
 import datacls
-import time
 import xmod
+
+from ..io import dmx, key_mouse, midi, osc
+from ..util import file, is_running, timed_heap
+from . import lamp as _lamp
 
 SPIN_TIME = 0.05
 STATE_FILE = Path(__file__).parents[2] / 'state.toml'
@@ -70,7 +72,8 @@ class State(is_running.IsRunning):
             self.mouse.start()
         else:
             self.keyboard.start()
-        self.lamps
+        self.lamps  # noqa: B018
+
         self.midi_input and self.midi_input.start()
         self.osc_server.start()
         self.timed_heap.start()

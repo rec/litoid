@@ -1,6 +1,7 @@
-from .has_thread import HasThread
 from functools import cached_property
 from queue import Queue
+
+from .has_thread import HasThread
 
 
 class ThreadQueue(HasThread):

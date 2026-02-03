@@ -1,10 +1,13 @@
+from functools import cached_property
+from pathlib import Path
+
+import datacls
+import PySimpleGUI as sg
+
+from litoid import log
+
 from ..util.is_running import IsRunning
 from .event import Event
-from functools import cached_property
-from litoid import log
-from pathlib import Path
-import PySimpleGUI as sg
-import datacls
 
 SUFFIX = '.ico'
 ICON_PATH = Path(__file__).parents[2] / 'images/tom-swirly.ico'

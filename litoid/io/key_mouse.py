@@ -1,7 +1,9 @@
-from ..util.has_thread import HasThread
-from typing import Callable
+from collections.abc import Callable
+
 import datacls
 import pynput
+
+from ..util.has_thread import HasThread
 
 
 @datacls

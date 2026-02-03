@@ -1,8 +1,10 @@
-from ..util import file
-from .instrument import Instrument
 from functools import cache
 from pathlib import Path
+
 import xmod
+
+from ..util import file
+from .instrument import Instrument
 
 __all__ = ('instruments',)
 
@@ -22,7 +24,7 @@ def instruments():
     presets = files('presets')
 
     assert defs.keys() == presets.keys()
-    kdp = zip(defs.keys(), defs.values(), presets.values())
+    kdp = zip(defs.keys(), defs.values(), presets.values(), strict=True)
     instruments = {k: Instrument(k, user_presets=p, **d) for k, d, p in kdp}
     return instruments
 

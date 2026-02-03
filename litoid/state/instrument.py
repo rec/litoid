@@ -1,8 +1,9 @@
-from .level import Level
 from collections import ChainMap
 from functools import cached_property
+
 import datacls
 
+from .level import Level
 
 Channel = int | str
 
@@ -13,7 +14,7 @@ class ValueNames(dict):
         super().__init__((k, v) for v, k in items)
 
         self.inv = []
-        for (v1, k1), (v2, k2) in zip(items, items[1:] + [(256, None)]):
+        for (v1, k1), (v2, _) in zip(items, items[1:] + [(256, None)], strict=True):
             self.inv.extend(k1 for i in range(v1, v2))
 
 

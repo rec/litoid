@@ -1,8 +1,9 @@
-from .is_running import IsRunning
+import sys
+import traceback
 from functools import cached_property
 from threading import Thread
-import traceback
-import sys
+
+from .is_running import IsRunning
 
 
 class HasThread(IsRunning):

@@ -1,8 +1,10 @@
-from ..util.has_thread import HasThread
+from collections.abc import Callable
 from functools import cached_property, partial
-from pynput import keyboard
-from typing import Callable
+
 import datacls
+from pynput import keyboard
+
+from ..util.has_thread import HasThread
 
 
 @datacls.mutable

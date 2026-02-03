@@ -1,11 +1,13 @@
 # DEPRECATED
 
-from . import app
-from .state import state
 from functools import cached_property
 from pathlib import Path
+
 import dtyper
 import xmod
+
+from . import app
+from .state import state
 
 
 @xmod

@@ -1,7 +1,8 @@
-from threading import Thread, Lock
 from pathlib import Path
-import xmod
+from threading import Lock, Thread
+
 import simpleaudio as sa
+import xmod
 
 DEFAULT = Path(__file__).parents[2] / 'audio/Click Mini 3.wav'
 _RUNNING = False

@@ -1,6 +1,7 @@
-from .. import log
-import PySimpleGUI as sg
 import pyperclip
+import PySimpleGUI as sg
+
+from .. import log
 
 
 class Action:

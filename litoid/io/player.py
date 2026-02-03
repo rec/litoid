@@ -1,10 +1,13 @@
+import time
+from collections.abc import Callable
+from functools import cached_property, total_ordering
+
+import datacls
+
+from litoid.util.timed_heap import TimedHeap
+
 from .recorder import Recorder
 from .track import Track
-from functools import cached_property, total_ordering
-from litoid.util.timed_heap import TimedHeap
-from typing import Callable
-import datacls
-import time
 
 INFINITE = float('inf')
 

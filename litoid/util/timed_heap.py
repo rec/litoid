@@ -1,6 +1,8 @@
-import datacls
 import heapq
 import time
+
+import datacls
+
 from .thread_queue import HasThread
 
 MAX_WAIT = 0.01

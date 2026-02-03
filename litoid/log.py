@@ -1,11 +1,13 @@
-from .util import play
-from pathlib import Path
-from functools import wraps
-import PySimpleGUI as sg
 import inspect
 import os
 import sys
+from functools import wraps
+from pathlib import Path
+
+import PySimpleGUI as sg
 import xmod
+
+from .util import play
 
 ROOT = Path(__file__).parent
 DEBUG = os.environ.get('DEBUG', '').strip().lower().startswith('t')

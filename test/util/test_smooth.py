@@ -1,6 +1,6 @@
-from fractions import Fraction
-from litoid.util import smooth
 import pytest
+
+from litoid.util import smooth
 
 # DT = Fraction(1, 10)
 DT = 1

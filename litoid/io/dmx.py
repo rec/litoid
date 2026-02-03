@@ -1,4 +1,5 @@
 from functools import cached_property
+
 import datacls
 import pyenttec
 

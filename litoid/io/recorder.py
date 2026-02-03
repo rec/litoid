@@ -1,9 +1,12 @@
-from .track import Track
-from litoid import log
+import time as _time
 from pathlib import Path
+
 import datacls
 import numpy as np
-import time as _time
+
+from litoid import log
+
+from .track import Track
 
 SEP = '-'
 

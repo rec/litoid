@@ -1,5 +1,6 @@
-from ..state import scene, state
 import datacls
+
+from ..state import scene, state
 
 
 @datacls

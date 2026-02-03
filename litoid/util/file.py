@@ -1,6 +1,7 @@
 import json
-import tomlkit
 import tomllib
+
+import tomlkit
 
 
 def load(path):

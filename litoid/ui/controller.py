@@ -1,11 +1,13 @@
+import json
+from pathlib import Path
+
+from litoid import log
+from litoid.io.midi.message import ControlChange
+from litoid.state.scene import CallbackScene
+
 from . import action
 from .model import Model
 from .view import View
-from litoid import log
-from litoid.state.scene import CallbackScene
-from litoid.io.midi.message import ControlChange
-from pathlib import Path
-import json
 
 
 class Controller:

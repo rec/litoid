@@ -1,10 +1,12 @@
-from . import defaults, layout, ui
-from .drawing_canvas import DrawingCanvas
+from collections.abc import Callable
+from functools import cached_property
+
+import datacls
+
 from ..state.level import Level
 from ..state.state import State, make_state
-from functools import cached_property
-from typing import Callable
-import datacls
+from . import defaults, layout, ui
+from .drawing_canvas import DrawingCanvas
 
 
 @datacls.mutable

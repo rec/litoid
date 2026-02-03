@@ -1,8 +1,9 @@
+import copy
+
 from litoid import log
 from litoid.io.midi.message import ControlChange, MidiMessage
 from litoid.io.recorder import Recorder
 from litoid.state import instruments
-import copy
 
 
 class Model:

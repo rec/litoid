@@ -1,6 +1,7 @@
 from functools import cached_property
-import PySimpleGUI as sg
+
 import datacls
+import PySimpleGUI as sg
 
 
 @datacls

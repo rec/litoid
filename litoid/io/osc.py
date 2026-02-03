@@ -1,9 +1,11 @@
-from ..util.thread_queue import ThreadQueue
+from collections.abc import Callable
 from functools import cached_property
+
+import datacls
 from pythonosc.dispatcher import Dispatcher
 from pythonosc.osc_server import BlockingOSCUDPServer
-from typing import Callable
-import datacls
+
+from ..util.thread_queue import ThreadQueue
 
 
 @datacls.mutable

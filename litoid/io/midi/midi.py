@@ -1,11 +1,14 @@
-from .message import MidiMessage
+import time
+from collections.abc import Callable
 from functools import cached_property
-from litoid.util.has_thread import HasThread
-from rtmidi import midiutil, MidiIn
-from typing import Callable
+
 import datacls
 import mido
-import time
+from rtmidi import MidiIn, midiutil
+
+from litoid.util.has_thread import HasThread
+
+from .message import MidiMessage
 
 SPIN_TIME = 0.003
 

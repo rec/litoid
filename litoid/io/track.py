@@ -1,4 +1,5 @@
 from functools import cached_property
+
 import datacls
 import numpy as np
 
@@ -42,7 +43,7 @@ class Track:
         self.count += 1
 
     def asdict(self):
-        return dict(zip(('times', 'data'), self.astuple()))
+        return dict(zip(('times', 'data'), self.astuple(), strict=True))
 
     def astuple(self):
         return (

@@ -1,7 +1,9 @@
-from . import instruments
-from ..io.dmx import DMX
 from functools import cached_property
+
 import datacls
+
+from ..io.dmx import DMX
+from . import instruments
 
 
 @datacls.mutable

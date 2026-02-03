@@ -1,7 +1,8 @@
 from functools import cached_property
+
+import datacls
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import datacls
 
 
 @datacls

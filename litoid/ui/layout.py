@@ -1,7 +1,9 @@
-from .defaults import COMMANDS
 from functools import partial
+
 import PySimpleGUI as sg
 import xmod
+
+from .defaults import COMMANDS
 
 SLIDER = {
     'range': (0, 255),

@@ -1,5 +1,6 @@
-from litoid.state import state
 import time
+
+from litoid.state import state
 
 
 def test_state():

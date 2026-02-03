@@ -6,8 +6,9 @@ def cli():
 
 
 def gui():
-    from .ui.controller import Controller
     import time
+
+    from .ui.controller import Controller
 
     try:
         Controller().start()
