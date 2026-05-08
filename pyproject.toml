@@ -40,16 +40,22 @@ dev = [
     "ty>=0.0.14",
 ]
 
-[tool.uv.build-backend]
-module-root = ""
-
-
 [tool.coverage]
 
 [tool.ruff.format]
 quote-style = "single"
+
+[tool.poetry]
+name = "litoid"
+version = "0.1.0"
+description = "💡Sequence DMX lighting 💡"
+authors = ["Tom Ritchford <tom@swirly.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+
+
 [build-system]
-requires = ["uv_build>=0.9.0,<0.10.0"]
-build-backend = "uv_build"
-
-
+requires = ["hatchling"]
+build-backend = "hatchling.build"
